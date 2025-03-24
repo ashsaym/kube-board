@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Pod JSON - Kubernetes Dashboard{% endblock %}
+{% block content %}
+    <div class="container-fluid mt-4">
+        <div class="card shadow-lg p-4">
+            <!-- Header -->
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Pod JSON: {{ pod_name }}</h4>
+                <div>
+                    <a href="{% url 'pod_details_page' namespace=namespace pod_name=pod_name %}" class="btn btn-light btn-sm me-2">
+                        <i class="bi bi-arrow-left-circle"></i> Back to Pod Details
+                    </a>
+                    <a href="?download=true" class="btn btn-light btn-sm">
+                        <i class="bi bi-download"></i> Download JSON
+                    </a>
+                </div>
+            </div>
+            <!-- JSON Content -->
+            <div class="card-body">
+                <!-- Global Controls -->
+                <div class="mb-3">
+                    <button id="expand-all" class="btn btn-secondary btn-sm me-2">Expand All</button>
+                    <button id="collapse-all" class="btn btn-secondary btn-sm">Collapse All</button>
+                </div>
+                <!-- Container for JSON Viewer -->
+                <div id="json-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embed JSON Data Safely -->
+    <script>
+        // Parse the JSON data safely by escaping it
+        const podJsonData = JSON.parse("{{ pod_json|escapejs }}");
+    </script>
+
+    <!-- JSON Viewer Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Retrieve the JSON data from the embedded script
+            const jsonData = podJsonData;
+
+            /**
+             * Function to create the JSON viewer
+             * @param {Object|Array} data - The JSON data to render
+             * @returns {HTMLElement} - The HTML element representing the JSON structure
+             */
+            function createJSONViewer(data) {
+                const container = document.createElement('div');
+                container.classList.add('json-viewer');
+
+                /**
+                 * Recursive function to create nodes for JSON keys and values
+                 * @param {String|null} key - The key of the JSON object or null for root
+                 * @param {*} value - The value associated with the key
+                 * @returns {HTMLElement} - The HTML element representing the key-value pair
+                 */
+                function createNode(key, value) {
+                    const node = document.createElement('div');
+                    node.classList.add('json-node');
+
+                    // Key
+                    if (key !== null) {
+                        const keySpan = document.createElement('span');
+                        keySpan.classList.add('json-key');
+                        keySpan.textContent = key + ': ';
+                        node.appendChild(keySpan);
+                    }
+
+                    // Value
+                    if (typeof value === 'object' && value !== null) {
+                        const toggleBtn = document.createElement('span');
+                        toggleBtn.classList.add('toggle-btn');
+                        toggleBtn.textContent = '▼ '; // Expanded by default
+                        node.appendChild(toggleBtn);
+
+                        // Removed the typeSpan to eliminate {Object} and [Array] labels
+
+                        const childContainer = document.createElement('div');
+                        childContainer.classList.add('child-container'); // Expanded by default
+
+                        // Handle arrays and objects differently
+                        if (Array.isArray(value)) {
+                            value.forEach((item, index) => {
+                                childContainer.appendChild(createNode(`[${index}]`, item));
+                            });
+                        } else {
+                            for (const [childKey, childValue] of Object.entries(value)) {
+                                childContainer.appendChild(createNode(childKey, childValue));
+                            }
+                        }
+
+                        node.appendChild(childContainer);
+
+                        toggleBtn.addEventListener('click', function () {
+                            childContainer.classList.toggle('collapsed');
+                            toggleBtn.textContent = childContainer.classList.contains('collapsed') ? '▶ ' : '▼ ';
+                        });
+                    } else {
+                        const valueSpan = document.createElement('span');
+                        valueSpan.classList.add('json-value', typeof value);
+                        if (typeof value === 'string') {
+                            valueSpan.textContent = `"${value}"`;
+                        } else {
+                            valueSpan.textContent = String(value);
+                        }
+                        node.appendChild(valueSpan);
+                    }
+
+                    return node;
+                }
+
+                // Handle root JSON data
+                if (Array.isArray(data)) {
+                    data.forEach((item, index) => {
+                        container.appendChild(createNode(`[${index}]`, item));
+                    });
+                } else {
+                    for (const [key, value] of Object.entries(data)) {
+                        container.appendChild(createNode(key, value));
+                    }
+                }
+
+                return container;
+            }
+
+            // Render the JSON viewer
+            const jsonViewer = createJSONViewer(jsonData);
+            document.getElementById('json-container').appendChild(jsonViewer);
+
+            // Expand All and Collapse All Functionality
+            document.getElementById('expand-all').addEventListener('click', function () {
+                const toggleButtons = document.querySelectorAll('.toggle-btn');
+                toggleButtons.forEach(function (btn) {
+                    const childContainer = btn.nextElementSibling; // Directly the childContainer
+                    if (childContainer.classList.contains('collapsed')) {
+                        childContainer.classList.remove('collapsed');
+                        btn.textContent = '▼ ';
+                    }
+                });
+            });
+
+            document.getElementById('collapse-all').addEventListener('click', function () {
+                const toggleButtons = document.querySelectorAll('.toggle-btn');
+                toggleButtons.forEach(function (btn) {
+                    const childContainer = btn.nextElementSibling; // Directly the childContainer
+                    if (!childContainer.classList.contains('collapsed')) {
+                        childContainer.classList.add('collapsed');
+                        btn.textContent = '▶ ';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- JSON Viewer Styles -->
+    <style>
+        .json-viewer {
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .json-node {
+            margin-left: 20px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .json-key {
+            color: #2b91af;
+            font-weight: bold;
+        }
+
+        .json-value.string {
+            color: #d14;
+        }
+
+        .json-value.number {
+            color: #1c00cf;
+        }
+
+        .json-value.boolean {
+            color: #aa0d91;
+        }
+
+        .json-value.null {
+            color: #aa0d91;
+        }
+
+        .toggle-btn {
+            cursor: pointer;
+            user-select: none;
+            margin-right: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* Removed .json-type since {Object} and [Array] labels are removed */
+
+        .child-container {
+            margin-left: 15px;
+            border-left: 1px dotted #ccc;
+            padding-left: 10px;
+        }
+
+        .collapsed {
+            display: none;
+        }
+
+        /* Optional: Hover effects */
+        .json-node:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Indentation for better readability */
+        .json-viewer .json-node {
+            padding-left: 5px;
+        }
+
+        /* Global Controls Styling */
+        .card-body .mb-3 button {
+            min-width: 100px;
+        }
+    </style>
+{% endblock %}

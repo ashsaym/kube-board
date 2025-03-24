@@ -1,0 +1,298 @@
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingLogs">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseLogs" aria-expanded="false"
+                aria-controls="collapseLogs">
+            <i class="bi bi-stickies me-2"></i> Real-Time Logs
+        </button>
+    </h2>
+    <div id="collapseLogs" class="accordion-collapse collapse"
+         aria-labelledby="headingLogs" data-bs-parent="#podDetailsAccordion">
+        <div class="accordion-body">
+            <!-- Connection Status -->
+            <div id="connection-status" class="mb-3 text-center"></div>
+
+            <!-- Controls Container: Left (Container, Tail Lines, and Filter) and Right (Buttons) -->
+            <div class="controls-container mb-3 d-flex justify-content-between align-items-center flex-wrap">
+                <!-- Left Controls: Container Select, Tail Lines Input, and Log Level Filter -->
+                <div class="left-controls d-flex align-items-center mb-2 mb-md-0">
+                    <!-- Container Selection -->
+                    <div class="control-group me-3">
+                        <label for="container-select" class="form-label me-2">Container:</label>
+                        <select id="container-select" class="form-select">
+                            {% for container in containers %}
+                                <option value="{{ container }}" {% if container == containers.0 %}selected{% endif %}>
+                                    {{ container }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Tail Lines Input -->
+                    <div class="control-group me-3">
+                        <label for="tail-lines-input" class="form-label me-2">Tail Lines:</label>
+                        <input type="number" id="tail-lines-input" class="form-control" min="1" value="100">
+                    </div>
+
+                    <!-- Log Level Filter -->
+                    <div class="control-group">
+                        <label for="log-level-filter" class="form-label me-2">Filter:</label>
+                        <select id="log-level-filter" class="form-select">
+                            <option value="all">All</option>
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="error">Error</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Right Controls: Buttons -->
+                <div class="right-controls d-flex align-items-center">
+                    <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause</button>
+                    <button id="resume-logs" class="btn btn-sm btn-outline-secondary me-2" disabled>Resume</button>
+                    <button id="jump-to-latest" class="btn btn-sm btn-outline-secondary">Jump Latest</button>
+                </div>
+            </div>
+
+            <!-- Kubectl Command Section -->
+            <div class="kubectl-command-section mb-3 p-3 border rounded position-relative">
+                <pre id="kubectl-command-text" class="mb-0"></pre>
+                <button id="copy-command" class="copy-button">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            </div>
+
+            <!-- Log Container -->
+            <div id="log-container"></div>
+        </div>
+    </div>
+</div>
+
+<!-- SSE and Log Handling Scripts -->
+<!-- Include this in your templates/logs.html -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const namespace = "{{ selected_namespace }}";
+        const podName = "{{ pod_name }}";
+        const containers = {{ containers|safe }};
+        const logContainer = document.getElementById('log-container');
+        const pauseButton = document.getElementById('pause-logs');
+        const resumeButton = document.getElementById('resume-logs');
+        const jumpButton = document.getElementById('jump-to-latest');
+        const connectionStatus = document.getElementById('connection-status');
+        const containerSelect = document.getElementById('container-select');
+        const logFilter = document.getElementById('log-level-filter');
+        const tailLinesInput = document.getElementById('tail-lines-input');
+        const kubectlCommandText = document.getElementById('kubectl-command-text');
+        const copyCommand = document.getElementById('copy-command');
+        let eventSource = null;
+        let isPaused = false;
+        let filterLevel = "all";
+        let reconnectTimeout = null;
+
+        // Debounce function to limit rapid calls
+        function debounce(func, delay) {
+            let debounceTimer;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => func.apply(context, args), delay);
+            }
+        }
+
+        // Update kubectl command display
+        function updateKubectlCommand() {
+            const container = containerSelect.value;
+            const tailLines = tailLinesInput.value || 100;
+            const command = container ?
+                `kubectl logs -f ${podName} -n ${namespace} -c ${container} --tail=${tailLines}` :
+                `kubectl logs -f ${podName} -n ${namespace} --tail=${tailLines}`;
+            kubectlCommandText.textContent = command;
+        }
+
+        // Initial command generation
+        updateKubectlCommand();
+
+        // Function to close existing SSE connection
+        function closeEventSource() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+                connectionStatus.textContent = "Disconnected.";
+                connectionStatus.className = 'text-danger';
+            }
+        }
+
+        // Function to reset SSE connection
+        function resetSSE() {
+            closeEventSource();
+            logContainer.innerHTML = "";
+            connectionStatus.textContent = "Reconnecting...";
+            connectionStatus.className = '';
+            initSSE();
+        }
+
+        // Listen for container selection change to update command and reset log stream
+        containerSelect.addEventListener('change', debounce(function () {
+            updateKubectlCommand();
+            resetSSE();
+        }, 300));
+
+        // Listen for tail lines input change to update command and reset log stream
+        tailLinesInput.addEventListener('change', debounce(function () {
+            const value = parseInt(this.value, 10);
+            if (isNaN(value) || value < 1) {
+                alert("Tail Lines must be a positive integer.");
+                this.value = 100;
+                return;
+            }
+            updateKubectlCommand();
+            resetSSE();
+        }, 300));
+
+        // Listen for log filter change to apply filtering
+        logFilter.addEventListener('change', function () {
+            filterLevel = this.value;
+            filterExistingLogs();
+        });
+
+        // Function to filter existing logs based on selected filter level
+        function filterExistingLogs() {
+            const allLogLines = logContainer.querySelectorAll('div');
+            allLogLines.forEach(function (logLine) {
+                if (filterLevel === "all") {
+                    logLine.style.display = "";
+                } else {
+                    logLine.style.display = logLine.classList.contains(`log-${filterLevel}`) ? "" : "none";
+                }
+            });
+        }
+
+        // Initialize Server-Sent Events (SSE) for log streaming
+        function initSSE() {
+            const containerName = containerSelect.value;
+            if (!containerName) {
+                console.error("No container name provided.");
+                logContainer.innerHTML = "<div class='log-error'>No container selected.</div>";
+                connectionStatus.textContent = "No container selected.";
+                connectionStatus.className = 'text-danger';
+                return;
+            }
+            const sse_url = `/pods/${encodeURIComponent(namespace)}/${encodeURIComponent(podName)}/stream-logs/${encodeURIComponent(containerName)}/?tail_lines=${encodeURIComponent(tailLinesInput.value)}`;
+            eventSource = new EventSource(sse_url);
+
+            eventSource.onmessage = function (e) {
+                if (isPaused) return;
+                const data = JSON.parse(e.data);
+                const log = data.log;
+                let logClass = 'log-info';
+                const upperLog = log.toUpperCase();
+                if (upperLog.includes('ERROR')) {
+                    logClass = 'log-error';
+                } else if (upperLog.includes('WARNING') || upperLog.includes('WARN')) {
+                    logClass = 'log-warning';
+                }
+
+                if (filterLevel !== "all" && logClass !== `log-${filterLevel}`) {
+                    return;
+                }
+
+                const logLine = document.createElement('div');
+                logLine.textContent = log;
+                logLine.classList.add(logClass);
+                logContainer.appendChild(logLine);
+                logContainer.scrollTop = logContainer.scrollHeight;
+            };
+
+            eventSource.onerror = function (e) {
+                console.error("SSE error:", e);
+                connectionStatus.textContent = "Error receiving logs.";
+                connectionStatus.className = 'text-danger';
+                const errorLine = document.createElement('div');
+                errorLine.textContent = "Error receiving logs.";
+                errorLine.classList.add('log-error');
+                logContainer.appendChild(errorLine);
+                // Attempt to reconnect after a delay
+                closeEventSource();
+                if (!isPaused) {
+                    reconnectTimeout = setTimeout(initSSE, 5000); // 5 seconds
+                }
+            };
+
+            eventSource.onopen = function () {
+                connectionStatus.textContent = `Connected to log stream for container "${containerSelect.value}".`;
+                connectionStatus.className = 'text-success';
+                logContainer.scrollTop = logContainer.scrollHeight;
+            };
+        }
+
+        // Initialize SSE on page load with the default selected container and tail lines
+        initSSE();
+
+        // Pause Logs Button Handler
+        pauseButton.addEventListener('click', function () {
+            isPaused = true;
+            connectionStatus.textContent = "Log streaming paused.";
+            connectionStatus.className = 'text-warning';
+            pauseButton.disabled = true;
+            resumeButton.disabled = false;
+            // Close SSE connection when paused
+            closeEventSource();
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+            }
+        });
+
+        // Resume Logs Button Handler
+        resumeButton.addEventListener('click', function () {
+            if (isPaused) {
+                isPaused = false;
+                connectionStatus.textContent = "Log streaming resumed.";
+                connectionStatus.className = 'text-success';
+                pauseButton.disabled = false;
+                resumeButton.disabled = true;
+                resetSSE();
+            }
+        });
+
+        // Jump to Latest Logs Button Handler
+        jumpButton.addEventListener('click', function () {
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        // Copy kubectl command to clipboard
+        copyCommand.addEventListener('click', function () {
+            navigator.clipboard.writeText(kubectlCommandText.textContent)
+                .then(() => {
+                    copyCommand.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                    copyCommand.classList.remove('btn-outline-secondary', 'copy-button');
+                    copyCommand.classList.add('btn-outline-success');
+                    setTimeout(() => {
+                        copyCommand.innerHTML = '<i class="bi bi-clipboard"></i>';
+                        copyCommand.classList.remove('btn-outline-success');
+                        copyCommand.classList.add('btn-outline-secondary', 'copy-button');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error("Failed to copy command: ", err);
+                });
+        });
+
+        // Scroll to latest logs when the accordion is expanded
+        const logsCollapse = document.getElementById('collapseLogs');
+        logsCollapse.addEventListener('shown.bs.collapse', function () {
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        // Clean up SSE connection when the page is unloaded
+        window.addEventListener('beforeunload', function () {
+            closeEventSource();
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+            }
+        });
+    });
+</script>

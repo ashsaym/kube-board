@@ -1,0 +1,9 @@
+/.idea
+./venv
+.DS_Store
+/*/__pycache__/*
+/*/migrations/*
+*.sqlite3
+.env
+rke2.yaml
+/kubeConfigs

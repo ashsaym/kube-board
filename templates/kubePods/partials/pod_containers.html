@@ -1,0 +1,459 @@
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingContainers">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseContainers" aria-expanded="false"
+                aria-controls="collapseContainers">
+            <i class="bi bi-box-seam me-2"></i> Containers
+        </button>
+    </h2>
+    <div id="collapseContainers" class="accordion-collapse collapse"
+         aria-labelledby="headingContainers" data-bs-parent="#podDetailsAccordion">
+        <div class="accordion-body">
+            <!-- Containers Content -->
+            {% for container in pod.spec.containers %}
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">{{ container.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover table-striped mb-4">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Image</th>
+                                    <td>{{ container.image }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Image Pull Policy</th>
+                                    <td>{{ container.image_pull_policy }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Command</th>
+                                    <td>
+                                        {% if container.command %}
+                                            {{ container.command | join:" " }}
+                                        {% else %}
+                                            <span class="text-muted">No Command</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Args</th>
+                                    <td>
+                                        {% if container.args %}
+                                            {{ container.args | join:" " }}
+                                        {% else %}
+                                            <span class="text-muted">No Args</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Environment Variables</th>
+                                    <td>
+                                        {% if container.env %}
+                                            <ul class="list-group list-group-flush">
+                                                {% for env_var in container.env %}
+                                                    <li class="list-group-item">
+                                                        <strong>{{ env_var.name }}</strong>:
+                                                        {% if env_var.value %}
+                                                            {{ env_var.value }}
+                                                        {% elif env_var.value_from %}
+                                                            {% if env_var.value_from.field_ref %}
+                                                                <em>From Field:</em>
+                                                                {{ env_var.value_from.field_ref.field_path }}
+                                                            {% elif env_var.value_from.config_map_key_ref %}
+                                                                <em>From ConfigMap:</em>
+                                                                {{ env_var.value_from.config_map_key_ref.name }} - Key:
+                                                                {{ env_var.value_from.config_map_key_ref.key }}
+                                                            {% elif env_var.value_from.secret_key_ref %}
+                                                                <em>From Secret:</em>
+                                                                {{ env_var.value_from.secret_key_ref.name }} - Key:
+                                                                {{ env_var.value_from.secret_key_ref.key }}
+                                                            {% else %}
+                                                                <span class="text-muted">N/A</span>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <span class="text-muted">N/A</span>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <span class="text-muted">No Environment Variables</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Ports</th>
+                                    <td>
+                                        {% if container.ports %}
+                                            <table class="table table-sm table-bordered mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Port</th>
+                                                        <th>Name</th>
+                                                        <th>Protocol</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for port in container.ports %}
+                                                        <tr>
+                                                            <td>{{ port.container_port }}</td>
+                                                            <td>{{ port.name|default:"N/A" }}</td>
+                                                            <td>{{ port.protocol }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        {% else %}
+                                            <span class="text-muted">No Ports</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Resources</th>
+                                    <td>
+                                        {% if container.resources %}
+                                            <strong>Requests:</strong>
+                                            {% if container.resources.requests %}
+                                                <ul class="mb-3">
+                                                    {% for key, value in container.resources.requests.items %}
+                                                        <li>{{ key }}: {{ value }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <span class="text-muted">No Requests</span>
+                                            {% endif %}
+                                            <strong>Limits:</strong>
+                                            {% if container.resources.limits %}
+                                                <ul>
+                                                    {% for key, value in container.resources.limits.items %}
+                                                        <li>{{ key }}: {{ value }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <span class="text-muted">No Limits</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">No Resources</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Volume Mounts</th>
+                                    <td>
+                                        {% if container.volume_mounts %}
+                                            <ul class="list-group list-group-flush">
+                                                {% for mount in container.volume_mounts %}
+                                                    <li class="list-group-item">
+                                                        <strong>{{ mount.name }}</strong>:
+                                                        Path: {{ mount.mount_path }},
+                                                        Read Only: {{ mount.read_only|yesno:"Yes,No" }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <span class="text-muted">No Volume Mounts</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <!-- Enhanced Row: Kubectl Commands -->
+                                <tr>
+                                    <th scope="row">Kubectl Commands</th>
+                                    <td>
+                                        <div class="mb-3">
+                                            <h6><i class="bi bi-terminal-fill me-2"></i>Kubectl Commands</h6>
+
+                                            <!-- Describe Container -->
+                                            <div class="command-container mb-2">
+                                                <pre><code>kubectl describe pod {{ pod.metadata.name }} -c {{ container.name }}</code></pre>
+                                                <button class="copy-button btn btn-sm btn-dark"
+                                                        title="Copy Command to Clipboard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                            <p class="small text-muted">Provides detailed information about the container's
+                                                current state, events, and configurations.</p>
+
+                                            <!-- Get Logs -->
+                                            <div class="command-container mb-2">
+                                                <pre><code>kubectl logs {{ pod.metadata.name }} -c {{ container.name }}</code></pre>
+                                                <button class="copy-button btn btn-sm btn-dark"
+                                                        title="Copy Command to Clipboard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                            <p class="small text-muted">Retrieves the logs produced by the container, useful
+                                                for debugging and monitoring.</p>
+
+                                            <!-- Exec into Container -->
+                                            <div class="command-container mb-2">
+                                                <pre><code>kubectl exec -it {{ pod.metadata.name }} -c {{ container.name }} -- /bin/bash</code></pre>
+                                                <button class="copy-button btn btn-sm btn-dark"
+                                                        title="Copy Command to Clipboard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                            <p class="small text-muted">Opens an interactive shell session inside the
+                                                container for direct access.</p>
+
+                                            <!-- Port Forward -->
+                                            {% if container.ports %}
+                                                {% for port in container.ports %}
+                                                    <div class="command-container mb-2">
+                                                        <pre><code>kubectl port-forward {{ pod.metadata.name }} {{ port.container_port }}:{{ port.container_port }} -c {{ container.name }}</code></pre>
+                                                        <button class="copy-button btn btn-sm btn-dark"
+                                                                title="Copy Command to Clipboard">
+                                                            <i class="bi bi-clipboard"></i>
+                                                        </button>
+                                                    </div>
+                                                    <p class="small text-muted">Forwards port
+                                                        <strong>{{ port.container_port }}</strong> on the pod to port
+                                                        <strong>{{ port.container_port }}</strong> on your local machine.
+                                                    </p>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="mb-2">
+                                                    <span class="text-muted">No Ports defined. Port forward not available.</span>
+                                                </div>
+                                            {% endif %}
+
+                                            <!-- Execute One-Time Command -->
+                                            <div class="command-container mb-2">
+                                                <pre><code>kubectl exec {{ pod.metadata.name }} -c {{ container.name }} -- &lt;command&gt;</code></pre>
+                                                <button class="copy-button btn btn-sm btn-dark"
+                                                        title="Copy Command to Clipboard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                            <p class="small text-muted">Runs a specified command inside the container
+                                                without opening an interactive shell.</p>
+
+                                            <!-- Copy Files -->
+                                            <div class="command-container mb-2">
+                                                <pre><code>kubectl cp &lt;source&gt; {{ pod.metadata.name }}:&lt;container_path&gt; -c {{ container.name }}</code></pre>
+                                                <button class="copy-button btn btn-sm btn-dark"
+                                                        title="Copy Command to Clipboard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                            <p class="small text-muted">Copies files or directories between the local
+                                                filesystem and the container.</p>
+
+                                            <!-- High-Relevance Kubectl Commands -->
+                                            <div class="command-container mb-2">
+                                                <pre><code>kubectl top pod {{ pod.metadata.name }} -c {{ container.name }}</code></pre>
+                                                <button class="copy-button btn btn-sm btn-dark"
+                                                        title="Copy Command to Clipboard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                            </div>
+                                            <p class="small text-muted">Displays resource (CPU/memory) usage metrics for the
+                                                specified container.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if pod.spec.init_containers %}
+                {% for init_container in pod.spec.init_containers %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">{{ init_container.name }} <span class="badge bg-secondary">Init Container</span></h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover table-striped mb-4">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Image</th>
+                                        <td>{{ init_container.image }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Image Pull Policy</th>
+                                        <td>{{ init_container.image_pull_policy }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Command</th>
+                                        <td>
+                                            {% if init_container.command %}
+                                                {{ init_container.command | join:" " }}
+                                            {% else %}
+                                                <span class="text-muted">No Command</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Args</th>
+                                        <td>
+                                            {% if init_container.args %}
+                                                {{ init_container.args | join:" " }}
+                                            {% else %}
+                                                <span class="text-muted">No Args</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Environment Variables</th>
+                                        <td>
+                                            {% if init_container.env %}
+                                                <ul class="list-group list-group-flush">
+                                                    {% for env_var in init_container.env %}
+                                                        <li class="list-group-item">
+                                                            <strong>{{ env_var.name }}</strong>:
+                                                            {% if env_var.value %}
+                                                                {{ env_var.value }}
+                                                            {% elif env_var.value_from %}
+                                                                {% if env_var.value_from.field_ref %}
+                                                                    <em>From Field:</em>
+                                                                    {{ env_var.value_from.field_ref.field_path }}
+                                                                {% elif env_var.value_from.config_map_key_ref %}
+                                                                    <em>From ConfigMap:</em>
+                                                                    {{ env_var.value_from.config_map_key_ref.name }} - Key:
+                                                                    {{ env_var.value_from.config_map_key_ref.key }}
+                                                                {% elif env_var.value_from.secret_key_ref %}
+                                                                    <em>From Secret:</em>
+                                                                    {{ env_var.value_from.secret_key_ref.name }} - Key:
+                                                                    {{ env_var.value_from.secret_key_ref.key }}
+                                                                {% else %}
+                                                                    <span class="text-muted">N/A</span>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                <span class="text-muted">N/A</span>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <span class="text-muted">No Environment Variables</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Volume Mounts</th>
+                                        <td>
+                                            {% if init_container.volume_mounts %}
+                                                <ul class="list-group list-group-flush">
+                                                    {% for mount in init_container.volume_mounts %}
+                                                        <li class="list-group-item">
+                                                            <strong>{{ mount.name }}</strong>:
+                                                            Path: {{ mount.mount_path }},
+                                                            Read Only: {{ mount.read_only|yesno:"Yes,No" }}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <span class="text-muted">No Volume Mounts</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <!-- Enhanced Row: Kubectl Commands for Init Containers -->
+                                    <tr>
+                                        <th scope="row">Kubectl Commands</th>
+                                        <td>
+                                            <div class="mb-3">
+                                                <h6><i class="bi bi-terminal-fill me-2"></i>Kubectl Commands</h6>
+
+                                                <!-- Describe Init Container -->
+                                                <div class="command-container mb-2">
+                                                    <pre><code>kubectl describe pod {{ pod.metadata.name }} -c {{ init_container.name }}</code></pre>
+                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                            title="Copy Command to Clipboard">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="small text-muted">Provides detailed information about the init
+                                                    container's current state, events, and configurations.</p>
+
+                                                <!-- Get Init Container Logs -->
+                                                <div class="command-container mb-2">
+                                                    <pre><code>kubectl logs {{ pod.metadata.name }} -c {{ init_container.name }}</code></pre>
+                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                            title="Copy Command to Clipboard">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="small text-muted">Retrieves the logs produced by the init
+                                                    container, useful for debugging and monitoring.</p>
+
+                                                <!-- Exec into Init Container -->
+                                                <div class="command-container mb-2">
+                                                    <pre><code>kubectl exec -it {{ pod.metadata.name }} -c {{ init_container.name }} -- /bin/bash</code></pre>
+                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                            title="Copy Command to Clipboard">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="small text-muted">Opens an interactive shell session inside the
+                                                    init container for direct access.</p>
+
+                                                <!-- Port Forward -->
+                                                {% if init_container.ports %}
+                                                    {% for port in init_container.ports %}
+                                                        <div class="command-container mb-2">
+                                                            <pre><code>kubectl port-forward {{ pod.metadata.name }} {{ port.container_port }}:{{ port.container_port }} -c {{ init_container.name }}</code></pre>
+                                                            <button class="copy-button btn btn-sm btn-dark"
+                                                                    title="Copy Command to Clipboard">
+                                                                <i class="bi bi-clipboard"></i>
+                                                            </button>
+                                                        </div>
+                                                        <p class="small text-muted">Forwards port
+                                                            <strong>{{ port.container_port }}</strong> on the pod to port
+                                                            <strong>{{ port.container_port }}</strong> on your local
+                                                            machine.
+                                                        </p>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <div class="mb-2">
+                                                        <span class="text-muted">No Ports defined. Port forward not available.</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                <!-- Execute One-Time Command in Init Container -->
+                                                <div class="command-container mb-2">
+                                                    <pre><code>kubectl exec {{ pod.metadata.name }} -c {{ init_container.name }} -- &lt;command&gt;</code></pre>
+                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                            title="Copy Command to Clipboard">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="small text-muted">Runs a specified command inside the init
+                                                    container without opening an interactive shell.</p>
+
+                                                <!-- Copy Files to Init Container -->
+                                                <div class="command-container mb-2">
+                                                    <pre><code>kubectl cp &lt;source&gt; {{ pod.metadata.name }}:&lt;container_path&gt; -c {{ init_container.name }}</code></pre>
+                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                            title="Copy Command to Clipboard">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="small text-muted">Copies files or directories between the local
+                                                    filesystem and the init container.</p>
+
+                                                <!-- High-Relevance Kubectl Commands -->
+                                                <div class="command-container mb-2">
+                                                    <pre><code>kubectl top pod {{ pod.metadata.name }} -c {{ init_container.name }}</code></pre>
+                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                            title="Copy Command to Clipboard">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="small text-muted">Displays resource (CPU/memory) usage metrics for
+                                                    the specified init container.</p>
+
+                                                <!-- Add more kubectl commands as needed -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>

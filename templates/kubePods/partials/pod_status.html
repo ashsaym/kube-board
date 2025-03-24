@@ -1,0 +1,162 @@
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingStatus">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseStatus" aria-expanded="true"
+                aria-controls="collapseStatus">
+            <i class="bi bi-bar-chart-line me-2"></i> Status
+        </button>
+    </h2>
+    <div id="collapseStatus" class="accordion-collapse collapse show"
+         aria-labelledby="headingStatus" data-bs-parent="#podDetailsAccordion">
+        <div class="accordion-body">
+            <!-- Status Content (Enhanced) -->
+            <div class="row g-4">
+                <div class="col-lg-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i> General Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless mb-0">
+                                <tbody>
+                                <tr>
+                                    <th scope="row" style="width: 150px;">Phase</th>
+                                    <td>
+                                        {% if pod.status.phase == "Running" %}
+                                            <span class="badge bg-success">{{ pod.status.phase }}</span>
+                                        {% elif pod.status.phase == "Pending" %}
+                                            <span class="badge bg-warning text-dark">{{ pod.status.phase }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ pod.status.phase }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Host IP</th>
+                                    <td>{{ pod.status.host_ip }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Pod IP</th>
+                                    <td>{{ pod.status.pod_ip }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">QoS Class</th>
+                                    <td>{{ pod.status.qos_class }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Start Time</th>
+                                    <td>{{ pod.status.start_time|date:"D, d M Y H:i:s" }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="bi bi-gear-wide-connected me-2"></i> Conditions</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if pod.status.conditions %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Last Transition</th>
+                                            <th>Message</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for condition in pod.status.conditions %}
+                                            <tr>
+                                                <td>{{ condition.type }}</td>
+                                                <td>
+                                                    {% if condition.status == "True" %}
+                                                        <span class="badge bg-success">{{ condition.status }}</span>
+                                                    {% elif condition.status == "False" %}
+                                                        <span class="badge bg-danger">{{ condition.status }}</span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning text-dark">{{ condition.status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ condition.last_transition_time|date:"D, d M Y H:i:s" }}</td>
+                                                <td>{{ condition.message|default:"N/A" }}</td>
+                                                <td>{{ condition.reason|default:"N/A" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="p-3 text-center text-muted">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>No Conditions Available
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i> Container Statuses</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if pod.status.container_statuses %}
+                                {% for cstatus in pod.status.container_statuses %}
+                                    <div class="mb-4">
+                                        <h6>
+                                            <i class="bi bi-container me-2"></i>{{ cstatus.name }}
+                                            {% if cstatus.ready %}
+                                                <span class="badge bg-success">Ready</span>
+                                            {% elif cstatus.waiting %}
+                                                <span class="badge bg-warning text-dark">Waiting</span>
+                                            {% elif cstatus.terminated %}
+                                                <span class="badge bg-danger">Terminated</span>
+                                            {% elif cstatus.running %}
+                                                <span class="badge bg-info">Running</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Not Ready</span>
+                                            {% endif %}
+                                        </h6>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item"><strong>Image:</strong> {{ cstatus.image }}</li>
+                                            <li class="list-group-item"><strong>Image
+                                                ID:</strong> {{ cstatus.image_id }}</li>
+                                            <li class="list-group-item"><strong>Container
+                                                ID:</strong> {{ cstatus.container_id }}</li>
+                                            <li class="list-group-item"><strong>Restart
+                                                Count:</strong> {{ cstatus.restart_count }}</li>
+                                            <li class="list-group-item">
+                                                <strong>State:</strong>
+                                                {% if cstatus.state.running %}
+                                                    <span class="text-success">Running since {{ cstatus.state.running.started_at|date:"D, d M Y H:i:s" }}</span>
+                                                {% elif cstatus.state.terminated %}
+                                                    <span class="text-danger">Terminated</span>
+                                                {% elif cstatus.state.waiting %}
+                                                    <span class="text-warning">Waiting</span>
+                                                {% else %}
+                                                    <span class="text-muted">Unknown</span>
+                                                {% endif %}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center text-muted">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>No Container Statuses Available
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Add more status fields as needed -->
+            </div>
+        </div>
+    </div>
+</div>

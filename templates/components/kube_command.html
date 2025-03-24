@@ -1,0 +1,12 @@
+<div class="command-container mb-3">
+    {% if display_type == "pre" or display_type == "pre_icon" %}
+        <pre><code>{{ kube_command }}</code></pre>
+    {% endif %}
+
+    {% if display_type == "icon" or display_type == "pre_icon" %}
+        <button class="copy-command btn btn-outline-light btn-sm" data-command="{{ kube_command }}"
+                title="Copy Command to Clipboard">
+            <i class="bi bi-clipboard"></i>
+        </button>
+    {% endif %}
+</div>
