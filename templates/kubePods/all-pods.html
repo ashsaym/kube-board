@@ -7,6 +7,15 @@
                 <h4 class="mb-0">Pods Overview</h4>
             </div>
             <div class="card-body">
+                <!-- Global Kubectl Command Section -->
+                <div class="kubectl-command-section mb-3 p-3 border rounded position-relative">
+                    <pre class="kubectl-command-text mb-0 bg-dark text-light p-2">{{ kubectl_command }}</pre>
+                    <button class="btn btn-sm btn-dark copy-command">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <select id="namespace-filter" class="form-select" aria-label="Filter by Namespace">
@@ -40,10 +49,16 @@
                 height: "auto",
                 placeholder: "No Pods Available",
                 columns: [
-                    {title: "Name", field: "name", headerFilter: "input", headerSort: true, formatter: function(cell) {
-                        // Generate a link to the Pod Details page
-                        return `<a href="/pods/${cell.getData().namespace}/${cell.getValue()}">${cell.getValue()}</a>`;
-                    }},
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell) {
+                            // Generate a link to the Pod Details page
+                            return `<a href="/pods/${cell.getData().namespace}/${cell.getValue()}">${cell.getValue()}</a>`;
+                        }
+                    },
                     {title: "Namespace", field: "namespace", headerFilter: "input", headerSort: true},
                     {title: "Status", field: "status", headerFilter: "input", headerSort: true},
                     {title: "Node", field: "node", headerFilter: "input", headerSort: true},

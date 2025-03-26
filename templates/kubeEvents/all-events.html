@@ -3,138 +3,147 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <!-- Display Error Messages -->
-    {% if error %}
-        <div class="alert alert-danger text-center" role="alert">
-            {{ error }}
-        </div>
-    {% endif %}
-    <!-- Events Overview Card -->
-    <div class="card shadow-lg p-4">
-        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Events Overview</h4>
-            <!-- You can add additional controls here, such as filters or export buttons -->
-        </div>
-        <div class="card-body">
-            <!-- Tabulator Table for Events -->
-            <div id="events-table"></div>
+    <div class="container-fluid mt-4">
+        <!-- Display Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger text-center" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <!-- Events Overview Card -->
+        <div class="card shadow-lg p-4">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Events Overview</h4>
+                <!-- You can add additional controls here, such as filters or export buttons -->
+            </div>
+            <div class="card-body">
+                <!-- Global Kubectl Command Section -->
+                <div class="kubectl-command-section mb-3 p-3 border rounded position-relative">
+                    <pre class="kubectl-command-text mb-0 bg-dark text-light p-2">{{ kubectl_command }}</pre>
+                    <button class="btn btn-sm btn-dark copy-command">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Tabulator Table for Events -->
+                <div id="events-table"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Parse the events data passed from Django
-        var eventsData = {{ events_data_json|safe }};
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Parse the events data passed from Django
+            var eventsData = {{ events_data_json|safe }};
 
-        // Initialize Tabulator for Events
-        var eventsTable = new Tabulator("#events-table", {
-            data: eventsData, // Assign data to Tabulator
-            layout: "fitColumns", // Fit columns to width of table
-            responsiveLayout: "collapse", // Enable responsive layouts
-            pagination: "local", // Enable local pagination
-            paginationSize: 50,  // Number of rows per page
-            movableColumns: true, // Allow column reordering
-            placeholder: "No Events Available", // Message to display when no data
-            initialSort: [
-                {column: "last_seen", dir: "desc"} // Sort by last_seen descending
-            ],
-            columns: [
-                {
-                    title: "Event Name",
-                    field: "event_name",
-                    headerFilter: "input", // Enable header filter
-                    headerSort: true,
-                    formatter: function(cell, formatterParams) {
-                        var data = cell.getRow().getData(); // Correctly access the entire row's data
-                        var url = data.details_url;
-                        if (url && url !== "#") {
-                            return `<a href="${url}">${cell.getValue()}</a>`;
-                        } else {
-                            return cell.getValue();
+            // Initialize Tabulator for Events
+            var eventsTable = new Tabulator("#events-table", {
+                data: eventsData, // Assign data to Tabulator
+                layout: "fitColumns", // Fit columns to width of table
+                responsiveLayout: "collapse", // Enable responsive layouts
+                pagination: "local", // Enable local pagination
+                paginationSize: 50,  // Number of rows per page
+                movableColumns: true, // Allow column reordering
+                placeholder: "No Events Available", // Message to display when no data
+                initialSort: [
+                    {column: "last_seen", dir: "desc"} // Sort by last_seen descending
+                ],
+                columns: [
+                    {
+                        title: "Event Name",
+                        field: "event_name",
+                        headerFilter: "input", // Enable header filter
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            var data = cell.getRow().getData(); // Correctly access the entire row's data
+                            var url = data.details_url;
+                            if (url && url !== "#") {
+                                return `<a href="${url}">${cell.getValue()}</a>`;
+                            } else {
+                                return cell.getValue();
+                            }
                         }
-                    }
-                },
-                {
-                    title: "Object Name",
-                    field: "object_name",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Namespace",
-                    field: "namespace",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Kind",
-                    field: "kind",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Type",
-                    field: "type",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Reason",
-                    field: "reason",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Message",
-                    field: "message",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Count",
-                    field: "count",
-                    headerFilter: "number",
-                    headerSort: "desc",
-                    hozAlign: "right",
-                },
-                {
-                    title: "Source Component",
-                    field: "source_component",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Source Host",
-                    field: "source_host",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "First Seen",
-                    field: "first_seen",
-                    headerFilter: "datetime",
-                    headerFilterParams: {
-                        inputType: "datetime-local",
                     },
-                    headerSort: "desc",
-                    sorter: "datetime",
-                    hozAlign: "center",
-                },
-                {
-                    title: "Last Seen",
-                    field: "last_seen",
-                    headerFilter: "datetime",
-                    headerFilterParams: {
-                        inputType: "datetime-local",
+                    {
+                        title: "Object Name",
+                        field: "object_name",
+                        headerFilter: "input",
+                        headerSort: true
                     },
-                    headerSort: "desc",
-                    sorter: "datetime",
-                    hozAlign: "center",
-                },
-            ],
+                    {
+                        title: "Namespace",
+                        field: "namespace",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Kind",
+                        field: "kind",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Type",
+                        field: "type",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Reason",
+                        field: "reason",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Message",
+                        field: "message",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Count",
+                        field: "count",
+                        headerFilter: "number",
+                        headerSort: "desc",
+                        hozAlign: "right",
+                    },
+                    {
+                        title: "Source Component",
+                        field: "source_component",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Source Host",
+                        field: "source_host",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "First Seen",
+                        field: "first_seen",
+                        headerFilter: "datetime",
+                        headerFilterParams: {
+                            inputType: "datetime-local",
+                        },
+                        headerSort: "desc",
+                        sorter: "datetime",
+                        hozAlign: "center",
+                    },
+                    {
+                        title: "Last Seen",
+                        field: "last_seen",
+                        headerFilter: "datetime",
+                        headerFilterParams: {
+                            inputType: "datetime-local",
+                        },
+                        headerSort: "desc",
+                        sorter: "datetime",
+                        hozAlign: "center",
+                    },
+                ],
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}

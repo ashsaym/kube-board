@@ -15,9 +15,11 @@ def all_events_page(request):
 
         # Prepare events data for Tabulator
         events_data = [format_event(event) for event in events]
+        kubectl_command = "kubectl get events --all-namespaces"
 
         context = {
             'events_data_json': json.dumps(events_data),
+            'kubectl_command': kubectl_command
         }
 
         return render(request, 'kubeEvents/all-events.html', context)
@@ -36,9 +38,12 @@ def event_detail_page(request, namespace, event_name):
 
         additional_properties = {}  # Optionally, extract additional properties if needed
 
+        kubectl_command = f"kubectl get event {event_name} -n {namespace} -o yaml"
+
         context = {
             'event': event,
-            'additional_properties': additional_properties
+            'additional_properties': additional_properties,
+            'kubectl_command': kubectl_command
         }
 
         return render(request, 'kubeEvents/event-detail.html', context)

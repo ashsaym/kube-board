@@ -16,8 +16,9 @@ def all_pods_page(request):
 
     # Get all pods across all namespaces
     pods = v1.list_pod_for_all_namespaces().items
+    kubectl_command = "kubectl get pods --all-namespaces"
 
-    return render(request, 'kubePods/all-pods.html', {'namespaces': all_namespaces, 'pods': pods})
+    return render(request, 'kubePods/all-pods.html', {'namespaces': all_namespaces, 'pods': pods, 'kubectl_command': kubectl_command})
 
 def pod_details_page(request, namespace, pod_name):
     try:
@@ -30,6 +31,7 @@ def pod_details_page(request, namespace, pod_name):
 
     containers = [container.name for container in pod.spec.containers]
     init_containers = [container.name for container in pod.spec.init_containers] if pod.spec.init_containers else []
+    kubectl_command = f"kubectl get pod {pod_name} -n {namespace} -o yaml"
 
     context = {
         'pod': pod,
@@ -37,6 +39,7 @@ def pod_details_page(request, namespace, pod_name):
         'pod_name': pod_name,
         'containers': containers,
         'init_containers': init_containers,
+        'kubectl_command': kubectl_command,
     }
 
     return render(request, 'kubePods/pod-details.html', context=context)
