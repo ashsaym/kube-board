@@ -12,41 +12,45 @@
          aria-labelledby="headingLogs" data-bs-parent="#podDetailsAccordion">
         <div class="accordion-body">
             <!-- Connection Status -->
-            <div id="connection-status" class="mb-3 text-center">
-                <!-- Connection status messages will appear here -->
-            </div>
+            <div id="connection-status" class="mb-3 text-center"></div>
 
-            <!-- Container Selection Dropdown -->
-            {% if containers|length > 1 %}
-            {% elif containers|length == 1 %}
-            {% endif %}
-                <input type="hidden" id="container-select" value="{{ containers.0 }}">
-                <div class="mb-3">
-                    <label for="container-select" class="form-label">Select Container:</label>
-                    <select id="container-select" class="form-select">
-                        {% for container in containers %}
-                            <option value="{{ container }}">{{ container }}</option>
-                        {% endfor %}
-                    </select>
+            <!-- Controls Container: Left (Container and Filter) and Right (Buttons) -->
+            <div class="controls-container mb-3 d-flex justify-content-between align-items-center">
+                <div class="left-controls d-flex align-items-center">
+                    <div class="control-group me-3">
+                        <!-- Container Selection Dropdown -->
+                        {% if containers|length > 1 %}
+                        {% elif containers|length == 1 %}
+                        {% endif %}
+                        <input type="hidden" id="container-select" value="{{ containers.0 }}">
+                        <label for="container-select" class="form-label me-2">Container:</label>
+                        <select id="container-select" class="form-select">
+                            {% for container in containers %}
+                                <option value="{{ container }}">{{ container }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <!-- Log Level Filter -->
+                        <label for="log-level-filter" class="form-label me-2">Filter:</label>
+                        <select id="log-level-filter" class="form-select">
+                            <option value="all">All</option>
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="error">Error</option>
+                        </select>
+                    </div>
                 </div>
-
-            <!-- Log Controls -->
-            <div class="mb-3 text-center">
-                <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause Logs</button>
-                <button id="resume-logs" class="btn btn-sm btn-outline-secondary me-2">Resume Logs</button>
-                <button id="jump-to-latest" class="btn btn-sm btn-outline-secondary me-2">Jump to Latest</button>
-                <select id="log-level-filter" class="form-select d-inline-block" style="width: auto; margin-left: 10px;">
-                    <option value="all">All</option>
-                    <option value="info">Info</option>
-                    <option value="warning">Warning</option>
-                    <option value="error">Error</option>
-                </select>
+                <div class="right-controls d-flex align-items-center">
+                    <!-- Buttons -->
+                    <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause</button>
+                    <button id="resume-logs" class="btn btn-sm btn-outline-secondary me-2" disabled>Resume</button>
+                    <button id="jump-to-latest" class="btn btn-sm btn-outline-secondary">Jump Latest</button>
+                </div>
             </div>
 
             <!-- Log Container -->
-            <div id="log-container" class="mb-3">
-                <!-- Logs will be appended here -->
-            </div>
+            <div id="log-container" class="mb-3"></div>
         </div>
     </div>
 </div>
@@ -68,29 +72,22 @@
         let isPaused = false;
         let filterLevel = "all";
 
-        // Update filterLevel when selection changes and filter existing logs
         logFilter.addEventListener('change', function () {
             filterLevel = this.value;
             filterExistingLogs();
         });
 
-        // Filter already appended log entries based on selected filter
         function filterExistingLogs() {
             const allLogLines = logContainer.querySelectorAll('div');
             allLogLines.forEach(function (logLine) {
                 if (filterLevel === "all") {
                     logLine.style.display = "";
                 } else {
-                    if (logLine.classList.contains(`log-${filterLevel}`)) {
-                        logLine.style.display = "";
-                    } else {
-                        logLine.style.display = "none";
-                    }
+                    logLine.style.display = logLine.classList.contains(`log-${filterLevel}`) ? "" : "none";
                 }
             });
         }
 
-        // Initialize SSE connection
         function initSSE(containerName) {
             if (!containerName) {
                 console.error("No container name provided.");
@@ -111,7 +108,6 @@
                 } else if (upperLog.includes('WARNING') || upperLog.includes('WARN')) {
                     logClass = 'log-warning';
                 }
-                // Filter new logs before appending
                 if (filterLevel !== "all" && logClass !== `log-${filterLevel}`) {
                     return;
                 }
@@ -141,7 +137,6 @@
             };
         }
 
-        // Reset SSE and clear logs
         function resetSSE(containerName) {
             if (eventSource) {
                 eventSource.close();
@@ -152,7 +147,6 @@
             initSSE(containerName);
         }
 
-        // Initialize SSE on page load
         if (containerSelect) {
             initSSE(containerSelect.value);
             containerSelect.addEventListener('change', function () {
@@ -163,14 +157,14 @@
             initSSE(containers[0]);
         }
 
-        // Pause log streaming
         pauseButton.addEventListener('click', function () {
             isPaused = true;
             connectionStatus.textContent = "Log streaming paused.";
             connectionStatus.className = 'text-warning';
+            pauseButton.disabled = true;
+            resumeButton.disabled = false;
         });
 
-        // Resume log streaming
         resumeButton.addEventListener('click', function () {
             if (isPaused && (eventSource === null || eventSource.readyState === EventSource.CLOSED)) {
                 if (containerSelect) {
@@ -180,20 +174,19 @@
             isPaused = false;
             connectionStatus.textContent = "Log streaming resumed.";
             connectionStatus.className = 'text-success';
+            pauseButton.disabled = false;
+            resumeButton.disabled = true;
         });
 
-        // Jump to latest logs
         jumpButton.addEventListener('click', function () {
             logContainer.scrollTop = logContainer.scrollHeight;
         });
 
-        // Scroll to latest when logs section opens
         const logsCollapse = document.getElementById('collapseLogs');
         logsCollapse.addEventListener('shown.bs.collapse', function () {
             logContainer.scrollTop = logContainer.scrollHeight;
         });
 
-        // Clean up EventSource on unload
         window.addEventListener('beforeunload', function () {
             if (eventSource) {
                 eventSource.close();
@@ -205,6 +198,25 @@
 <style>
     body {
         font-family: \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .controls-container {
+        /* Flex container with space between groups */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .left-controls,
+    .right-controls {
+        display: flex;
+        align-items: center;
+    }
+    .control-group {
+        display: flex;
+        align-items: center;
+    }
+    .control-group label {
+        margin-bottom: 0;
     }
     #log-container {
         width: 100%;
