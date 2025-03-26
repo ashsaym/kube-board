@@ -1,15 +1,18 @@
 # views.py
+
 import json
 from collections import defaultdict
+from datetime import datetime
+import threading
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import StreamingHttpResponse, HttpResponse
 from django.utils.encoding import escape_uri_path
 
 from appConfig.kubeconfig import v1  # Ensure this imports your CoreV1Api instance correctly
 from kubernetes.client import ApiException
-from kubernetes import client
-from datetime import datetime
+from kubernetes import client, watch
+
 
 def index_page(request):
     try:
@@ -109,6 +112,7 @@ def index_page(request):
         error_message = f"Unexpected Error: {str(e)}"
         return render(request, 'index.html', {'error': error_message})
 
+
 def all_pods_page(request):
     # Get all namespaces
     all_namespaces = v1.list_namespace().items
@@ -117,6 +121,7 @@ def all_pods_page(request):
     pods = v1.list_pod_for_all_namespaces().items
 
     return render(request, 'all-pods.html', {'namespaces': all_namespaces, 'pods': pods})
+
 
 def all_events_page(request):
     try:
@@ -168,6 +173,7 @@ def all_events_page(request):
         error_message = f"Unexpected Error: {str(e)}"
         return render(request, 'all-events.html', {'error': error_message})
 
+
 def event_detail_page(request, namespace, event_name):
     try:
         # Retrieve the specific event based on event_name and namespace
@@ -189,6 +195,7 @@ def event_detail_page(request, namespace, event_name):
         error_message = f"Unexpected Error: {str(e)}"
         return render(request, 'event-detail.html', {'error': error_message})
 
+
 def pod_details_page(request, namespace, pod_name):
     # Get the specific pod from the provided namespace and pod name
     try:
@@ -199,13 +206,20 @@ def pod_details_page(request, namespace, pod_name):
         else:
             return HttpResponse("An error occurred", status=e.status)
 
+    # Extract container names
+    containers = [container.name for container in pod.spec.containers]
+    init_containers = [container.name for container in pod.spec.init_containers] if pod.spec.init_containers else []
+
     context = {
         'pod': pod,
         'selected_namespace': namespace,
-        'pod_name': pod_name
+        'pod_name': pod_name,
+        'containers': containers,
+        'init_containers': init_containers,
     }
 
     return render(request, 'pod-details.html', context=context)
+
 
 def pod_json_page(request, namespace, pod_name):
     """
@@ -241,6 +255,7 @@ def pod_json_page(request, namespace, pod_name):
 
     return render(request, 'pod-details-json.html', context=context)
 
+
 def download_pod_json(request, namespace, pod_name):
     try:
         pod = v1.read_namespaced_pod(pod_name, namespace)
@@ -261,3 +276,42 @@ def download_pod_json(request, namespace, pod_name):
     filename = f"{pod_name}.json"
     response['Content-Disposition'] = f'attachment; filename="{escape_uri_path(filename)}"'
     return response
+
+
+def stream_pod_logs(request, namespace, pod_name, container_name):
+    """
+    Stream pod logs using Server-Sent Events (SSE) with container support.
+    """
+    try:
+        # Establish a connection to the pod log stream
+        pod_logs = v1.read_namespaced_pod_log(
+            name=pod_name,
+            namespace=namespace,
+            container=container_name,  # Specify the container name
+            follow=True,
+            _preload_content=False
+        )
+
+        def event_stream():
+            try:
+                for log_line in pod_logs:
+                    decoded_log = log_line.decode('utf-8').rstrip()
+                    # Format the log line as an SSE message
+                    yield f"data: {json.dumps({'log': decoded_log})}\n\n"
+            except GeneratorExit:
+                # Handle client disconnect
+                v1.api_client.close()
+            except Exception as e:
+                # Send error message to client
+                yield f"data: {json.dumps({'log': f'Error streaming logs: {str(e)}'})}\n\n"
+
+        # Return a StreamingHttpResponse with the appropriate SSE headers
+        response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+        response['Cache-Control'] = 'no-cache'
+        response['X-Accel-Buffering'] = 'no'  # Disable buffering for Nginx or other proxies
+        return response
+
+    except ApiException as e:
+        return HttpResponse(f"API Error: {e.reason}", status=e.status)
+    except Exception as e:
+        return HttpResponse(f"Unexpected Error: {str(e)}", status=500)

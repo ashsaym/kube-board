@@ -1,3 +1,5 @@
+<!-- pod-details.html -->
+
 {% extends "base.html" %}
 
 {% load static %}
@@ -34,6 +36,7 @@
                         <div id="collapseMetadata" class="accordion-collapse collapse show"
                              aria-labelledby="headingMetadata" data-bs-parent="#podDetailsAccordion">
                             <div class="accordion-body">
+                                <!-- Metadata Content (Existing) -->
                                 <div class="row">
                                     <div class="col-md-6">
                                         <table class="table table-hover table-striped mb-3">
@@ -172,10 +175,10 @@
                             <div id="collapseSpec" class="accordion-collapse collapse"
                                  aria-labelledby="headingSpec" data-bs-parent="#podDetailsAccordion">
                                 <div class="accordion-body">
+                                    <!-- Specification Content (Existing) -->
                                     <div class="table-responsive">
                                         <table class="table table-hover table-striped">
                                             <tbody>
-                                            <!-- Add key specification fields here -->
                                             <tr>
                                                 <th scope="row">Restart Policy</th>
                                                 <td>{{ pod.spec.restart_policy }}</td>
@@ -267,6 +270,7 @@
                             <div id="collapseContainers" class="accordion-collapse collapse"
                                  aria-labelledby="headingContainers" data-bs-parent="#podDetailsAccordion">
                                 <div class="accordion-body">
+                                    <!-- Containers Content (Existing) -->
                                     {% for container in pod.spec.containers %}
                                         <div class="card mb-3">
                                             <div class="card-header bg-secondary text-white">
@@ -525,6 +529,7 @@
                             <div id="collapseStatus" class="accordion-collapse collapse"
                                  aria-labelledby="headingStatus" data-bs-parent="#podDetailsAccordion">
                                 <div class="accordion-body">
+                                    <!-- Status Content (Existing) -->
                                     <div class="row">
                                         <div class="col-md-6">
                                             <table class="table table-hover table-striped mb-3">
@@ -679,9 +684,201 @@
                             </div>
                         </div>
 
-                        <!-- Additional Sections (e.g., Events, Logs) can be added similarly -->
+                        <!-- Real-Time Logs Section (Updated) -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingLogs">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseLogs" aria-expanded="false"
+                                        aria-controls="collapseLogs">
+                                    <i class="bi bi-stickies me-2"></i> Real-Time Logs
+                                </button>
+                            </h2>
+                            <div id="collapseLogs" class="accordion-collapse collapse"
+                                 aria-labelledby="headingLogs" data-bs-parent="#podDetailsAccordion">
+                                <div class="accordion-body">
+                                    <!-- Container Selection Dropdown -->
+                                    {% if containers|length > 1 %}
+                                        <div class="mb-3">
+                                            <label for="container-select" class="form-label">Select Container:</label>
+                                            <select id="container-select" class="form-select">
+                                                {% for container in containers %}
+                                                    <option value="{{ container }}">{{ container }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% elif containers|length == 1 %}
+                                        <input type="hidden" id="container-select" value="{{ containers.0 }}">
+                                    {% endif %}
+
+                                    <!-- Log Container -->
+                                    <div id="log-container" class="mb-3">
+                                        <!-- Logs will be appended here -->
+                                    </div>
+
+                                    <!-- Optional: Log Controls -->
+                                    <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause Logs</button>
+                                    <button id="resume-logs" class="btn btn-sm btn-outline-secondary">Resume Logs</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Sections (e.g., Events) can be added similarly -->
                     </div>
                 </div>
             </div>
         </div>
-    {% endblock %}
+    </div>
+
+    <!-- SSE and Log Handling Scripts (Updated) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const namespace = "{{ selected_namespace }}";
+            const podName = "{{ pod_name }}";
+            const containers = {{ containers|safe }}; // Array of container names
+            const logContainer = document.getElementById('log-container');
+            const pauseButton = document.getElementById('pause-logs');
+            const resumeButton = document.getElementById('resume-logs');
+            const containerSelect = document.getElementById('container-select');
+            let eventSource = null;
+            let isPaused = false;
+
+            // Function to initialize SSE connection
+            function initSSE(containerName) {
+                if (!containerName) {
+                    console.error("No container name provided.");
+                    logContainer.innerHTML = "<div class='log-error'>No container selected.</div>";
+                    return;
+                }
+
+                // Construct the SSE URL with URL encoding
+                const sse_url = `/pods/${encodeURIComponent(namespace)}/${encodeURIComponent(podName)}/stream-logs/${encodeURIComponent(containerName)}/`;
+
+                eventSource = new EventSource(sse_url);
+
+                eventSource.onmessage = function (e) {
+                    if (isPaused) return; // Do not append logs if paused
+
+                    const data = JSON.parse(e.data);
+                    const log = data.log;
+
+                    // Determine log level for styling
+                    let logClass = 'log-info'; // Default class
+                    const upperLog = log.toUpperCase();
+                    if (upperLog.includes('ERROR')) {
+                        logClass = 'log-error';
+                    } else if (upperLog.includes('WARNING') || upperLog.includes('WARN')) {
+                        logClass = 'log-warning';
+                    }
+
+                    const logLine = document.createElement('div');
+                    logLine.textContent = log;
+                    logLine.classList.add(logClass);
+                    logContainer.appendChild(logLine);
+                    logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to bottom
+                };
+
+                eventSource.onerror = function (e) {
+                    console.error("SSE error:", e);
+                    const errorLine = document.createElement('div');
+                    errorLine.textContent = "Error receiving logs.";
+                    errorLine.classList.add('log-error');
+                    logContainer.appendChild(errorLine);
+                    eventSource.close();
+                };
+
+                eventSource.onopen = function () {
+                    console.log("SSE connection established.");
+                    const statusLine = document.createElement('div');
+                    statusLine.textContent = `Connected to log stream for container "${containerName}".`;
+                    statusLine.classList.add('log-info');
+                    logContainer.appendChild(statusLine);
+                };
+            }
+
+            // Function to reset and initialize SSE
+            function resetSSE(containerName) {
+                if (eventSource) {
+                    eventSource.close();
+                }
+                logContainer.innerHTML = ""; // Clear existing logs
+                initSSE(containerName);
+            }
+
+            // Initialize SSE on page load
+            if (containerSelect) {
+                // If multiple containers, initialize with the first selected
+                initSSE(containerSelect.value);
+
+                // Listen for container selection changes
+                containerSelect.addEventListener('change', function () {
+                    const selectedContainer = this.value;
+                    resetSSE(selectedContainer);
+                });
+            } else if (containers.length === 1) {
+                // If only one container, initialize with it
+                initSSE(containers[0]);
+            }
+
+            // Pause Logs
+            pauseButton.addEventListener('click', function () {
+                isPaused = true;
+                logContainer.appendChild(createStatusLine("Log streaming paused.", 'log-warning'));
+            });
+
+            // Resume Logs
+            resumeButton.addEventListener('click', function () {
+                if (isPaused && eventSource.readyState !== EventSource.OPEN) {
+                    // Reinitialize SSE connection if it was closed
+                    if (containerSelect) {
+                        resetSSE(containerSelect.value);
+                    }
+                }
+                isPaused = false;
+                logContainer.appendChild(createStatusLine("Log streaming resumed.", 'log-info'));
+            });
+
+            // Helper function to create status lines
+            function createStatusLine(message, cssClass) {
+                const statusLine = document.createElement('div');
+                statusLine.textContent = message;
+                statusLine.classList.add(cssClass);
+                return statusLine;
+            }
+
+            // Optional: Clean up EventSource when navigating away
+            window.addEventListener('beforeunload', function () {
+                if (eventSource) {
+                    eventSource.close();
+                }
+            });
+        });
+    </script>
+
+    <style>
+        /* Styles for the log container */
+        #log-container {
+            width: 100%;
+            height: 50em;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Styles for different log levels */
+        .log-error {
+            color: #f00; /* Red for errors */
+        }
+
+        .log-warning {
+            color: #ff0; /* Yellow for warnings */
+        }
+
+        .log-info {
+            color: #0f0; /* Green for info */
+        }
+    </style>
+{% endblock %}
