@@ -18,10 +18,6 @@
             <div class="controls-container mb-3 d-flex justify-content-between align-items-center">
                 <div class="left-controls d-flex align-items-center">
                     <div class="control-group me-3">
-                        <!-- Container Selection Dropdown -->
-                        {% if containers|length > 1 %}
-                        {% elif containers|length == 1 %}
-                        {% endif %}
                         <input type="hidden" id="container-select" value="{{ containers.0 }}">
                         <label for="container-select" class="form-label me-2">Container:</label>
                         <select id="container-select" class="form-select">
@@ -42,11 +38,18 @@
                     </div>
                 </div>
                 <div class="right-controls d-flex align-items-center">
-                    <!-- Buttons -->
                     <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause</button>
                     <button id="resume-logs" class="btn btn-sm btn-outline-secondary me-2" disabled>Resume</button>
                     <button id="jump-to-latest" class="btn btn-sm btn-outline-secondary">Jump Latest</button>
                 </div>
+            </div>
+
+            <!-- Kubectl Command Section -->
+            <div class="kubectl-command-section mb-3 p-3 border rounded position-relative">
+                <pre id="kubectl-command-text" class="mb-0 bg-dark text-light p-2" style="padding-right: 50px;"></pre>
+                <button id="copy-command" class="btn btn-sm btn-dark copy-button">
+                    <i class="bi bi-clipboard"></i>
+                </button>
             </div>
 
             <!-- Log Container -->
@@ -68,9 +71,29 @@
         const connectionStatus = document.getElementById('connection-status');
         const containerSelect = document.getElementById('container-select');
         const logFilter = document.getElementById('log-level-filter');
+        const kubectlCommandText = document.getElementById('kubectl-command-text');
+        const copyCommand = document.getElementById('copy-command');
         let eventSource = null;
         let isPaused = false;
         let filterLevel = "all";
+
+        // Update kubectl command display
+        function updateKubectlCommand() {
+            const container = containerSelect.value;
+            const command = container ?
+                `kubectl logs -f ${podName} -n ${namespace} -c ${container}` :
+                `kubectl logs -f ${podName} -n ${namespace}`;
+            kubectlCommandText.textContent = command;
+        }
+
+        // Initial command generation
+        updateKubectlCommand();
+
+        // Listen for container selection change to update command and reset log stream
+        containerSelect.addEventListener('change', function () {
+            updateKubectlCommand();
+            resetSSE(this.value);
+        });
 
         logFilter.addEventListener('change', function () {
             filterLevel = this.value;
@@ -130,8 +153,7 @@
             };
 
             eventSource.onopen = function () {
-                console.log("SSE connection established.");
-                connectionStatus.textContent = `Connected to log stream for container "${containerName}".`;
+                connectionStatus.textContent = `Connected to log stream for container "${containerSelect.value}".`;
                 connectionStatus.className = 'text-success';
                 logContainer.scrollTop = logContainer.scrollHeight;
             };
@@ -149,10 +171,6 @@
 
         if (containerSelect) {
             initSSE(containerSelect.value);
-            containerSelect.addEventListener('change', function () {
-                const selectedContainer = this.value;
-                resetSSE(selectedContainer);
-            });
         } else if (containers.length === 1) {
             initSSE(containers[0]);
         }
@@ -166,10 +184,8 @@
         });
 
         resumeButton.addEventListener('click', function () {
-            if (isPaused && (eventSource === null || eventSource.readyState === EventSource.CLOSED)) {
-                if (containerSelect) {
-                    resetSSE(containerSelect.value);
-                }
+            if (isPaused && (!eventSource || eventSource.readyState === EventSource.CLOSED)) {
+                resetSSE(containerSelect.value);
             }
             isPaused = false;
             connectionStatus.textContent = "Log streaming resumed.";
@@ -180,6 +196,20 @@
 
         jumpButton.addEventListener('click', function () {
             logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        // Copy command to clipboard using the icon button
+        copyCommand.addEventListener('click', function () {
+            navigator.clipboard.writeText(kubectlCommandText.textContent)
+                .then(() => {
+                    copyCommand.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                    setTimeout(() => {
+                        copyCommand.innerHTML = '<i class="bi bi-clipboard"></i>';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error("Failed to copy command: ", err);
+                });
         });
 
         const logsCollapse = document.getElementById('collapseLogs');
@@ -200,7 +230,6 @@
         font-family: \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif;
     }
     .controls-container {
-        /* Flex container with space between groups */
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -265,5 +294,33 @@
     .btn-outline-secondary:hover {
         background-color: #6c757d;
         color: #fff;
+    }
+    .kubectl-command-section {
+        background-color: #343a40;
+        color: #f8f9fa;
+        border-color: #495057;
+        position: relative;
+    }
+    #kubectl-command-text {
+        background-color: #212529;
+        color: #f8f9fa;
+        border-radius: 4px;
+    }
+    .btn-dark {
+        background-color: #495057;
+        border: none;
+    }
+    .btn-dark:hover {
+        background-color: #6c757d;
+    }
+    .copy-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #495057;
+        border: none;
+    }
+    .copy-button:hover {
+        background-color: #6c757d;
     }
 </style>
