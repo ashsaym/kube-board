@@ -14,6 +14,41 @@ from kubernetes.client import ApiException
 from kubernetes import client, watch
 
 
+def format_event(event):
+    """Helper function to format an event for general usage."""
+    namespace = event.metadata.namespace if event.metadata.namespace else 'default'
+    event_name = event.metadata.name if event.metadata.name else 'unknown-event'
+    object_name = event.involved_object.name if (event.involved_object and event.involved_object.name) else 'unknown-object'
+    kind = event.involved_object.kind if (event.involved_object and event.involved_object.kind) else 'UnknownKind'
+    details_url = f"/events/{namespace}/{event_name}/" if (namespace != 'default' and event_name != 'unknown-event') else "#"
+    return {
+        'event_name': event_name,
+        'object_name': object_name,
+        'namespace': namespace,
+        'kind': kind,
+        'type': event.type if event.type else '',
+        'reason': event.reason if event.reason else '',
+        'message': event.message if event.message else '',
+        'count': event.count if event.count else 0,
+        'source_component': event.source.component if event.source and event.source.component else '',
+        'source_host': event.source.host if event.source and event.source.host else '',
+        'first_seen': event.first_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else '',
+        'last_seen': event.last_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else '',
+        'details_url': details_url,
+    }
+
+
+def format_pod_event(event):
+    """Helper function to format an event related to a pod."""
+    return {
+        'type': event.type,
+        'reason': event.reason,
+        'message': event.message,
+        'first_seen': event.first_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else '',
+        'last_seen': event.last_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else '',
+    }
+
+
 def index_page(request):
     try:
         # Get all namespaces
@@ -41,13 +76,7 @@ def index_page(request):
 
             # Filter events related to this pod
             pod_events = [
-                {
-                    'type': event.type,
-                    'reason': event.reason,
-                    'message': event.message,
-                    'first_seen': event.first_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else '',
-                    'last_seen': event.last_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else '',
-                }
+                format_pod_event(event)
                 for event in events
                 if event.involved_object.kind == 'Pod' and event.involved_object.name == pod.metadata.name
             ]
@@ -59,49 +88,19 @@ def index_page(request):
                 'node': pod.spec.node_name or 'N/A',
                 'age': age_str,
                 'details_url': f"/pods/{pod.metadata.namespace}/{pod.metadata.name}/",
-                'events': pod_events,  # Add structured events data
+                'events': pod_events,
             })
 
         # Prepare events data for Tabulator
-        events_data = []
-        for event in events:
-            involved_object = event.involved_object
-
-            # Ensure all required fields are present
-            namespace = event.metadata.namespace if event.metadata.namespace else 'default'  # Event's namespace
-            event_name = event.metadata.name if event.metadata.name else 'unknown-event'
-            object_name = involved_object.name if involved_object.name else 'unknown-object'
-            kind = involved_object.kind if involved_object.kind else 'UnknownKind'
-
-            # Construct details_url using the event's actual name
-            if namespace != 'default' and event_name != 'unknown-event':
-                details_url = f"/events/{namespace}/{event_name}/"
-            else:
-                details_url = "#"
-
-            events_data.append({
-                'event_name': event_name,  # Event's actual name
-                'object_name': object_name,
-                'namespace': namespace,
-                'kind': kind,
-                'type': event.type if event.type else '',
-                'reason': event.reason if event.reason else '',
-                'message': event.message if event.message else '',
-                'count': event.count if event.count else 0,
-                'source_component': event.source.component if event.source and event.source.component else '',
-                'source_host': event.source.host if event.source and event.source.host else '',
-                'first_seen': event.first_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else '',
-                'last_seen': event.last_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else '',
-                'details_url': details_url,  # Use event's actual name in URL
-            })
+        events_data = [format_event(event) for event in events]
 
         context = {
             'namespaces': all_namespaces,
             'total_namespaces': total_namespaces,
             'total_pods': total_pods,
             'phase_counts': phase_counts,
-            'pods_data_json': json.dumps(pods_data),       # Serialize pods data for Tabulator
-            'events_data_json': json.dumps(events_data),   # Serialize events data for Tabulator
+            'pods_data_json': json.dumps(pods_data),
+            'events_data_json': json.dumps(events_data),
         }
 
         return render(request, 'index.html', context)
@@ -129,40 +128,10 @@ def all_events_page(request):
         events = v1.list_event_for_all_namespaces(limit=1000).items
 
         # Prepare events data for Tabulator
-        events_data = []
-        for event in events:
-            involved_object = event.involved_object
-
-            # Ensure all required fields are present
-            namespace = event.metadata.namespace if event.metadata.namespace else 'default'  # Event's namespace
-            event_name = event.metadata.name if event.metadata.name else 'unknown-event'
-            object_name = involved_object.name if involved_object.name else 'unknown-object'
-            kind = involved_object.kind if involved_object.kind else 'UnknownKind'
-
-            # Construct details_url using the event's actual name
-            if namespace != 'default' and event_name != 'unknown-event':
-                details_url = f"/events/{namespace}/{event_name}/"
-            else:
-                details_url = "#"
-
-            events_data.append({
-                'event_name': event_name,  # Event's actual name
-                'object_name': object_name,
-                'namespace': namespace,
-                'kind': kind,
-                'type': event.type if event.type else '',
-                'reason': event.reason if event.reason else '',
-                'message': event.message if event.message else '',
-                'count': event.count if event.count else 0,
-                'source_component': event.source.component if event.source and event.source.component else '',
-                'source_host': event.source.host if event.source and event.source.host else '',
-                'first_seen': event.first_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else '',
-                'last_seen': event.last_timestamp.strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else '',
-                'details_url': details_url,  # Use event's actual name in URL
-            })
+        events_data = [format_event(event) for event in events]
 
         context = {
-            'events_data_json': json.dumps(events_data),  # Serialize events data for Tabulator
+            'events_data_json': json.dumps(events_data),
         }
 
         return render(request, 'all-events.html', context)
@@ -179,8 +148,7 @@ def event_detail_page(request, namespace, event_name):
         # Retrieve the specific event based on event_name and namespace
         event = v1.read_namespaced_event(name=event_name, namespace=namespace)
 
-        # Optionally, extract additional properties if needed
-        additional_properties = {}  # Fill this with any extra processing if required
+        additional_properties = {}  # Optionally, extract additional properties if needed
 
         context = {
             'event': event,
@@ -197,7 +165,6 @@ def event_detail_page(request, namespace, event_name):
 
 
 def pod_details_page(request, namespace, pod_name):
-    # Get the specific pod from the provided namespace and pod name
     try:
         pod = v1.read_namespaced_pod(pod_name, namespace)
     except ApiException as e:
@@ -206,7 +173,6 @@ def pod_details_page(request, namespace, pod_name):
         else:
             return HttpResponse("An error occurred", status=e.status)
 
-    # Extract container names
     containers = [container.name for container in pod.spec.containers]
     init_containers = [container.name for container in pod.spec.init_containers] if pod.spec.init_containers else []
 
@@ -222,10 +188,6 @@ def pod_details_page(request, namespace, pod_name):
 
 
 def pod_json_page(request, namespace, pod_name):
-    """
-    Render a new page displaying the JSON representation of a specific pod.
-    If 'download=true' is present in query parameters, return the JSON as a downloadable file.
-    """
     try:
         pod = v1.read_namespaced_pod(pod_name, namespace)
         api_client = client.ApiClient()
@@ -279,16 +241,13 @@ def download_pod_json(request, namespace, pod_name):
 
 
 def stream_pod_logs(request, namespace, pod_name, container_name):
-    """
-    Stream pod logs using Server-Sent Events (SSE) with container support.
-    """
     try:
-        # Establish a connection to the pod log stream
         pod_logs = v1.read_namespaced_pod_log(
             name=pod_name,
             namespace=namespace,
-            container=container_name,  # Specify the container name
+            container=container_name,
             follow=True,
+            tail_lines=100,  # Fetch the last 100 log lines initially
             _preload_content=False
         )
 
@@ -296,19 +255,15 @@ def stream_pod_logs(request, namespace, pod_name, container_name):
             try:
                 for log_line in pod_logs:
                     decoded_log = log_line.decode('utf-8').rstrip()
-                    # Format the log line as an SSE message
                     yield f"data: {json.dumps({'log': decoded_log})}\n\n"
             except GeneratorExit:
-                # Handle client disconnect
-                v1.api_client.close()
+                v1.api_client.close()  # Handle client disconnect
             except Exception as e:
-                # Send error message to client
                 yield f"data: {json.dumps({'log': f'Error streaming logs: {str(e)}'})}\n\n"
 
-        # Return a StreamingHttpResponse with the appropriate SSE headers
         response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'
-        response['X-Accel-Buffering'] = 'no'  # Disable buffering for Nginx or other proxies
+        response['X-Accel-Buffering'] = 'no'
         return response
 
     except ApiException as e:

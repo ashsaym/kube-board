@@ -696,6 +696,11 @@
                             <div id="collapseLogs" class="accordion-collapse collapse"
                                  aria-labelledby="headingLogs" data-bs-parent="#podDetailsAccordion">
                                 <div class="accordion-body">
+                                    <!-- Connection Status -->
+                                    <div id="connection-status" class="mb-3">
+                                        <!-- Connection status messages will appear here -->
+                                    </div>
+
                                     <!-- Container Selection Dropdown -->
                                     {% if containers|length > 1 %}
                                         <div class="mb-3">
@@ -710,14 +715,17 @@
                                         <input type="hidden" id="container-select" value="{{ containers.0 }}">
                                     {% endif %}
 
+                                    <!-- Log Controls -->
+                                    <div class="mb-3">
+                                        <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause Logs</button>
+                                        <button id="resume-logs" class="btn btn-sm btn-outline-secondary">Resume Logs</button>
+                                        <button id="jump-to-latest" class="btn btn-sm btn-outline-secondary">Jump to Latest</button>
+                                    </div>
+
                                     <!-- Log Container -->
                                     <div id="log-container" class="mb-3">
                                         <!-- Logs will be appended here -->
                                     </div>
-
-                                    <!-- Optional: Log Controls -->
-                                    <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause Logs</button>
-                                    <button id="resume-logs" class="btn btn-sm btn-outline-secondary">Resume Logs</button>
                                 </div>
                             </div>
                         </div>
@@ -738,6 +746,8 @@
             const logContainer = document.getElementById('log-container');
             const pauseButton = document.getElementById('pause-logs');
             const resumeButton = document.getElementById('resume-logs');
+            const jumpButton = document.getElementById('jump-to-latest');
+            const connectionStatus = document.getElementById('connection-status');
             const containerSelect = document.getElementById('container-select');
             let eventSource = null;
             let isPaused = false;
@@ -779,6 +789,8 @@
 
                 eventSource.onerror = function (e) {
                     console.error("SSE error:", e);
+                    connectionStatus.textContent = "Error receiving logs.";
+                    connectionStatus.className = 'text-danger';
                     const errorLine = document.createElement('div');
                     errorLine.textContent = "Error receiving logs.";
                     errorLine.classList.add('log-error');
@@ -788,10 +800,10 @@
 
                 eventSource.onopen = function () {
                     console.log("SSE connection established.");
-                    const statusLine = document.createElement('div');
-                    statusLine.textContent = `Connected to log stream for container "${containerName}".`;
-                    statusLine.classList.add('log-info');
-                    logContainer.appendChild(statusLine);
+                    connectionStatus.textContent = `Connected to log stream for container "${containerName}".`;
+                    connectionStatus.className = 'text-success';
+                    // Scroll to bottom on connection
+                    logContainer.scrollTop = logContainer.scrollHeight;
                 };
             }
 
@@ -801,6 +813,8 @@
                     eventSource.close();
                 }
                 logContainer.innerHTML = ""; // Clear existing logs
+                connectionStatus.textContent = "Reconnecting...";
+                connectionStatus.className = '';
                 initSSE(containerName);
             }
 
@@ -822,28 +836,41 @@
             // Pause Logs
             pauseButton.addEventListener('click', function () {
                 isPaused = true;
-                logContainer.appendChild(createStatusLine("Log streaming paused.", 'log-warning'));
+                connectionStatus.textContent = "Log streaming paused.";
+                connectionStatus.className = 'text-warning';
             });
 
             // Resume Logs
             resumeButton.addEventListener('click', function () {
-                if (isPaused && eventSource.readyState !== EventSource.OPEN) {
+                if (isPaused && (eventSource === null || eventSource.readyState === EventSource.CLOSED)) {
                     // Reinitialize SSE connection if it was closed
                     if (containerSelect) {
                         resetSSE(containerSelect.value);
                     }
                 }
                 isPaused = false;
-                logContainer.appendChild(createStatusLine("Log streaming resumed.", 'log-info'));
+                connectionStatus.textContent = "Log streaming resumed.";
+                connectionStatus.className = 'text-success';
             });
 
-            // Helper function to create status lines
+            // Jump to Latest Logs
+            jumpButton.addEventListener('click', function () {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            });
+
+            // Helper function to create status lines (if needed)
             function createStatusLine(message, cssClass) {
                 const statusLine = document.createElement('div');
                 statusLine.textContent = message;
                 statusLine.classList.add(cssClass);
                 return statusLine;
             }
+
+            // Automatically scroll to bottom when the logs section is opened
+            const logsCollapse = document.getElementById('collapseLogs');
+            logsCollapse.addEventListener('shown.bs.collapse', function () {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            });
 
             // Optional: Clean up EventSource when navigating away
             window.addEventListener('beforeunload', function () {
@@ -866,6 +893,7 @@
             padding: 10px;
             font-family: monospace;
             white-space: pre-wrap;
+            scroll-behavior: smooth; /* Smooth scrolling */
         }
 
         /* Styles for different log levels */
@@ -879,6 +907,19 @@
 
         .log-info {
             color: #0f0; /* Green for info */
+        }
+
+        /* Connection Status Styles */
+        #connection-status.text-success {
+            color: #198754 !important;
+        }
+
+        #connection-status.text-warning {
+            color: #ffc107 !important;
+        }
+
+        #connection-status.text-danger {
+            color: #dc3545 !important;
         }
     </style>
 {% endblock %}
