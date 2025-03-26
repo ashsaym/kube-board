@@ -1,5 +1,6 @@
 # views.py
 import json
+from collections import defaultdict
 
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
@@ -10,14 +11,73 @@ from kubernetes.client import ApiException
 from kubernetes import client
 
 def index_page(request):
-    # Get all namespaces
-    all_namespaces = v1.list_namespace().items
+    try:
+        # Handle GET parameters for filtering and searching
+        selected_namespace = request.GET.get('namespace', '')
+        search_query = request.GET.get('search', '').lower()
 
-    # Get all pods across all namespaces
-    pods = v1.list_pod_for_all_namespaces().items
+        # Get all namespaces
+        all_namespaces = v1.list_namespace().items
 
-    return render(request, 'index.html', {'namespaces': all_namespaces, 'pods': pods})
+        # Get all pods across all namespaces once
+        all_pods = v1.list_pod_for_all_namespaces().items
 
+        # Apply namespace filtering
+        if selected_namespace:
+            pods = [pod for pod in all_pods if pod.metadata.namespace == selected_namespace]
+        else:
+            pods = all_pods
+
+        # Apply search filtering
+        if search_query:
+            pods = [
+                pod for pod in pods
+                if search_query in pod.metadata.name.lower() or
+                   search_query in pod.metadata.namespace.lower() or
+                   search_query in pod.status.phase.lower() or
+                   (pod.spec.node_name and search_query in pod.spec.node_name.lower())
+            ]
+
+        # Get recent events (e.g., last 100)
+        events = v1.list_event_for_all_namespaces(limit=100).items
+
+        # Summary statistics
+        total_namespaces = len(all_namespaces)
+        total_pods = len(all_pods)
+        running_pods = sum(1 for pod in all_pods if pod.status.phase == "Running")
+        pending_pods = sum(1 for pod in all_pods if pod.status.phase == "Pending")
+        failed_pods = sum(1 for pod in all_pods if pod.status.phase == "Failed")
+        succeeded_pods = sum(1 for pod in all_pods if pod.status.phase == "Succeeded")
+
+        # Pod status distribution for HTML table
+        status_counts = defaultdict(int)
+        for pod in all_pods:
+            status = pod.status.phase
+            status_counts[status] += 1
+
+        # Convert to list of dictionaries for easy templating
+
+        context = {
+            'namespaces': all_namespaces,
+            'pods': pods,
+            'events': events,
+            'total_namespaces': total_namespaces,
+            'total_pods': total_pods,
+            'running_pods': running_pods,
+            'pending_pods': pending_pods,
+            'failed_pods': failed_pods,
+            'succeeded_pods': succeeded_pods,
+            'selected_namespace': selected_namespace,
+            'search_query': search_query,
+        }
+
+        return render(request, 'index.html', context)
+    except ApiException as e:
+        error_message = f"API Error: {e.reason}"
+        return render(request, 'index.html', {'error': error_message})
+    except Exception as e:
+        error_message = f"Unexpected Error: {str(e)}"
+        return render(request, 'index.html', {'error': error_message})
 def all_pods_page(request):
     # Get all namespaces
     all_namespaces = v1.list_namespace().items

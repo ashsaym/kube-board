@@ -3,31 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Kubernetes {% endblock %}</title>
+    <title>{% block title %}Kubernetes{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"
+          type="image/svg+xml">
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
-          integrity="sha512-ebIaxY70UU1jxdjl9Zd154Ph5mVn0R1EjdPvevPPdoeEmR72GDn+Zwqg+06FeaiE0nFatsqR0pRfHl3NpHrD8A=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'index_page' %}">Kubernetes Dashboard</a>
+    </div>
 </nav>
 
-<div class="container-fluid  mt-4">
+<div class="container-fluid mt-4">
     {% block content %}{% endblock %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
-
-<!-- Optional: Include Prism.js for Syntax Highlighting -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-        integrity="sha512-hcQzOaAUFQ8oQFcSIQdA4vHlTcOTOclYYdk0A20txnykdtwaAUNpcbqzv/uMa20tDT+-xRutqi7VSr067Fw4Kw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 </body>
 </html>
