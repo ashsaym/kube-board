@@ -1,0 +1,257 @@
+<!-- templates/kubePods/partials/pod_logs.html -->
+
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingLogs">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseLogs" aria-expanded="false"
+                aria-controls="collapseLogs">
+            <i class="bi bi-stickies me-2"></i> Real-Time Logs
+        </button>
+    </h2>
+    <div id="collapseLogs" class="accordion-collapse collapse"
+         aria-labelledby="headingLogs" data-bs-parent="#podDetailsAccordion">
+        <div class="accordion-body">
+            <!-- Connection Status -->
+            <div id="connection-status" class="mb-3 text-center">
+                <!-- Connection status messages will appear here -->
+            </div>
+
+            <!-- Container Selection Dropdown -->
+            {% if containers|length > 1 %}
+            {% elif containers|length == 1 %}
+            {% endif %}
+                <input type="hidden" id="container-select" value="{{ containers.0 }}">
+                <div class="mb-3">
+                    <label for="container-select" class="form-label">Select Container:</label>
+                    <select id="container-select" class="form-select">
+                        {% for container in containers %}
+                            <option value="{{ container }}">{{ container }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            <!-- Log Controls -->
+            <div class="mb-3 text-center">
+                <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause Logs</button>
+                <button id="resume-logs" class="btn btn-sm btn-outline-secondary me-2">Resume Logs</button>
+                <button id="jump-to-latest" class="btn btn-sm btn-outline-secondary me-2">Jump to Latest</button>
+                <select id="log-level-filter" class="form-select d-inline-block" style="width: auto; margin-left: 10px;">
+                    <option value="all">All</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                </select>
+            </div>
+
+            <!-- Log Container -->
+            <div id="log-container" class="mb-3">
+                <!-- Logs will be appended here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SSE and Log Handling Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const namespace = "{{ selected_namespace }}";
+        const podName = "{{ pod_name }}";
+        const containers = {{ containers|safe }};
+        const logContainer = document.getElementById('log-container');
+        const pauseButton = document.getElementById('pause-logs');
+        const resumeButton = document.getElementById('resume-logs');
+        const jumpButton = document.getElementById('jump-to-latest');
+        const connectionStatus = document.getElementById('connection-status');
+        const containerSelect = document.getElementById('container-select');
+        const logFilter = document.getElementById('log-level-filter');
+        let eventSource = null;
+        let isPaused = false;
+        let filterLevel = "all";
+
+        // Update filterLevel when selection changes and filter existing logs
+        logFilter.addEventListener('change', function () {
+            filterLevel = this.value;
+            filterExistingLogs();
+        });
+
+        // Filter already appended log entries based on selected filter
+        function filterExistingLogs() {
+            const allLogLines = logContainer.querySelectorAll('div');
+            allLogLines.forEach(function (logLine) {
+                if (filterLevel === "all") {
+                    logLine.style.display = "";
+                } else {
+                    if (logLine.classList.contains(`log-${filterLevel}`)) {
+                        logLine.style.display = "";
+                    } else {
+                        logLine.style.display = "none";
+                    }
+                }
+            });
+        }
+
+        // Initialize SSE connection
+        function initSSE(containerName) {
+            if (!containerName) {
+                console.error("No container name provided.");
+                logContainer.innerHTML = "<div class='log-error'>No container selected.</div>";
+                return;
+            }
+            const sse_url = `/pods/${encodeURIComponent(namespace)}/${encodeURIComponent(podName)}/stream-logs/${encodeURIComponent(containerName)}/`;
+            eventSource = new EventSource(sse_url);
+
+            eventSource.onmessage = function (e) {
+                if (isPaused) return;
+                const data = JSON.parse(e.data);
+                const log = data.log;
+                let logClass = 'log-info';
+                const upperLog = log.toUpperCase();
+                if (upperLog.includes('ERROR')) {
+                    logClass = 'log-error';
+                } else if (upperLog.includes('WARNING') || upperLog.includes('WARN')) {
+                    logClass = 'log-warning';
+                }
+                // Filter new logs before appending
+                if (filterLevel !== "all" && logClass !== `log-${filterLevel}`) {
+                    return;
+                }
+                const logLine = document.createElement('div');
+                logLine.textContent = log;
+                logLine.classList.add(logClass);
+                logContainer.appendChild(logLine);
+                logContainer.scrollTop = logContainer.scrollHeight;
+            };
+
+            eventSource.onerror = function (e) {
+                console.error("SSE error:", e);
+                connectionStatus.textContent = "Error receiving logs.";
+                connectionStatus.className = 'text-danger';
+                const errorLine = document.createElement('div');
+                errorLine.textContent = "Error receiving logs.";
+                errorLine.classList.add('log-error');
+                logContainer.appendChild(errorLine);
+                eventSource.close();
+            };
+
+            eventSource.onopen = function () {
+                console.log("SSE connection established.");
+                connectionStatus.textContent = `Connected to log stream for container "${containerName}".`;
+                connectionStatus.className = 'text-success';
+                logContainer.scrollTop = logContainer.scrollHeight;
+            };
+        }
+
+        // Reset SSE and clear logs
+        function resetSSE(containerName) {
+            if (eventSource) {
+                eventSource.close();
+            }
+            logContainer.innerHTML = "";
+            connectionStatus.textContent = "Reconnecting...";
+            connectionStatus.className = '';
+            initSSE(containerName);
+        }
+
+        // Initialize SSE on page load
+        if (containerSelect) {
+            initSSE(containerSelect.value);
+            containerSelect.addEventListener('change', function () {
+                const selectedContainer = this.value;
+                resetSSE(selectedContainer);
+            });
+        } else if (containers.length === 1) {
+            initSSE(containers[0]);
+        }
+
+        // Pause log streaming
+        pauseButton.addEventListener('click', function () {
+            isPaused = true;
+            connectionStatus.textContent = "Log streaming paused.";
+            connectionStatus.className = 'text-warning';
+        });
+
+        // Resume log streaming
+        resumeButton.addEventListener('click', function () {
+            if (isPaused && (eventSource === null || eventSource.readyState === EventSource.CLOSED)) {
+                if (containerSelect) {
+                    resetSSE(containerSelect.value);
+                }
+            }
+            isPaused = false;
+            connectionStatus.textContent = "Log streaming resumed.";
+            connectionStatus.className = 'text-success';
+        });
+
+        // Jump to latest logs
+        jumpButton.addEventListener('click', function () {
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        // Scroll to latest when logs section opens
+        const logsCollapse = document.getElementById('collapseLogs');
+        logsCollapse.addEventListener('shown.bs.collapse', function () {
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        // Clean up EventSource on unload
+        window.addEventListener('beforeunload', function () {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
+    });
+</script>
+
+<style>
+    body {
+        font-family: \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #log-container {
+        width: 100%;
+        height: 50em;
+        border-radius: 8px;
+        border: 1px solid #444;
+        overflow-y: auto;
+        background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+        color: #cfcfcf;
+        padding: 15px;
+        font-family: \"Courier New\", Courier, monospace;
+        white-space: pre-wrap;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        scroll-behavior: smooth;
+    }
+    #log-container div {
+        padding: 3px 0;
+        border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+    }
+    .log-error {
+        color: #ff6b6b;
+        font-weight: bold;
+    }
+    .log-warning {
+        color: #f4d35e;
+    }
+    .log-info {
+        color: #6bc1ff;
+    }
+    #connection-status {
+        font-size: 1.1em;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    #connection-status.text-success {
+        color: #198754 !important;
+    }
+    #connection-status.text-warning {
+        color: #ffc107 !important;
+    }
+    #connection-status.text-danger {
+        color: #dc3545 !important;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+</style>

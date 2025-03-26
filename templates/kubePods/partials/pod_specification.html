@@ -1,0 +1,95 @@
+<!-- partials/pod_specification.html -->
+
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingSpec">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseSpec" aria-expanded="false"
+                aria-controls="collapseSpec">
+            <i class="bi bi-card-text me-2"></i> Specification
+        </button>
+    </h2>
+    <div id="collapseSpec" class="accordion-collapse collapse"
+         aria-labelledby="headingSpec" data-bs-parent="#podDetailsAccordion">
+        <div class="accordion-body">
+            <!-- Specification Content (Existing) -->
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <tbody>
+                    <tr>
+                        <th scope="row">Restart Policy</th>
+                        <td>{{ pod.spec.restart_policy }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">DNS Policy</th>
+                        <td>{{ pod.spec.dns_policy|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Service Account</th>
+                        <td>{{ pod.spec.service_account|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Node Name</th>
+                        <td>{{ pod.spec.node_name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Node Selector</th>
+                        <td>
+                            {% if pod.spec.node_selector %}
+                                {% for key, value in pod.spec.node_selector.items %}
+                                    <span class="badge bg-secondary me-1">{{ key }}: <strong>{{ value }}</strong></span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">No Node Selector</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Tolerations</th>
+                        <td>
+                            {% if pod.spec.tolerations %}
+                                {% for tol in pod.spec.tolerations %}
+                                    <span class="badge bg-info text-dark me-1">
+                                        {{ tol.key|default:"N/A" }}: {{ tol.effect|default:"N/A" }}
+                                    </span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">No Tolerations</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Priority Class</th>
+                        <td>{{ pod.spec.priority_class_name|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Volumes</th>
+                        <td>
+                            {% if pod.spec.volumes %}
+                                <ul class="list-group list-group-flush">
+                                    {% for volume in pod.spec.volumes %}
+                                        <li class="list-group-item">
+                                            <strong>{{ volume.name }}</strong>:
+                                            {% if volume.host_path %}
+                                                HostPath - Path: {{ volume.host_path.path }}
+                                            {% elif volume.secret %}
+                                                Secret - Name: {{ volume.secret.secret_name }}
+                                            {% elif volume.projected %}
+                                                Projected Volume
+                                            {% else %}
+                                                Other
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <span class="text-muted">No Volumes</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <!-- Add more specification fields as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
