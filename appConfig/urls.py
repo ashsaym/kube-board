@@ -1,22 +1,12 @@
-"""
-URL configuration for appConfig project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
+from kubeBoard.views import index_page,all_pods_page,pod_details_page,pod_json_page,download_pod_json
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',index_page, name='index_page'),
+    path('all-pods/', all_pods_page, name='all_pods_page'),
+    path('pods/<str:namespace>/<str:pod_name>/', pod_details_page, name='pod_details_page'),
+    path('pods/<str:namespace>/<str:pod_name>/json/', pod_json_page, name='pod_details_json'),
+    path('pods/<str:namespace>/<str:pod_name>/json/download/', download_pod_json, name='download_pod_json'),
 ]
