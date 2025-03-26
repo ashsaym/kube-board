@@ -3,15 +3,14 @@
 import json
 from collections import defaultdict
 from datetime import datetime
-import threading
 
-from django.shortcuts import render
 from django.http import StreamingHttpResponse, HttpResponse
+from django.shortcuts import render
 from django.utils.encoding import escape_uri_path
+from kubernetes import client
+from kubernetes.client import ApiException
 
 from appConfig.kubeconfig import v1  # Ensure this imports your CoreV1Api instance correctly
-from kubernetes.client import ApiException
-from kubernetes import client, watch
 
 
 def format_event(event):
@@ -103,170 +102,18 @@ def index_page(request):
             'events_data_json': json.dumps(events_data),
         }
 
-        return render(request, 'index.html', context)
+        return render(request, 'kubeBoard/index.html', context)
     except ApiException as e:
         error_message = f"API Error: {e.reason}"
-        return render(request, 'index.html', {'error': error_message})
+        return render(request, 'kubeBoard/index.html', {'error': error_message})
     except Exception as e:
         error_message = f"Unexpected Error: {str(e)}"
-        return render(request, 'index.html', {'error': error_message})
+        return render(request, 'kubeBoard/index.html', {'error': error_message})
 
 
-def all_pods_page(request):
-    # Get all namespaces
-    all_namespaces = v1.list_namespace().items
-
-    # Get all pods across all namespaces
-    pods = v1.list_pod_for_all_namespaces().items
-
-    return render(request, 'all-pods.html', {'namespaces': all_namespaces, 'pods': pods})
 
 
-def all_events_page(request):
-    try:
-        # Get all events across all namespaces with a higher limit if needed
-        events = v1.list_event_for_all_namespaces(limit=1000).items
-
-        # Prepare events data for Tabulator
-        events_data = [format_event(event) for event in events]
-
-        context = {
-            'events_data_json': json.dumps(events_data),
-        }
-
-        return render(request, 'all-events.html', context)
-    except ApiException as e:
-        error_message = f"API Error: {e.reason}"
-        return render(request, 'all-events.html', {'error': error_message})
-    except Exception as e:
-        error_message = f"Unexpected Error: {str(e)}"
-        return render(request, 'all-events.html', {'error': error_message})
 
 
-def event_detail_page(request, namespace, event_name):
-    try:
-        # Retrieve the specific event based on event_name and namespace
-        event = v1.read_namespaced_event(name=event_name, namespace=namespace)
-
-        additional_properties = {}  # Optionally, extract additional properties if needed
-
-        context = {
-            'event': event,
-            'additional_properties': additional_properties
-        }
-
-        return render(request, 'event-detail.html', context)
-    except ApiException as e:
-        error_message = f"API Error: {e.reason}"
-        return render(request, 'event-detail.html', {'error': error_message})
-    except Exception as e:
-        error_message = f"Unexpected Error: {str(e)}"
-        return render(request, 'event-detail.html', {'error': error_message})
 
 
-def pod_details_page(request, namespace, pod_name):
-    try:
-        pod = v1.read_namespaced_pod(pod_name, namespace)
-    except ApiException as e:
-        if e.status == 404:
-            return HttpResponse("Pod not found", status=404)
-        else:
-            return HttpResponse("An error occurred", status=e.status)
-
-    containers = [container.name for container in pod.spec.containers]
-    init_containers = [container.name for container in pod.spec.init_containers] if pod.spec.init_containers else []
-
-    context = {
-        'pod': pod,
-        'selected_namespace': namespace,
-        'pod_name': pod_name,
-        'containers': containers,
-        'init_containers': init_containers,
-    }
-
-    return render(request, 'pod-details.html', context=context)
-
-
-def pod_json_page(request, namespace, pod_name):
-    try:
-        pod = v1.read_namespaced_pod(pod_name, namespace)
-        api_client = client.ApiClient()
-        serialized_pod = api_client.sanitize_for_serialization(pod)
-        pod_json = json.dumps(serialized_pod, indent=4)
-    except ApiException as e:
-        if e.status == 404:
-            return HttpResponse("Pod not found", status=404)
-        else:
-            return HttpResponse(f"An error occurred: {e.reason}", status=e.status)
-    except TypeError as e:
-        return HttpResponse(f"Error serializing JSON: {str(e)}", status=500)
-    except Exception as e:
-        return HttpResponse(f"An unexpected error occurred: {str(e)}", status=500)
-
-    if request.GET.get('download') == 'true':
-        response = HttpResponse(pod_json, content_type='application/json')
-        filename = f"{pod_name}.json"
-        response['Content-Disposition'] = f'attachment; filename="{escape_uri_path(filename)}"'
-        return response
-
-    context = {
-        'pod_json': pod_json,
-        'pod_name': pod.metadata.name,
-        'namespace': namespace,
-    }
-
-    return render(request, 'pod-details-json.html', context=context)
-
-
-def download_pod_json(request, namespace, pod_name):
-    try:
-        pod = v1.read_namespaced_pod(pod_name, namespace)
-        api_client = client.ApiClient()
-        serialized_pod = api_client.sanitize_for_serialization(pod)
-        pod_json = json.dumps(serialized_pod, indent=4)
-    except ApiException as e:
-        if e.status == 404:
-            return HttpResponse("Pod not found", status=404)
-        else:
-            return HttpResponse(f"An error occurred: {e.reason}", status=e.status)
-    except TypeError as e:
-        return HttpResponse(f"Error serializing JSON: {str(e)}", status=500)
-    except Exception as e:
-        return HttpResponse(f"An unexpected error occurred: {str(e)}", status=500)
-
-    response = HttpResponse(pod_json, content_type='application/json')
-    filename = f"{pod_name}.json"
-    response['Content-Disposition'] = f'attachment; filename="{escape_uri_path(filename)}"'
-    return response
-
-
-def stream_pod_logs(request, namespace, pod_name, container_name):
-    try:
-        pod_logs = v1.read_namespaced_pod_log(
-            name=pod_name,
-            namespace=namespace,
-            container=container_name,
-            follow=True,
-            tail_lines=100,  # Fetch the last 100 log lines initially
-            _preload_content=False
-        )
-
-        def event_stream():
-            try:
-                for log_line in pod_logs:
-                    decoded_log = log_line.decode('utf-8').rstrip()
-                    yield f"data: {json.dumps({'log': decoded_log})}\n\n"
-            except GeneratorExit:
-                v1.api_client.close()  # Handle client disconnect
-            except Exception as e:
-                yield f"data: {json.dumps({'log': f'Error streaming logs: {str(e)}'})}\n\n"
-
-        response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
-        response['Cache-Control'] = 'no-cache'
-        response['X-Accel-Buffering'] = 'no'
-        return response
-
-    except ApiException as e:
-        return HttpResponse(f"API Error: {e.reason}", status=e.status)
-    except Exception as e:
-        return HttpResponse(f"Unexpected Error: {str(e)}", status=500)
