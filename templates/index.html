@@ -1,9 +1,11 @@
+<!-- templates/index.html -->
 {% extends "base.html" %}
 
 {% block content %}
 <div class="container-fluid mt-4">
+    <!-- Display Error Messages -->
     {% if error %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger text-center" role="alert">
             {{ error }}
         </div>
     {% endif %}
@@ -33,7 +35,7 @@
             <div class="card text-white bg-warning mb-3 shadow">
                 <div class="card-header">Running Pods</div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ running_pods }}</h5>
+                    <h5 class="card-title">{{ phase_counts.Running|default:0 }}</h5>
                 </div>
             </div>
         </div>
@@ -42,108 +44,112 @@
             <div class="card text-white bg-danger mb-3 shadow">
                 <div class="card-header">Failed Pods</div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ failed_pods }}</h5>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <!-- Pod Status Distribution Table -->
-
-        <!-- Recent Events -->
-        <div class="col-md-12">
-            <div class="card shadow">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Recent Events</h5>
-                </div>
-                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                    <ul class="list-group">
-                        {% for event in events %}
-                            <li class="list-group-item">
-                                <strong>
-                                    {% if event.first_timestamp %}
-                                        {{ event.first_timestamp|date:"Y-m-d H:i" }}
-                                    {% else %}
-                                        {{ event.last_timestamp|date:"Y-m-d H:i" }}
-                                    {% endif %}
-                                </strong>
-                                <br>
-                                {{ event.message }}
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">No recent events.</li>
-                        {% endfor %}
-                    </ul>
+                    <h5 class="card-title">{{ phase_counts.Failed|default:0 }}</h5>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Pods Overview -->
-    <div class="card shadow-lg p-4">
+    <div class="card shadow-lg p-4 mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Pods Overview</h4>
             <a href="{% url 'all_pods_page' %}" class="btn btn-light btn-sm">View All Pods</a>
         </div>
         <div class="card-body">
-            <!-- Filters -->
-            <form method="get" class="row mb-3">
-                <div class="col-md-6">
-                    <select name="namespace" class="form-select" aria-label="Filter by Namespace">
-                        <option value="">Filter by Namespace</option>
-                        {% for namespace in namespaces %}
-                            <option value="{{ namespace.metadata.name }}" {% if selected_namespace == namespace.metadata.name %}selected{% endif %}>
-                                {{ namespace.metadata.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <input type="text" name="search" class="form-control" placeholder="Search Pods" value="{{ search_query }}">
-                </div>
-            </form>
+            <!-- Tabulator Table for Pods -->
+            <div id="pods-table"></div>
+        </div>
+    </div>
 
-            <!-- Pods Table -->
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Namespace</th>
-                        <th>Status</th>
-                        <th>Node</th>
-                        <th>Age</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pod in pods %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'pod_details_page' pod.metadata.namespace pod.metadata.name %}" target="_blank">
-                                    {{ pod.metadata.name }}
-                                </a>
-                            </td>
-                            <td>{{ pod.metadata.namespace }}</td>
-                            <td>{{ pod.status.phase }}</td>
-                            <td>{{ pod.spec.node_name|default:"N/A" }}</td>
-                            <td>
-                                {% if pod.metadata.creation_timestamp %}
-                                    {% with current_time=now %}
-                                        {{ pod.metadata.creation_timestamp|timesince:current_time }} ago
-                                    {% endwith %}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center">No pods available.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Events Overview -->
+    <div class="card shadow-lg p-4">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Events Overview</h4>
+            <a href="{% url 'all_events_page' %}" class="btn btn-light btn-sm">View All Events</a>
+        </div>
+        <div class="card-body">
+            <!-- Tabulator Table for Events -->
+            <div id="events-table"></div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Parse the pods data passed from Django
+        var podsData = {{ pods_data_json|safe }};
+
+        // Initialize Tabulator for Pods
+        var podsTable = new Tabulator("#pods-table", {
+            data: podsData,
+            layout: "fitColumns",
+            responsiveLayout: "collapse",
+            pagination: "local", // Use local pagination
+            paginationSize: 10,  // Number of rows per page
+            movableColumns: true,
+            placeholder: "No Pods Available",
+            initialSort: [
+                {column: "name", dir: "asc"}
+            ],
+            columns: [
+                {
+                    title: "Name",
+                    field: "name",
+                    headerFilter: "input",
+                    headerSort: true,
+                    formatter: function(cell, formatterParams) {
+                        return `<a href="${cell.getData().details_url}" target="_blank">${cell.getValue()}</a>`;
+                    }
+                },
+                { title: "Namespace", field: "namespace", headerFilter: "input", headerSort: true },
+                { title: "Status", field: "status", headerFilter: "input", headerSort: true },
+                { title: "Node", field: "node", headerFilter: "input", headerSort: true },
+                { title: "Age", field: "age", headerFilter: "input", headerSort: true },
+            ],
+        });
+
+        // Parse the events data passed from Django
+        var eventsData = {{ events_data_json|safe }};
+
+        // Initialize Tabulator for Events
+        var eventsTable = new Tabulator("#events-table", {
+            data: eventsData,
+            layout: "fitColumns",
+            responsiveLayout: "collapse",
+            pagination: "local", // Use local pagination
+            paginationSize: 10,  // Number of rows per page
+            movableColumns: true,
+            placeholder: "No Events Available",
+            initialSort: [
+                {column: "last_seen", dir: "desc"}
+            ],
+            columns: [
+                {
+                    title: "Event Name",
+                    field: "event_name",
+                    headerFilter: "input",
+                    headerSort: true,
+                    formatter: function(cell, formatterParams) {
+                        var data = cell.getRow().getData();
+                        var url = data.details_url;
+                        if (url && url !== "#") {
+                            return `<a href="${url}" target="_blank">${cell.getValue()}</a>`;
+                        } else {
+                            return cell.getValue();
+                        }
+                    }
+                },
+                { title: "Object Name", field: "object_name", headerFilter: "input", headerSort: true },
+                { title: "Namespace", field: "namespace", headerFilter: "input", headerSort: true },
+                { title: "Kind", field: "kind", headerFilter: "input", headerSort: true },
+                { title: "Type", field: "type", headerFilter: "input", headerSort: true },
+                { title: "Reason", field: "reason", headerFilter: "input", headerSort: true },
+                { title: "Message", field: "message", headerFilter: "input", headerSort: true },
+                { title: "First Seen", field: "first_seen", headerFilter: "input", headerSort: true },
+                { title: "Last Seen", field: "last_seen", headerFilter: "input", headerSort: true },
+            ],
+        });
+    });
+</script>
 {% endblock %}
