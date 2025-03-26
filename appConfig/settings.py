@@ -15,9 +15,9 @@ logging.basicConfig(level=logging.INFO)
 
 # SECURITY SETTINGS
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')  # Use a default key for development
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # APPLICATIONS
 INSTALLED_APPS = [
@@ -31,6 +31,9 @@ INSTALLED_APPS = [
     
     # Custom apps
     'kubeBoard',
+    'kubeEvents',
+    'kubePods',
+    'kubeLogs',
 ]
 
 # MIDDLEWARE
@@ -77,30 +80,22 @@ DATABASES = {
 
 # AUTH PASSWORD VALIDATORS
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # INTERNATIONALIZATION
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', 'en-us')
+TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
 USE_I18N = True
 USE_TZ = True
 
 # STATIC FILES
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']  # Directory for additional static files
-STATIC_ROOT = BASE_DIR / 'staticfiles'    # Directory where static files will be collected
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory where static files will be collected
 
 # MEDIA FILES (Optional: Add if you handle user-uploaded files)
 MEDIA_URL = '/media/'

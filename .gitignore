@@ -1,8 +1,7 @@
 /.idea
 ./venv
 .DS_Store
-/appConfig/__pycache__
-/kubeBoard/__pycache__
-/kubeBoard/migrations
+/*/__pycache__/*
+/*/migrations/*
 *.sqlite3
 .env
