@@ -12,7 +12,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Logging
 logging.basicConfig(level=logging.INFO)
 
-
 # SECURITY SETTINGS
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')  # Use a default key for development
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
@@ -28,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Custom apps
     'kubeBoard',
 ]
@@ -59,6 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'appConfig.context_processors.kubeconfig_context',
             ],
         },
     },

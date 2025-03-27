@@ -1,6 +1,9 @@
+<!-- base.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Existing head content -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Kubernetes{% endblock %}</title>
@@ -18,6 +21,23 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'index_page' %}">Kubernetes Dashboard</a>
+
+        <!-- Kubeconfig Selection Dropdown -->
+        <form method="post" action="{% url 'select_kubeconfig' %}" class="d-flex">
+            {% csrf_token %}
+            <div class="input-group">
+                <label class="input-group-text text-white bg-dark border-0" for="kubeconfigSelect">
+                    <i class="fas fa-file-alt"></i>
+                </label>
+                <select class="form-select bg-dark text-white border-0" id="kubeconfigSelect" name="kubeconfig"
+                        onchange="this.form.submit()">
+                    {% for file in kubeconfig_files %}
+                        <option value="{{ file }}"
+                                {% if file == selected_kubeconfig %}selected{% endif %}>{{ file }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
     </div>
 </nav>
 
@@ -25,6 +45,7 @@
     {% block content %}{% endblock %}
 </div>
 
+<!-- Existing scripts and styles -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
 <style>
