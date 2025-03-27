@@ -71,6 +71,7 @@
                     {title: "Namespace", field: "namespace", headerFilter: "input", headerSort: true},
                     {title: "Status", field: "status", headerFilter: "input", headerSort: true},
                     {title: "Node", field: "node", headerFilter: "input", headerSort: true},
+                    {title: "Containers", field: "container_info", headerFilter: "input", headerSort: true},
                     {title: "Age", field: "age", headerFilter: "input", headerSort: true},
                     {
                         title: "JSON",
@@ -92,7 +93,8 @@
                             node: "{{ pod.spec.node_name|default:"N/A" }}",
                             age: "{{ pod.metadata.creation_timestamp|timesince }} ago",
                             details_url: "{% url 'pod_details_page' namespace=pod.metadata.namespace pod_name=pod.metadata.name %}",
-                            view_json: "{% url 'pod_json_page' namespace=pod.metadata.namespace pod_name=pod.metadata.name %}"
+                            view_json: "{% url 'pod_json_page' namespace=pod.metadata.namespace pod_name=pod.metadata.name %}",
+                            container_info: "{{ pod.running_container_count }} / {{ pod.container_count }}"
                         }{% if not forloop.last %},{% endif %}
                     {% endfor %}
                 ],

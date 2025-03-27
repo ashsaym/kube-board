@@ -88,6 +88,7 @@ def format_pod_event(event):
 def all_pods_page(request):
     """
     Displays all pods across all namespaces in the selected Kubernetes cluster.
+    Calculates how many containers are running in each pod and determines the maximum container count.
     """
     cluster, error = get_cluster_client(request)
     if error:
@@ -99,6 +100,22 @@ def all_pods_page(request):
 
         # Get all pods across all namespaces
         pods = cluster.core_v1.list_pod_for_all_namespaces().items
+
+        max_container_count = 0
+        for pod in pods:
+            # Total containers for the pod
+            container_count = len(pod.spec.containers) if pod.spec.containers else 0
+            setattr(pod, "container_count", container_count)
+            if container_count > max_container_count:
+                max_container_count = container_count
+
+            # Count running containers based on container statuses
+            running_container_count = 0
+            if pod.status.container_statuses:
+                for status in pod.status.container_statuses:
+                    if status.ready:
+                        running_container_count += 1
+            setattr(pod, "running_container_count", running_container_count)
 
         kubectl_command = {
             'get': "kubectl get pods --all-namespaces",
@@ -117,6 +134,7 @@ def all_pods_page(request):
             'namespaces': all_namespaces,
             'pods': pods,
             'kubectl_command': kubectl_command,
+            'max_container_count': max_container_count,
         }
 
         return render(request, 'kubePods/all-pods.html', context)
@@ -129,7 +147,6 @@ def all_pods_page(request):
         error_message = f"Unexpected Error: {str(e)}"
         logger.error(f"Unexpected Exception in all_pods_page: {error_message}")
         return HttpResponse(error_message, status=500)
-
 
 
 def pod_details_page(request, namespace, pod_name):
