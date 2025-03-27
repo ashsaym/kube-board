@@ -31,9 +31,6 @@ INSTALLED_APPS = [
     
     # Custom apps
     'kubeBoard',
-    'kubeEvents',
-    'kubePods',
-    'kubeLogs',
 ]
 
 # MIDDLEWARE
