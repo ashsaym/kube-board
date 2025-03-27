@@ -16,12 +16,13 @@ class ClusterClient:
     """
     Represents a Kubernetes cluster with its API clients.
     """
-    def __init__(self, name, kubeconfig_file, core_v1, apps_v1, custom_api):
+    def __init__(self, name, kubeconfig_file, core_v1, apps_v1, custom_api, metrics_api):
         self.name = name
         self.kubeconfig_file = kubeconfig_file
         self.core_v1 = core_v1
         self.apps_v1 = apps_v1
         self.custom_api = custom_api
+        self.metrics_api = metrics_api
 
 
 def load_kubeconfig(kubeconfig_path):
@@ -47,6 +48,7 @@ def load_kubeconfig(kubeconfig_path):
         core_v1 = client.CoreV1Api(api_client)
         apps_v1 = client.AppsV1Api(api_client)
         custom_api = client.CustomObjectsApi(api_client)
+        metrics_api = client.CustomObjectsApi(api_client)  # Metrics API is accessed via CustomObjectsApi
 
         # Extract cluster name from context
         current_context = config_dict.get('current-context')
@@ -64,7 +66,8 @@ def load_kubeconfig(kubeconfig_path):
             kubeconfig_file=kubeconfig_path.name,
             core_v1=core_v1,
             apps_v1=apps_v1,
-            custom_api=custom_api
+            custom_api=custom_api,
+            metrics_api=metrics_api
         )
 
     except Exception as e:

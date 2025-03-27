@@ -15,6 +15,64 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def parse_cpu(cpu_str):
+    """
+    Parses CPU usage strings from Kubernetes metrics and converts to millicores.
+
+    Args:
+        cpu_str (str): CPU usage string (e.g., '500m', '1', '250n').
+
+    Returns:
+        float: CPU usage in millicores.
+    """
+    try:
+        if cpu_str.endswith('n'):
+            # nano cores
+            return float(cpu_str[:-1]) / 1e6  # millicores
+        elif cpu_str.endswith('u'):
+            # micro cores
+            return float(cpu_str[:-1]) / 1e3  # millicores
+        elif cpu_str.endswith('m'):
+            return float(cpu_str[:-1])  # millicores
+        else:
+            # assuming it's in cores
+            return float(cpu_str) * 1000  # millicores
+    except ValueError as e:
+        logger.error(f"Error parsing CPU string '{cpu_str}': {e}")
+        return 0.0
+
+
+def parse_ram(ram_str):
+    """
+    Parses RAM usage strings from Kubernetes metrics and converts to MiB.
+
+    Args:
+        ram_str (str): RAM usage string (e.g., '256Mi', '1Gi', '512Ki').
+
+    Returns:
+        float: RAM usage in MiB.
+    """
+    try:
+        if ram_str.endswith('Ki'):
+            return float(ram_str[:-2]) / 1024
+        elif ram_str.endswith('Mi'):
+            return float(ram_str[:-2])
+        elif ram_str.endswith('Gi'):
+            return float(ram_str[:-2]) * 1024
+        elif ram_str.endswith('Ti'):
+            return float(ram_str[:-2]) * 1024 * 1024
+        elif ram_str.endswith('n'):
+            # Unlikely, set to 0
+            return 0.0
+        else:
+            # Unknown unit, set to 0
+            logger.warning(f"Unknown RAM unit in '{ram_str}'")
+            return 0.0
+    except ValueError as e:
+        logger.error(f"Error parsing RAM string '{ram_str}': {e}")
+        return 0.0
+
+
 def format_event(event, kubeconfig_file):
     """Formats an event for general usage."""
     namespace = event.metadata.namespace or 'default'
@@ -25,7 +83,6 @@ def format_event(event, kubeconfig_file):
     first_seen = event.first_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else ''
     last_seen = event.last_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else ''
     return {
-        'kubeconfig_file': kubeconfig_file,
         'event_name': event_name,
         'object_name': object_name,
         'namespace': namespace,
@@ -102,6 +159,85 @@ def index_page(request):
             logger.error(f"Failed to retrieve events for kubeconfig '{cluster.kubeconfig_file}': {e}")
             events = []
 
+        # Retrieve nodes
+        try:
+            all_nodes = cluster.core_v1.list_node().items
+        except ApiException as e:
+            logger.error(f"Failed to retrieve nodes for kubeconfig '{cluster.kubeconfig_file}': {e}")
+            all_nodes = []
+
+        # Retrieve metrics (CPU and RAM)
+        try:
+            metrics = cluster.metrics_api.list_cluster_custom_object(
+                group="metrics.k8s.io",
+                version="v1beta1",
+                plural="pods"
+            )
+            metrics_items = metrics.get('items', [])
+        except ApiException as e:
+            logger.error(f"Failed to retrieve metrics for kubeconfig '{cluster.kubeconfig_file}': {e}")
+            metrics_items = []
+
+        # Compute total cluster capacity
+        total_cpu_capacity = 0  # in millicores
+        total_ram_capacity = 0  # in MiB
+
+        for node in all_nodes:
+            capacity = node.status.capacity
+            cpu = capacity.get('cpu', '0')
+            ram_str = capacity.get('memory', '0')
+            # Parse CPU
+            try:
+                cpu_cores = float(cpu)
+                total_cpu_capacity += cpu_cores * 1000  # millicores
+            except ValueError as e:
+                logger.error(f"Error parsing node CPU '{cpu}': {e}")
+            # Parse RAM
+            try:
+                if ram_str.endswith('Ki'):
+                    ram_mi = float(ram_str[:-2]) / 1024
+                elif ram_str.endswith('Mi'):
+                    ram_mi = float(ram_str[:-2])
+                elif ram_str.endswith('Gi'):
+                    ram_mi = float(ram_str[:-2]) * 1024
+                elif ram_str.endswith('Ti'):
+                    ram_mi = float(ram_str[:-2]) * 1024 * 1024
+                else:
+                    ram_mi = 0.0
+                    logger.warning(f"Unknown memory unit in node capacity '{ram_str}'")
+                total_ram_capacity += ram_mi
+            except ValueError as e:
+                logger.error(f"Error parsing node RAM '{ram_str}': {e}")
+
+        # Compute metrics
+        total_cpu_usage = 0.0  # in millicores
+        total_ram_usage = 0.0  # in MiB
+        pod_metrics = {}
+
+        for metric in metrics_items:
+            namespace = metric.get('metadata', {}).get('namespace', 'default')
+            name = metric.get('metadata', {}).get('name', 'unknown')
+            containers = metric.get('containers', [])
+            pod_cpu = 0.0
+            pod_ram = 0.0
+            for container in containers:
+                cpu = container.get('usage', {}).get('cpu', '0m')
+                ram = container.get('usage', {}).get('memory', '0Mi')
+                # Parse CPU
+                pod_cpu += parse_cpu(cpu)
+                # Parse RAM
+                pod_ram += parse_ram(ram)
+            total_cpu_usage += pod_cpu
+            total_ram_usage += pod_ram
+            pod_metrics[(namespace, name)] = {
+                'cpu_usage': f"{pod_cpu:.2f}m",
+                'ram_usage': f"{pod_ram:.2f}Mi"
+            }
+
+        # Compute usage percentages
+        cpu_percentage = (total_cpu_usage / total_cpu_capacity) * 100 if total_cpu_capacity > 0 else 0
+        ram_percentage = (total_ram_usage / total_ram_capacity) * 100 if total_ram_capacity > 0 else 0
+
         # Compute summary statistics
         total_namespaces = len(all_namespaces)
         total_pods = len(all_pods)
@@ -121,6 +257,11 @@ def index_page(request):
             else:
                 age_str = "N/A"
 
+            # Get pod metrics
+            metrics = pod_metrics.get((pod.metadata.namespace, pod.metadata.name), {})
+            cpu_usage = metrics.get('cpu_usage', '0.00m')
+            ram_usage = metrics.get('ram_usage', '0.00Mi')
+
             # Filter events related to this pod
             pod_events = [
                 format_pod_event(event)
@@ -129,14 +270,14 @@ def index_page(request):
             ]
 
             all_pods_data.append({
-                'kubeconfig_file': cluster.kubeconfig_file,
                 'name': pod.metadata.name,
                 'namespace': pod.metadata.namespace,
                 'status': pod.status.phase or 'Unknown',
                 'node': pod.spec.node_name or 'N/A',
                 'age': age_str,
+                'cpu_usage': cpu_usage,
+                'ram_usage': ram_usage,
                 'details_url': f"/pods/{pod.metadata.namespace}/{pod.metadata.name}/",
-                'events': pod_events,
             })
 
         # Aggregate event data
@@ -144,12 +285,13 @@ def index_page(request):
         for event in events:
             all_events_data.append(format_event(event, cluster.kubeconfig_file))
 
-        # Collect overview statistics, including kubeconfig file name
+        # Collect overview statistics
         all_overviews = [{
-            'kubeconfig_file': cluster.kubeconfig_file,
             'total_namespaces': total_namespaces,
             'total_pods': total_pods,
             'phase_counts': phase_counts,
+            'cpu_usage_percent': round(cpu_percentage, 2),
+            'ram_usage_percent': round(ram_percentage, 2),
         }]
 
         # Prepare context for the template
@@ -169,6 +311,7 @@ def index_page(request):
         error_message = f"Unexpected Error: {str(e)}"
         logger.error(f"Unexpected Exception: {error_message}")
         return render(request, 'kubeBoard/index.html', {'error': error_message})
+
 
 @require_POST
 def select_kubeconfig(request):

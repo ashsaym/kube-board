@@ -16,6 +16,36 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-pvgEHI1a6kkKqiKZOb7KxH8I3BzPQstwPl+M1HWzh2k/S+wyj1x9Iu7aaFTXv8VhegIumzIHYCrVfn7+JSLg7A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <!-- Additional styles for copy command buttons -->
+    <style>
+        /* Copy Command Button Styles */
+        .copy-command {
+            background-color: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .copy-command:hover {
+            color: #d1d1d1;
+        }
+
+        .copy-command:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Adjust the button size if necessary */
+        .copy-command i {
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -48,78 +78,7 @@
 <!-- Existing scripts and styles -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
-<style>
-    /* Kubectl Command Section Styles */
-    .kubectl-command-section {
-        background-color: #343a40;
-        color: #f8f9fa;
-        border-color: #495057;
-        position: relative;
-        border: 1px solid #495057;
-        border-radius: 8px;
-    }
-
-    .kubectl-command-text {
-        background-color: #212529;
-        color: #f8f9fa;
-        border-radius: 4px;
-        padding-right: 2.5rem; /* Equivalent to 50px */
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-
-    .copy-command {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: #495057;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .copy-command:hover {
-        background-color: #6c757d;
-    }
-
-    .copy-command:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.5);
-    }
-</style>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Function to handle copy action
-        function handleCopyCommand(event) {
-            const button = event.currentTarget;
-            const commandTextElement = button.closest('.kubectl-command-section').querySelector('.kubectl-command-text');
-            const commandText = commandTextElement.textContent;
-
-            navigator.clipboard.writeText(commandText)
-                .then(() => {
-                    // Provide visual feedback by changing the icon
-                    const originalIcon = button.innerHTML;
-                    button.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-
-                    // Revert back to the original icon after 2 seconds
-                    setTimeout(() => {
-                        button.innerHTML = '<i class="bi bi-clipboard"></i>';
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error("Failed to copy command: ", err);
-                    // Optional: Display an error message to the user
-                });
-        }
-
-        // Attach event listeners to all copy-command buttons
-        const copyButtons = document.querySelectorAll('.copy-command');
-        copyButtons.forEach(button => {
-            button.addEventListener('click', handleCopyCommand);
-        });
-    });
-</script>
+<!-- Font Awesome for Icons -->
+<script src="https://use.fontawesome.com/releases/v6.4.0/js/all.js" crossorigin="anonymous"></script>
 </body>
 </html>
