@@ -3,124 +3,125 @@
 {% extends "base.html" %}
 {% block title %}Kubernetes Dashboard{% endblock %}
 {% block content %}
-<div class="container-fluid mt-4">
-    <!-- Display Error Messages -->
-    {% if error %}
-        <div class="alert alert-danger text-center" role="alert">
-            {{ error }}
-        </div>
-    {% endif %}
+    <div class="container-fluid mt-4">
+        <!-- Display Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger text-center" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
 
-    <!-- Cluster Overviews -->
-    <div class="card mb-4 shadow-lg">
-        <div class="card-header bg-dark text-white d-flex flex-wrap justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fas fa-server mr-2"></i>Cluster Overview</h5>
-            <!-- Copy Command Button -->
-            {% include 'components/kube_command.html' with kube_command=kube_commands.cluster_info display_type='icon' %}
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Total Pods Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-success shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-cubes mr-2"></i>Total Pods</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_pods display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.total_pods }}</h5>
-                        </div>
-                    </div>
-                </div>
-                <!-- Running Pods Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-warning shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-play-circle mr-2"></i>Running Pods</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_running_pods display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.phase_counts.Running|default:0 }}</h5>
+        <!-- Cluster Overviews -->
+        <div class="card mb-4 shadow-lg">
+            <div class="card-header bg-dark text-white d-flex flex-wrap justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-server mr-2"></i>Cluster Overview</h5>
+                <!-- Copy Command Button -->
+                {% include 'components/kube_command.html' with kube_command=kube_commands.cluster_info display_type='icon' %}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Total Pods Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-success shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-cubes mr-2"></i>Total Pods</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_pods display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.total_pods }}</h5>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Pending Pods Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-secondary shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-hourglass-half mr-2"></i>Pending Pods</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_pending_pods display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.phase_counts.Pending|default:0 }}</h5>
-                        </div>
-                    </div>
-                </div>
-                <!-- Failed Pods Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-danger shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-times-circle mr-2"></i>Failed Pods</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_failed_pods display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.phase_counts.Failed|default:0 }}</h5>
+                    <!-- Running Pods Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-warning shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-play-circle mr-2"></i>Running Pods</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_running_pods display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.phase_counts.Running|default:0 }}</h5>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Namespaces Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-info shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-sitemap mr-2"></i>Namespaces</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_namespaces display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.total_namespaces }}</h5>
-                        </div>
-                    </div>
-                </div>
-                <!-- CPU Usage Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-primary shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-microchip mr-2"></i>CPU Usage</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_cpu_usage display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.cpu_usage_percent }}%</h5>
+                    <!-- Pending Pods Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-secondary shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-hourglass-half mr-2"></i>Pending Pods</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_pending_pods display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.phase_counts.Pending|default:0 }}</h5>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- RAM Usage Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-info shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-memory mr-2"></i>RAM Usage</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_ram_usage display_type='icon' %}
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.ram_usage_percent }}%</h5>
+                    <!-- Failed Pods Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-danger shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-times-circle mr-2"></i>Failed Pods</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_failed_pods display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.phase_counts.Failed|default:0 }}</h5>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Total Nodes Card -->
-                <div class="col-md-3 mb-3">
-                    <div class="card text-white bg-dark shadow h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-server mr-2"></i>Total Nodes</span>
-                            <!-- Copy Command Button -->
-                            {% include 'components/kube_command.html' with kube_command=kube_commands.get_nodes display_type='icon' %}
+                    <!-- Namespaces Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-info shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-sitemap mr-2"></i>Namespaces</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_namespaces display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.total_namespaces }}</h5>
+                            </div>
                         </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <h5 class="card-title">{{ overviews.0.total_nodes|default:0 }}</h5>
+                    </div>
+                    <!-- CPU Usage Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-primary shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-microchip mr-2"></i>CPU Usage</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_cpu_usage display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.cpu_usage_percent }}%</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- RAM Usage Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-info shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-memory mr-2"></i>RAM Usage</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_ram_usage display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.ram_usage_percent }}%</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Total Nodes Card -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-dark shadow h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-server mr-2"></i>Total Nodes</span>
+                                <!-- Copy Command Button -->
+                                {% include 'components/kube_command.html' with kube_command=kube_commands.get_nodes display_type='icon' %}
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">{{ overviews.0.total_nodes|default:0 }}</h5>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,7 +179,7 @@
                         field: "name",
                         headerFilter: "input",
                         headerSort: true,
-                        formatter: function(cell, formatterParams) {
+                        formatter: function (cell, formatterParams) {
                             return `<a href="${cell.getData().details_url}" target="_blank">${cell.getValue()}</a>`;
                         }
                     },
@@ -239,7 +240,7 @@
                         field: "event_name",
                         headerFilter: "input",
                         headerSort: true,
-                        formatter: function(cell, formatterParams) {
+                        formatter: function (cell, formatterParams) {
                             var data = cell.getRow().getData();
                             var url = data.details_url;
                             if (url && url !== "#") {
@@ -301,5 +302,5 @@
             });
         });
     </script>
-</div>
+    </div>
 {% endblock %}
