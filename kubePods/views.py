@@ -131,6 +131,7 @@ def all_pods_page(request):
         return HttpResponse(error_message, status=500)
 
 
+
 def pod_details_page(request, namespace, pod_name):
     """
     Displays detailed information about a specific pod.
@@ -162,12 +163,73 @@ def pod_details_page(request, namespace, pod_name):
         'logs': f"kubectl logs {pod_name} -n {namespace}",
         'describe': f"kubectl describe pod {pod_name} -n {namespace}",
         'exec': f"kubectl exec -it {pod_name} -n {namespace} -- /bin/bash",
-        'port_forward': f"kubectl port-forward {pod_name} 8080:80 -n {namespace}",
         'delete': f"kubectl delete pod {pod_name} -n {namespace}",
         'edit': f"kubectl edit pod {pod_name} -n {namespace}",
         'events': f"kubectl get events -n {namespace} --field-selector=involvedObject.name={pod_name}",
         'metrics': f"kubectl top pod {pod_name} -n {namespace}",
     }
+
+    # Explanations for each kubectl command
+    kubectl_explanations = {
+        'get': "Lists details about the specified pod.",
+        'yaml': "Outputs the pod's configuration in YAML format.",
+        'logs': "Retrieves the logs produced by the pod.",
+        'describe': "Provides detailed information about the pod's state and events.",
+        'exec': "Opens an interactive shell session inside the pod.",
+        'delete': "Deletes the specified pod.",
+        'edit': "Edits the pod's configuration.",
+        'events': "Lists events related to the pod.",
+        'metrics': "Displays resource (CPU/memory) usage metrics for the pod.",
+    }
+
+    # Generate port_forward commands dynamically
+    port_forward_commands = []
+    used_local_ports = set()
+
+    # Function to assign a unique local port
+    def assign_unique_local_port(desired_port):
+        local_port = desired_port
+        while local_port in used_local_ports:
+            local_port += 1  # Increment to find an available port
+        used_local_ports.add(local_port)
+        return local_port
+
+    # Iterate over containers and their ports
+    for container in pod.spec.containers:
+        for port in container.ports:
+            pod_port = port.container_port
+            local_port = assign_unique_local_port(pod_port)
+            cmd = f"kubectl port-forward {pod_name} {local_port}:{pod_port} -n {namespace}"
+            explanation = f"Forwards port <strong>{pod_port}</strong> on the pod to port <strong>{local_port}</strong> on your local machine."
+            port_forward_commands.append({
+                'command': cmd,
+                'explanation': explanation,
+            })
+
+    # Similarly, handle init containers
+    if pod.spec.init_containers:
+        for init_container in pod.spec.init_containers:
+            for port in init_container.ports:
+                pod_port = port.container_port
+                local_port = assign_unique_local_port(pod_port)
+                cmd = f"kubectl port-forward {pod_name} {local_port}:{pod_port} -n {namespace}"
+                explanation = f"Forwards port <strong>{pod_port}</strong> on the pod to port <strong>{local_port}</strong> on your local machine."
+                port_forward_commands.append({
+                    'command': cmd,
+                    'explanation': explanation,
+                })
+
+    # Combine kubectl_command entries with explanations into a 'kubectl_commands' list
+    kubectl_commands = []
+    for cmd_name, cmd in kubectl_command.items():
+        if cmd_name != 'port_forward':
+            explanation = kubectl_explanations.get(cmd_name, "")
+            kubectl_commands.append({
+                'command': cmd,
+                'explanation': explanation,
+            })
+    # Add port_forward_commands to kubectl_commands list
+    kubectl_commands.extend(port_forward_commands)
 
     context = {
         'pod': pod,
@@ -175,7 +237,7 @@ def pod_details_page(request, namespace, pod_name):
         'pod_name': pod_name,
         'containers': containers,
         'init_containers': init_containers,
-        'kubectl_command': kubectl_command,
+        'kubectl_commands': kubectl_commands,  # New list with all commands
     }
 
     return render(request, 'kubePods/pod-details.html', context)
