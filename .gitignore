@@ -6,3 +6,4 @@
 *.sqlite3
 .env
 rke2.yaml
+/kubeConfigs

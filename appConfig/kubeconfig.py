@@ -1,13 +1,12 @@
+import logging
 import os
 
 from kubernetes import client, config
-from kubernetes.client.rest import ApiException
 
-import logging
 logger = logging.getLogger(__name__)
 # Kubernetes Client Setup
 def load_kube_config():
-    config_file = os.getenv("KUBECONFIG_PATH", "rke2.yaml")
+    config_file = os.getenv("KUBECONFIG_PATH", "kubeConfigs/config-3.yaml")
     logger.info(f"Loading Kubernetes config from {config_file}")
     try:
         config.load_kube_config(config_file=config_file)

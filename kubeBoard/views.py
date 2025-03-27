@@ -4,10 +4,7 @@ import json
 from collections import defaultdict
 from datetime import datetime
 
-from django.http import StreamingHttpResponse, HttpResponse
 from django.shortcuts import render
-from django.utils.encoding import escape_uri_path
-from kubernetes import client
 from kubernetes.client import ApiException
 
 from appConfig.kubeconfig import v1  # Ensure this imports your CoreV1Api instance correctly
