@@ -1,6 +1,5 @@
-<!-- templates/kubeBoard/index.html -->
-
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Kubernetes Dashboard{% endblock %}
 {% block content %}
     <div class="container-fluid mt-4">
@@ -14,7 +13,7 @@
         <!-- Cluster Overviews -->
         <div class="card mb-4 shadow-lg">
             <div class="card-header bg-dark text-white d-flex flex-wrap justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-server mr-2"></i>Cluster Overview</h5>
+                <h5 class="mb-0"><i class="fas fa-server me-2"></i>Cluster Overview</h5>
                 <!-- Copy Command Button -->
                 {% include 'components/kube_command.html' with kube_command=kube_commands.cluster_info display_type='icon' %}
             </div>
@@ -24,7 +23,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-success shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-cubes mr-2"></i>Total Pods</span>
+                                <span><i class="fas fa-cubes me-2"></i>Total Pods</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_pods display_type='icon' %}
                             </div>
@@ -37,7 +36,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-warning shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-play-circle mr-2"></i>Running Pods</span>
+                                <span><i class="fas fa-play-circle me-2"></i>Running Pods</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_running_pods display_type='icon' %}
                             </div>
@@ -50,7 +49,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-secondary shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-hourglass-half mr-2"></i>Pending Pods</span>
+                                <span><i class="fas fa-hourglass-half me-2"></i>Pending Pods</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_pending_pods display_type='icon' %}
                             </div>
@@ -63,7 +62,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-danger shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-times-circle mr-2"></i>Failed Pods</span>
+                                <span><i class="fas fa-times-circle me-2"></i>Failed Pods</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_failed_pods display_type='icon' %}
                             </div>
@@ -76,7 +75,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-info shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-sitemap mr-2"></i>Namespaces</span>
+                                <span><i class="fas fa-sitemap me-2"></i>Namespaces</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_namespaces display_type='icon' %}
                             </div>
@@ -89,7 +88,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-primary shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-microchip mr-2"></i>CPU Usage</span>
+                                <span><i class="fas fa-microchip me-2"></i>CPU Usage</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_cpu_usage display_type='icon' %}
                             </div>
@@ -102,7 +101,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-info shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-memory mr-2"></i>RAM Usage</span>
+                                <span><i class="fas fa-memory me-2"></i>RAM Usage</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_ram_usage display_type='icon' %}
                             </div>
@@ -115,7 +114,7 @@
                     <div class="col-md-3 mb-3">
                         <div class="card text-white bg-dark shadow h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-server mr-2"></i>Total Nodes</span>
+                                <span><i class="fas fa-server me-2"></i>Total Nodes</span>
                                 <!-- Copy Command Button -->
                                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_nodes display_type='icon' %}
                             </div>
@@ -131,10 +130,10 @@
         <!-- Pods Overview -->
         <div class="card shadow-lg p-4 mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><i class="fas fa-podcast mr-2"></i>Pods Overview</h4>
+                <h4 class="mb-0"><i class="fas fa-podcast me-2"></i>Pods Overview</h4>
                 <!-- Copy Command Button -->
                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_all_pods display_type='pre_icon' %}
-                <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">View All Pods</a>
+                <a href="{% url 'all_pods_page' %}" class="btn btn-light btn-sm">View All Pods</a>
             </div>
             <div class="card-body">
                 <!-- Tabulator Table for Pods -->
@@ -145,7 +144,7 @@
         <!-- Events Overview -->
         <div class="card shadow-lg p-4 mb-4">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><i class="fas fa-bell mr-2"></i>Events Overview</h4>
+                <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Events Overview</h4>
                 <!-- Copy Command Button -->
                 {% include 'components/kube_command.html' with kube_command=kube_commands.get_all_events display_type='pre_icon' %}
                 <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">View All Events</a>
@@ -302,5 +301,4 @@
             });
         });
     </script>
-    </div>
 {% endblock %}

@@ -1,9 +1,6 @@
-<!-- pod-details.html -->
-
 {% extends "base.html" %}
-
 {% load static %}
-
+{% block title %}Pod Details - Kubernetes Dashboard{% endblock %}
 {% block content %}
     <div class="container-fluid mt-4">
         <div class="card shadow-lg p-4">
@@ -44,8 +41,7 @@
                                 {% for cmd in kubectl_commands %}
                                     <div class="command-container mb-3">
                                         <pre><code>{{ cmd.command }}</code></pre>
-                                        <button class="copy-command btn btn-outline-light btn-sm"
-                                                data-command="{{ cmd.command }}"
+                                        <button class="copy-button btn btn-sm btn-dark"
                                                 title="Copy Command to Clipboard">
                                             <i class="bi bi-clipboard"></i>
                                         </button>

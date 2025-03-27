@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Pod JSON - Kubernetes Dashboard{% endblock %}
+{% block content %}
+    <div class="container-fluid mt-4">
+        <div class="card shadow-lg p-4">
+            <!-- Header -->
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Pod JSON: {{ pod_name }}</h4>
+                <div>
+                    <a href="{% url 'pod_details_page' namespace=namespace pod_name=pod_name %}" class="btn btn-light btn-sm me-2">
+                        <i class="bi bi-arrow-left-circle"></i> Back to Pod Details
+                    </a>
+                    <a href="?download=true" class="btn btn-light btn-sm">
+                        <i class="bi bi-download"></i> Download JSON
+                    </a>
+                </div>
+            </div>
+            <!-- JSON Content -->
+            <div class="card-body">
+                <pre><code>{{ pod_json }}</code></pre>
+            </div>
+        </div>
+    </div>
+{% endblock %}

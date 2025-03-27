@@ -7,7 +7,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def get_cluster_client(request):
     """
     Retrieves the currently selected ClusterClient based on the user's session.

@@ -1,25 +1,14 @@
-<!-- pods-overview.html -->
-
 {% extends "base.html" %}
-
 {% load static %}
-
+{% block title %}All Pods - Kubernetes Dashboard{% endblock %}
 {% block content %}
     <div class="container-fluid mt-4">
         <div class="card shadow-lg p-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Pods Overview</h4>
-                <!-- Optional: Display Selected Cluster -->
-                {% if selected_kubeconfig %}
-                    <span class="badge bg-info text-dark">Cluster: {{ selected_kubeconfig }}</span>
-                {% endif %}
-            </div>
-            <div class="card-body">
-                <!-- Global Kubectl Command Section -->
-                <div class="kubectl-command-section mb-3 p-3 border rounded position-relative">
-                    {% include 'components/kube_command.html' with kube_command=kubectl_command.get display_type='pre_icon' %}
-                    {% include 'components/kube_command.html' with kube_command=kubectl_command.yaml display_type='pre_icon' %}
-                </div>
+                <!-- Copy Command Buttons -->
+                {% include 'components/kube_command.html' with kube_command=kubectl_command.get display_type='pre_icon' %}
+                {% include 'components/kube_command.html' with kube_command=kubectl_command.yaml display_type='pre_icon' %}
             </div>
             <div class="card-body">
                 <!-- Filters Section -->
@@ -63,8 +52,7 @@
                         field: "name",
                         headerFilter: "input",
                         headerSort: true,
-                        formatter: function (cell, formatterParams, onRendered) {
-                            // Use the pre-generated details_url for the Pod Details page
+                        formatter: function (cell, formatterParams) {
                             return `<a href="${cell.getData().details_url}" target="_blank">${cell.getValue()}</a>`;
                         }
                     },

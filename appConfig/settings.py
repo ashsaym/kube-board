@@ -1,3 +1,5 @@
+# settings.py
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -10,7 +12,19 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Logging
-logging.basicConfig(level=logging.INFO)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
 
 # SECURITY SETTINGS
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')  # Use a default key for development
@@ -37,8 +51,8 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -96,7 +110,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']  # Directory for additional static files
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory where static files will be collected
 
-# MEDIA FILES (Optional: Add if you handle user-uploaded files)
+# MEDIA FILES
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

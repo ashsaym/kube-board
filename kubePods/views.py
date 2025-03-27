@@ -1,21 +1,22 @@
-# appName/views.py
+# kubePods/views.py
 
 import json
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.utils.encoding import escape_uri_path
-from kubernetes.client import ApiException
-from django.views.decorators.http import require_POST
-
-from appConfig.utils import get_cluster_client  # Import the helper function
-
-import logging
 from collections import defaultdict
 from datetime import datetime, timezone
 
+from django.http import StreamingHttpResponse, HttpResponse
+from django.shortcuts import render, redirect
+from django.utils.encoding import escape_uri_path
+from django.views.decorators.http import require_POST
+from kubernetes.client import ApiException
+
+from appConfig.kubeconfig import load_kubeconfig, list_kubeconfigs, ClusterClient
+from appConfig.utils import get_cluster_client
+
+import logging
+
 logger = logging.getLogger(__name__)
 
-# --- Existing Helper Functions (No Change Needed) ---
 def parse_cpu(cpu_str):
     try:
         if cpu_str.endswith('n'):
@@ -84,7 +85,6 @@ def format_pod_event(event):
         'last_seen': last_seen,
     }
 
-# --- Updated View Functions ---
 def all_pods_page(request):
     """
     Displays all pods across all namespaces in the selected Kubernetes cluster.
@@ -148,7 +148,6 @@ def all_pods_page(request):
         logger.error(f"Unexpected Exception in all_pods_page: {error_message}")
         return HttpResponse(error_message, status=500)
 
-
 def pod_details_page(request, namespace, pod_name):
     """
     Displays detailed information about a specific pod.
@@ -174,30 +173,44 @@ def pod_details_page(request, namespace, pod_name):
     containers = [container.name for container in pod.spec.containers]
     init_containers = [container.name for container in pod.spec.init_containers] if pod.spec.init_containers else []
 
-    kubectl_command = {
-        'get': f"kubectl get pod {pod_name} -n {namespace}",
-        'yaml': f"kubectl get pod {pod_name} -n {namespace} -o yaml",
-        'logs': f"kubectl logs {pod_name} -n {namespace}",
-        'describe': f"kubectl describe pod {pod_name} -n {namespace}",
-        'exec': f"kubectl exec -it {pod_name} -n {namespace} -- /bin/bash",
-        'delete': f"kubectl delete pod {pod_name} -n {namespace}",
-        'edit': f"kubectl edit pod {pod_name} -n {namespace}",
-        'events': f"kubectl get events -n {namespace} --field-selector=involvedObject.name={pod_name}",
-        'metrics': f"kubectl top pod {pod_name} -n {namespace}",
-    }
-
-    # Explanations for each kubectl command
-    kubectl_explanations = {
-        'get': "Lists details about the specified pod.",
-        'yaml': "Outputs the pod's configuration in YAML format.",
-        'logs': "Retrieves the logs produced by the pod.",
-        'describe': "Provides detailed information about the pod's state and events.",
-        'exec': "Opens an interactive shell session inside the pod.",
-        'delete': "Deletes the specified pod.",
-        'edit': "Edits the pod's configuration.",
-        'events': "Lists events related to the pod.",
-        'metrics': "Displays resource (CPU/memory) usage metrics for the pod.",
-    }
+    kubectl_command = kubectl_commands = [
+        {
+            'command': f"kubectl get pod {pod_name} -n {namespace}",
+            'explanation': "Lists details about the specified pod."
+        },
+        {
+            'command': f"kubectl get pod {pod_name} -n {namespace} -o yaml",
+            'explanation': "Outputs the pod's configuration in YAML format."
+        },
+        {
+            'command': f"kubectl logs {pod_name} -n {namespace}",
+            'explanation': "Retrieves the logs produced by the pod."
+        },
+        {
+            'command': f"kubectl describe pod {pod_name} -n {namespace}",
+            'explanation': "Provides detailed information about the pod's state and events."
+        },
+        {
+            'command': f"kubectl exec -it {pod_name} -n {namespace} -- /bin/bash",
+            'explanation': "Opens an interactive shell session inside the pod."
+        },
+        {
+            'command': f"kubectl delete pod {pod_name} -n {namespace}",
+            'explanation': "Deletes the specified pod."
+        },
+        {
+            'command': f"kubectl edit pod {pod_name} -n {namespace}",
+            'explanation': "Edits the pod's configuration."
+        },
+        {
+            'command': f"kubectl get events -n {namespace} --field-selector=involvedObject.name={pod_name}",
+            'explanation': "Lists events related to the pod."
+        },
+        {
+            'command': f"kubectl top pod {pod_name} -n {namespace}",
+            'explanation': "Displays resource (CPU/memory) usage metrics for the pod."
+        },
+    ]
 
     # Generate port_forward commands dynamically
     port_forward_commands = []
@@ -213,40 +226,28 @@ def pod_details_page(request, namespace, pod_name):
 
     # Iterate over containers and their ports
     for container in pod.spec.containers:
-        for port in container.ports:
-            pod_port = port.container_port
-            local_port = assign_unique_local_port(pod_port)
-            cmd = f"kubectl port-forward {pod_name} {local_port}:{pod_port} -n {namespace}"
-            explanation = f"Forwards port <strong>{pod_port}</strong> on the pod to port <strong>{local_port}</strong> on your local machine."
-            port_forward_commands.append({
-                'command': cmd,
-                'explanation': explanation,
-            })
-
-    # Similarly, handle init containers
-    if pod.spec.init_containers:
-        for init_container in pod.spec.init_containers:
-            for port in init_container.ports:
+        if container.ports:
+            for port in container.ports:
                 pod_port = port.container_port
                 local_port = assign_unique_local_port(pod_port)
-                cmd = f"kubectl port-forward {pod_name} {local_port}:{pod_port} -n {namespace}"
+                cmd = f"kubectl port-forward {pod_name} {local_port}:{pod_port} -n {namespace} -c {container.name}"
                 explanation = f"Forwards port <strong>{pod_port}</strong> on the pod to port <strong>{local_port}</strong> on your local machine."
                 port_forward_commands.append({
                     'command': cmd,
                     'explanation': explanation,
                 })
-
-    # Combine kubectl_command entries with explanations into a 'kubectl_commands' list
-    kubectl_commands = []
-    for cmd_name, cmd in kubectl_command.items():
-        if cmd_name != 'port_forward':
-            explanation = kubectl_explanations.get(cmd_name, "")
-            kubectl_commands.append({
+        else:
+            # If no ports are defined, provide a generic message
+            cmd = f"kubectl port-forward {pod_name} <local-port>:<pod-port> -n {namespace} -c {container.name}"
+            explanation = "No ports defined for this container. Specify local and pod ports."
+            port_forward_commands.append({
                 'command': cmd,
                 'explanation': explanation,
             })
-    # Add port_forward_commands to kubectl_commands list
-    kubectl_commands.extend(port_forward_commands)
+
+
+    # Combine kubectl_command entries with explanations into a 'kubectl_commands' list
+    kubectl_commands += port_forward_commands
 
     context = {
         'pod': pod,
@@ -258,7 +259,6 @@ def pod_details_page(request, namespace, pod_name):
     }
 
     return render(request, 'kubePods/pod-details.html', context)
-
 
 def pod_json_page(request, namespace, pod_name):
     """
@@ -303,40 +303,72 @@ def pod_json_page(request, namespace, pod_name):
 
     return render(request, 'kubePods/pod-details-json.html', context)
 
-
 def download_pod_json(request, namespace, pod_name):
     """
     Provides a downloadable JSON file of a specific pod.
     """
-    # This view is now redundant since `pod_json_page` handles downloading via a GET parameter.
-    # However, if you prefer to keep it separate, here's the updated version:
+    # Redirect to pod_json_page with download parameter
+    return redirect(f"/pods/{namespace}/{pod_name}/json/?download=true")
 
+def stream_pod_logs(request, namespace, pod_name, container_name):
+    """
+    Streams the logs of a specific pod's container in the selected Kubernetes cluster.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+        namespace (str): The namespace of the pod.
+        pod_name (str): The name of the pod.
+        container_name (str): The name of the container within the pod.
+
+    Returns:
+        StreamingHttpResponse: A streaming HTTP response with log data.
+        HttpResponse: An error response in case of failures.
+    """
+    # Retrieve the ClusterClient based on the user's selected kubeconfig
     cluster, error = get_cluster_client(request)
     if error:
+        logger.error(f"Failed to get cluster client: {error}")
         return HttpResponse(error, status=500)
 
     try:
-        pod = cluster.core_v1.read_namespaced_pod(pod_name, namespace)
-        api_client = cluster.core_v1.api_client
-        serialized_pod = api_client.sanitize_for_serialization(pod)
-        pod_json = json.dumps(serialized_pod, indent=4)
-    except ApiException as e:
-        if e.status == 404:
-            return HttpResponse("Pod not found", status=404)
-        else:
-            error_message = f"An error occurred: {e.reason or 'Unknown error'}"
-            logger.error(f"API Exception in download_pod_json: {error_message}")
-            return HttpResponse(error_message, status=e.status if e.status else 500)
-    except TypeError as e:
-        error_message = f"Error serializing JSON: {str(e)}"
-        logger.error(f"TypeError in download_pod_json: {error_message}")
-        return HttpResponse(error_message, status=500)
-    except Exception as e:
-        error_message = f"An unexpected error occurred: {str(e)}"
-        logger.error(f"Unexpected Exception in download_pod_json: {error_message}")
-        return HttpResponse(error_message, status=500)
+        # Initialize the log stream
+        pod_logs = cluster.core_v1.read_namespaced_pod_log(
+            name=pod_name,
+            namespace=namespace,
+            container=container_name,
+            follow=True,
+            tail_lines=100,  # Fetch the last 100 log lines initially
+            _preload_content=False,
+            pretty=True,
+            async_req=False
+        )
 
-    response = HttpResponse(pod_json, content_type='application/json')
-    filename = f"{pod_name}.json"
-    response['Content-Disposition'] = f'attachment; filename="{escape_uri_path(filename)}"'
-    return response
+        def event_stream():
+            try:
+                for log_line in pod_logs:
+                    if isinstance(log_line, bytes):
+                        decoded_log = log_line.decode('utf-8').rstrip()
+                    else:
+                        decoded_log = str(log_line).rstrip()
+                    yield f"data: {json.dumps({'log': decoded_log})}\n\n"
+            except GeneratorExit:
+                cluster.core_v1.api_client.close()  # Handle client disconnect
+                logger.info(f"Log streaming for pod '{pod_name}' in namespace '{namespace}' has been terminated by the client.")
+            except Exception as e:
+                error_message = f"Error streaming logs: {str(e)}"
+                logger.error(error_message)
+                yield f"data: {json.dumps({'log': error_message})}\n\n"
+
+        response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+        response['Cache-Control'] = 'no-cache'
+        response['X-Accel-Buffering'] = 'no'
+        return response
+
+    except ApiException as e:
+        error_message = f"API Error: {e.reason or 'An unknown API error occurred.'}"
+        logger.error(f"API Exception in stream_pod_logs: {error_message}")
+        return HttpResponse(error_message, status=e.status if e.status else 500)
+    except Exception as e:
+        error_message = f"Unexpected Error: {str(e)}"
+        logger.error(f"Unexpected Exception in stream_pod_logs: {error_message}")
+        return HttpResponse(error_message, status=500)

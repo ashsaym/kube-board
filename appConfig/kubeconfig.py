@@ -9,8 +9,6 @@ from kubernetes.client import Configuration
 
 # Configure logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
 
 class ClusterClient:
     """
@@ -23,7 +21,6 @@ class ClusterClient:
         self.apps_v1 = apps_v1
         self.custom_api = custom_api
         self.metrics_api = metrics_api
-
 
 def load_kubeconfig(kubeconfig_path):
     """
@@ -73,7 +70,6 @@ def load_kubeconfig(kubeconfig_path):
     except Exception as e:
         logger.error(f"Failed to load kubeconfig '{kubeconfig_path}': {e}")
         return None
-
 
 def list_kubeconfigs(kube_configs_dir="kubeConfigs/"):
     """

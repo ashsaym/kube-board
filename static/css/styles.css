@@ -1,0 +1,217 @@
+/* Global Styles */
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.badge {
+    font-size: 0.9rem;
+}
+
+.copy-command {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+
+.copy-command:hover {
+    color: #d1d1d1;
+}
+
+.copy-command:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.copy-command i {
+    pointer-events: none;
+}
+
+.command-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.command-container pre {
+    background-color: #212529;
+    color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 0;
+    flex: 1;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #495057;
+    border: none;
+    color: #f8f9fa;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px;
+    transition: background-color 0.3s;
+}
+
+.copy-button:hover {
+    background-color: #6c757d;
+}
+
+#log-container {
+    width: 100%;
+    height: 50em;
+    border-radius: 8px;
+    border: 1px solid #333;
+    overflow-y: auto;
+    background: #1e1e1e; /* Dark background */
+    color: #d4d4d4; /* Light gray text */
+    padding: 15px;
+    font-family: 'Fira Code', monospace; /* Modern monospace font */
+    white-space: pre-wrap;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    scroll-behavior: smooth;
+}
+
+#log-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#log-container td.line-number {
+    width: 50px;
+    text-align: right;
+    padding-right: 10px;
+    user-select: none;
+    color: #858585;
+    border-right: 1px solid #333;
+}
+
+#log-container td.log-entry {
+    padding-left: 10px;
+}
+
+#log-container .log-entry {
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-bottom: 2px;
+}
+
+#log-container .log-info {
+    color: #9CDCFE; /* Light blue */
+}
+
+#log-container .log-warning {
+    color: #FFD700; /* Gold */
+}
+
+#log-container .log-error {
+    color: #F44747; /* Red */
+}
+
+/* Hover effect for individual log entries */
+#log-container .log-entry:hover {
+    background-color: #2e2e2e;
+}
+
+/* Scrollbar styling */
+#log-container::-webkit-scrollbar {
+    width: 12px;
+}
+
+#log-container::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+#log-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 6px;
+    border: 3px solid #1e1e1e;
+}
+
+#log-container::-webkit-scrollbar-thumb:hover {
+    background-color: #777;
+}
+
+#connection-status {
+    font-size: 1.1em;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#connection-status.text-success {
+    color: #198754 !important;
+}
+
+#connection-status.text-warning {
+    color: #ffc107 !important;
+}
+
+#connection-status.text-danger {
+    color: #dc3545 !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.kubectl-command-section {
+    background-color: #343a40;
+    color: #f8f9fa;
+    border-color: #495057;
+    position: relative;
+}
+
+#kubectl-command-text {
+    background-color: #212529;
+    color: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+#copy-command {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #495057;
+    border: none;
+    color: #f8f9fa;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px;
+    transition: background-color 0.3s;
+}
+
+#copy-command:hover {
+    background-color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .controls-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .right-controls {
+        margin-top: 10px;
+    }
+}

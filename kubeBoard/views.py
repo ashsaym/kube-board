@@ -1,16 +1,15 @@
+# kubeBoard/views.py
+
 import json
 from collections import defaultdict
 from datetime import datetime, timezone
-from pathlib import Path
 
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from kubernetes.client.exceptions import ApiException
 
-from appConfig.kubeconfig import load_kubeconfig, list_kubeconfigs, ClusterClient
-
-import logging
-logger = logging.getLogger(__name__)
+from appConfig.kubeconfig import list_kubeconfigs
+from appConfig.utils import get_cluster_client, logger
 
 
 def parse_cpu(cpu_str):
@@ -38,7 +37,6 @@ def parse_cpu(cpu_str):
     except ValueError as e:
         logger.error(f"Error parsing CPU string '{cpu_str}': {e}")
         return 0.0
-
 
 def parse_ram(ram_str):
     """
@@ -70,7 +68,6 @@ def parse_ram(ram_str):
         logger.error(f"Error parsing RAM string '{ram_str}': {e}")
         return 0.0
 
-
 def format_event(event, kubeconfig_file):
     """Formats an event for general usage."""
     namespace = event.metadata.namespace or 'default'
@@ -96,7 +93,6 @@ def format_event(event, kubeconfig_file):
         'details_url': details_url,
     }
 
-
 def format_pod_event(event):
     """Formats an event related to a pod."""
     first_seen = event.first_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else ''
@@ -109,32 +105,14 @@ def format_pod_event(event):
         'last_seen': last_seen,
     }
 
-
 def index_page(request):
     """
     Renders the main dashboard page with data from the selected Kubernetes cluster.
     """
     try:
-        selected_kubeconfig = request.session.get('selected_kubeconfig')
-
-        if not selected_kubeconfig:
-            # If no selection, default to the first kubeconfig file
-            kubeconfig_files = [kubeconfig_file.name for kubeconfig_file in list_kubeconfigs()]
-            selected_kubeconfig = kubeconfig_files[0] if kubeconfig_files else None
-            request.session['selected_kubeconfig'] = selected_kubeconfig
-
-        if not selected_kubeconfig:
-            error_message = "No Kubernetes kubeconfig files found."
-            logger.error(error_message)
-            return render(request, 'kubeBoard/index.html', {'error': error_message})
-
-        kubeconfig_path = Path("kubeConfigs") / selected_kubeconfig
-        cluster = load_kubeconfig(kubeconfig_path)
-
-        if not cluster:
-            error_message = f"Failed to load kubeconfig '{selected_kubeconfig}'."
-            logger.error(error_message)
-            return render(request, 'kubeBoard/index.html', {'error': error_message})
+        cluster, error = get_cluster_client(request)
+        if error:
+            return render(request, 'kubeBoard/index.html', {'error': error})
 
         # Retrieve namespaces
         try:
@@ -192,17 +170,7 @@ def index_page(request):
                 logger.error(f"Error parsing node CPU '{cpu}': {e}")
             # Parse RAM
             try:
-                if ram_str.endswith('Ki'):
-                    ram_mi = float(ram_str[:-2]) / 1024
-                elif ram_str.endswith('Mi'):
-                    ram_mi = float(ram_str[:-2])
-                elif ram_str.endswith('Gi'):
-                    ram_mi = float(ram_str[:-2]) * 1024
-                elif ram_str.endswith('Ti'):
-                    ram_mi = float(ram_str[:-2]) * 1024 * 1024
-                else:
-                    ram_mi = 0.0
-                    logger.warning(f"Unknown memory unit in node capacity '{ram_str}'")
+                ram_mi = parse_ram(ram_str)
                 total_ram_capacity += ram_mi
             except ValueError as e:
                 logger.error(f"Error parsing node RAM '{ram_str}': {e}")
@@ -327,7 +295,6 @@ def index_page(request):
         error_message = f"Unexpected Error: {str(e)}"
         logger.error(f"Unexpected Exception: {error_message}")
         return render(request, 'kubeBoard/index.html', {'error': error_message})
-
 
 @require_POST
 def select_kubeconfig(request):
