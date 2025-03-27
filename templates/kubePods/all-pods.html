@@ -1,0 +1,142 @@
+<!-- pods-overview.html -->
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <div class="card shadow-lg p-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Pods Overview</h4>
+                <!-- Optional: Display Selected Cluster -->
+                {% if selected_kubeconfig %}
+                    <span class="badge bg-info text-dark">Cluster: {{ selected_kubeconfig }}</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <!-- Global Kubectl Command Section -->
+                <div class="kubectl-command-section mb-3 p-3 border rounded position-relative">
+                    {% include 'components/kube_command.html' with kube_command=kubectl_command.get display_type='pre_icon' %}
+                    {% include 'components/kube_command.html' with kube_command=kubectl_command.yaml display_type='pre_icon' %}
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Filters Section -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <select id="namespace-filter" class="form-select" aria-label="Filter by Namespace">
+                            <option selected value="">Filter by Namespace</option>
+                            {% for namespace in namespaces %}
+                                <option value="{{ namespace.metadata.name }}">{{ namespace.metadata.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="search" class="form-control" placeholder="Search Pods">
+                    </div>
+                </div>
+
+                {% if error %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <!-- Pods Table -->
+                <div id="pods-table" class="table-responsive border rounded p-2 bg-light"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabulator Initialization Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var table = new Tabulator("#pods-table", {
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                height: "auto",
+                placeholder: "No Pods Available",
+                columns: [
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell, formatterParams, onRendered) {
+                            // Use the pre-generated details_url for the Pod Details page
+                            return `<a href="${cell.getData().details_url}" target="_blank">${cell.getValue()}</a>`;
+                        }
+                    },
+                    {title: "Namespace", field: "namespace", headerFilter: "input", headerSort: true},
+                    {title: "Status", field: "status", headerFilter: "input", headerSort: true},
+                    {title: "Node", field: "node", headerFilter: "input", headerSort: true},
+                    {title: "Age", field: "age", headerFilter: "input", headerSort: true},
+                    {
+                        title: "JSON",
+                        field: "view_json",
+                        formatter: "buttonTick",
+                        width: 100,
+                        align: "center",
+                        cellClick: function (e, cell) {
+                            window.open(cell.getValue(), '_blank');
+                        }
+                    },
+                ],
+                data: [
+                    {% for pod in pods %}
+                        {
+                            name: "{{ pod.metadata.name }}",
+                            namespace: "{{ pod.metadata.namespace }}",
+                            status: "{{ pod.status.phase }}",
+                            node: "{{ pod.spec.node_name|default:"N/A" }}",
+                            age: "{{ pod.metadata.creation_timestamp|timesince }} ago",
+                            details_url: "{% url 'pod_details_page' namespace=pod.metadata.namespace pod_name=pod.metadata.name %}",
+                            view_json: "{% url 'pod_json_page' namespace=pod.metadata.namespace pod_name=pod.metadata.name %}"
+                        }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                initialSort: [
+                    {column: "name", dir: "asc"}
+                ],
+            });
+
+            // Apply Namespace Filter
+            document.getElementById('namespace-filter').addEventListener('change', function () {
+                var namespace = this.value;
+                if (namespace) {
+                    // Clear existing filters and apply namespace filter
+                    table.setFilter("namespace", "=", namespace);
+                } else {
+                    // Clear all filters if "Filter by Namespace" is selected
+                    table.clearFilter();
+                }
+            });
+
+            // Apply Search Filter
+            document.getElementById('search').addEventListener('input', function () {
+                var query = this.value;
+                if (query) {
+                    // Apply a compound filter: name OR namespace contains the query
+                    table.setFilter([
+                        {field: "name", type: "like", value: query},
+                        {field: "namespace", type: "like", value: query}
+                    ], "OR");
+                } else {
+                    // Clear all filters if search input is empty
+                    table.clearFilter();
+                }
+            });
+        });
+
+        // Copy to Clipboard Functionality
+        function copyToClipboard(command) {
+            navigator.clipboard.writeText(command).then(function () {
+                /* Optional: Provide user feedback */
+                alert('Kubectl command copied to clipboard!');
+            }, function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+{% endblock %}
