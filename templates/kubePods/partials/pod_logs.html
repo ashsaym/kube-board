@@ -15,19 +15,23 @@
             <div id="connection-status" class="mb-3 text-center"></div>
 
             <!-- Controls Container: Left (Container and Filter) and Right (Buttons) -->
-            <div class="controls-container mb-3 d-flex justify-content-between align-items-center">
-                <div class="left-controls d-flex align-items-center">
+            <div class="controls-container mb-3 d-flex justify-content-between align-items-center flex-wrap">
+                <!-- Left Controls: Container Select and Log Level Filter -->
+                <div class="left-controls d-flex align-items-center mb-2 mb-md-0">
+                    <!-- Container Selection -->
                     <div class="control-group me-3">
-                        <input type="hidden" id="container-select" value="{{ containers.0 }}">
                         <label for="container-select" class="form-label me-2">Container:</label>
                         <select id="container-select" class="form-select">
                             {% for container in containers %}
-                                <option value="{{ container }}">{{ container }}</option>
+                                <option value="{{ container }}" {% if container == containers.0 %}selected{% endif %}>
+                                    {{ container }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
+
+                    <!-- Log Level Filter -->
                     <div class="control-group">
-                        <!-- Log Level Filter -->
                         <label for="log-level-filter" class="form-label me-2">Filter:</label>
                         <select id="log-level-filter" class="form-select">
                             <option value="all">All</option>
@@ -37,6 +41,8 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- Right Controls: Buttons -->
                 <div class="right-controls d-flex align-items-center">
                     <button id="pause-logs" class="btn btn-sm btn-outline-secondary me-2">Pause</button>
                     <button id="resume-logs" class="btn btn-sm btn-outline-secondary me-2" disabled>Resume</button>
@@ -95,11 +101,13 @@
             resetSSE(this.value);
         });
 
+        // Listen for log filter change to apply filtering
         logFilter.addEventListener('change', function () {
             filterLevel = this.value;
             filterExistingLogs();
         });
 
+        // Function to filter existing logs based on selected filter level
         function filterExistingLogs() {
             const allLogLines = logContainer.querySelectorAll('div');
             allLogLines.forEach(function (logLine) {
@@ -111,6 +119,7 @@
             });
         }
 
+        // Initialize Server-Sent Events (SSE) for log streaming
         function initSSE(containerName) {
             if (!containerName) {
                 console.error("No container name provided.");
@@ -131,9 +140,11 @@
                 } else if (upperLog.includes('WARNING') || upperLog.includes('WARN')) {
                     logClass = 'log-warning';
                 }
+
                 if (filterLevel !== "all" && logClass !== `log-${filterLevel}`) {
                     return;
                 }
+
                 const logLine = document.createElement('div');
                 logLine.textContent = log;
                 logLine.classList.add(logClass);
@@ -159,6 +170,7 @@
             };
         }
 
+        // Function to reset SSE connection
         function resetSSE(containerName) {
             if (eventSource) {
                 eventSource.close();
@@ -169,12 +181,14 @@
             initSSE(containerName);
         }
 
+        // Initialize SSE on page load with the default selected container
         if (containerSelect) {
             initSSE(containerSelect.value);
         } else if (containers.length === 1) {
             initSSE(containers[0]);
         }
 
+        // Pause Logs Button Handler
         pauseButton.addEventListener('click', function () {
             isPaused = true;
             connectionStatus.textContent = "Log streaming paused.";
@@ -183,6 +197,7 @@
             resumeButton.disabled = false;
         });
 
+        // Resume Logs Button Handler
         resumeButton.addEventListener('click', function () {
             if (isPaused && (!eventSource || eventSource.readyState === EventSource.CLOSED)) {
                 resetSSE(containerSelect.value);
@@ -194,11 +209,12 @@
             resumeButton.disabled = true;
         });
 
+        // Jump to Latest Logs Button Handler
         jumpButton.addEventListener('click', function () {
             logContainer.scrollTop = logContainer.scrollHeight;
         });
 
-        // Copy command to clipboard using the icon button
+        // Copy kubectl command to clipboard
         copyCommand.addEventListener('click', function () {
             navigator.clipboard.writeText(kubectlCommandText.textContent)
                 .then(() => {
@@ -212,11 +228,13 @@
                 });
         });
 
+        // Scroll to latest logs when the accordion is expanded
         const logsCollapse = document.getElementById('collapseLogs');
         logsCollapse.addEventListener('shown.bs.collapse', function () {
             logContainer.scrollTop = logContainer.scrollHeight;
         });
 
+        // Clean up SSE connection when the page is unloaded
         window.addEventListener('beforeunload', function () {
             if (eventSource) {
                 eventSource.close();
@@ -227,26 +245,31 @@
 
 <style>
     body {
-        font-family: \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     }
+
     .controls-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
     }
+
     .left-controls,
     .right-controls {
         display: flex;
         align-items: center;
     }
-    .control-group {
+
+    .left-controls .control-group {
         display: flex;
         align-items: center;
     }
+
     .control-group label {
         margin-bottom: 0;
     }
+
     #log-container {
         width: 100%;
         height: 50em;
@@ -256,63 +279,77 @@
         background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
         color: #cfcfcf;
         padding: 15px;
-        font-family: \"Courier New\", Courier, monospace;
+        font-family: "Courier New", Courier, monospace;
         white-space: pre-wrap;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         scroll-behavior: smooth;
     }
+
     #log-container div {
         padding: 3px 0;
         border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
     }
+
     .log-error {
         color: #ff6b6b;
         font-weight: bold;
     }
+
     .log-warning {
         color: #f4d35e;
     }
+
     .log-info {
         color: #6bc1ff;
     }
+
     #connection-status {
         font-size: 1.1em;
         padding: 5px;
         border-radius: 5px;
         background-color: #f8f9fa;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     }
+
     #connection-status.text-success {
         color: #198754 !important;
     }
+
     #connection-status.text-warning {
         color: #ffc107 !important;
     }
+
     #connection-status.text-danger {
         color: #dc3545 !important;
     }
+
     .btn-outline-secondary:hover {
         background-color: #6c757d;
         color: #fff;
     }
+
     .kubectl-command-section {
         background-color: #343a40;
         color: #f8f9fa;
         border-color: #495057;
         position: relative;
     }
+
     #kubectl-command-text {
         background-color: #212529;
         color: #f8f9fa;
         border-radius: 4px;
     }
+
     .btn-dark {
         background-color: #495057;
         border: none;
     }
+
     .btn-dark:hover {
         background-color: #6c757d;
     }
+
     .copy-button {
         position: absolute;
         top: 10px;
@@ -320,7 +357,19 @@
         background-color: #495057;
         border: none;
     }
+
     .copy-button:hover {
         background-color: #6c757d;
+    }
+
+    @media (max-width: 767.98px) {
+        .controls-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .right-controls {
+            margin-top: 10px;
+        }
     }
 </style>

@@ -15,7 +15,9 @@ def stream_pod_logs(request, namespace, pod_name, container_name):
             container=container_name,
             follow=True,
             tail_lines=100,  # Fetch the last 100 log lines initially
-            _preload_content=False
+            _preload_content=False,
+            pretty=True,
+            async_req=False
         )
 
         def event_stream():
