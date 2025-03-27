@@ -1,5 +1,3 @@
-# views.py
-
 import json
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -241,6 +239,7 @@ def index_page(request):
         # Compute summary statistics
         total_namespaces = len(all_namespaces)
         total_pods = len(all_pods)
+        total_nodes = len(all_nodes)
         phase_counts = defaultdict(int)
         for pod in all_pods:
             phase = pod.status.phase or "Unknown"
@@ -289,16 +288,33 @@ def index_page(request):
         all_overviews = [{
             'total_namespaces': total_namespaces,
             'total_pods': total_pods,
+            'total_nodes': total_nodes,
             'phase_counts': phase_counts,
             'cpu_usage_percent': round(cpu_percentage, 2),
             'ram_usage_percent': round(ram_percentage, 2),
         }]
+
+        # Define dynamic kubectl commands
+        kube_commands = {
+            'cluster_info': 'kubectl cluster-info',
+            'get_namespaces': 'kubectl get namespaces',
+            'get_pods': 'kubectl get pods --all-namespaces',
+            'get_running_pods': 'kubectl get pods --all-namespaces --field-selector=status.phase=Running',
+            'get_pending_pods': 'kubectl get pods --all-namespaces --field-selector=status.phase=Pending',
+            'get_failed_pods': 'kubectl get pods --all-namespaces --field-selector=status.phase=Failed',
+            'get_cpu_usage': 'kubectl top pods --all-namespaces',
+            'get_ram_usage': 'kubectl top pods --all-namespaces',
+            'get_nodes': 'kubectl get nodes',
+            'get_all_pods': 'kubectl get pods --all-namespaces',
+            'get_all_events': 'kubectl get events --all-namespaces',
+        }
 
         # Prepare context for the template
         context = {
             'overviews': all_overviews,
             'pods_data_json': json.dumps(all_pods_data),
             'events_data_json': json.dumps(all_events_data),
+            'kube_commands': kube_commands,
         }
 
         return render(request, 'kubeBoard/index.html', context)
