@@ -1,0 +1,121 @@
+<!-- templates/kubeBoard/all_ingresses.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}All Ingresses - Kubernetes Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Display Error Messages -->
+    {% if error %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <!-- Ingresses Overview -->
+    <div class="card shadow-lg p-4 mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-network-wired me-2"></i>All Ingresses</h4>
+            <div class="d-flex align-items-center">
+                <!-- Copy All Ingresses Command -->
+                <button class="btn btn-outline-light btn-sm me-2" onclick="copyToClipboard('{{ kube_commands.get_ingresses }}')"
+                        data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Get All Ingresses Command">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">
+                    <i class="fas fa-home me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Tabulator Table for Ingresses -->
+            <div id="ingresses-table"></div>
+        </div>
+    </div>
+
+    <!-- Optional: Toast for Copy Feedback -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Command copied to clipboard!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialize Tabulator Tables and Tooltips -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Initialize Bootstrap Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
+            // Initialize Tabulator for Ingresses
+            var ingressesTable = new Tabulator("#ingresses-table", {
+                data: {{ ingresses_data_json|safe }},
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "local", // Enable local pagination
+                paginationSize: 20,  // Number of rows per page
+                movableColumns: true,
+                placeholder: "No Ingresses Available",
+                initialSort: [
+                    {column: "name", dir: "asc"},
+                ],
+                columns: [
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            return `<a href="${cell.getData().details_url}" class="text-primary">${cell.getValue()}</a>`;
+                        }
+                    },
+                    {
+                        title: "Namespace",
+                        field: "namespace",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Host",
+                        field: "host",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Paths",
+                        field: "paths",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Age",
+                        field: "age",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                ],
+            });
+        });
+
+        // Copy to Clipboard Function with Toast Feedback
+        function copyToClipboard(command) {
+            navigator.clipboard.writeText(command).then(function () {
+                var toastEl = document.getElementById('copyToast');
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }, function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</div>
+{% endblock %}

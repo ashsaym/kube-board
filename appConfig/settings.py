@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'kubePods',
     'kubeLogs',
     'kubeEvents',
+    'kubeIngress',
 ]
 
 # MIDDLEWARE

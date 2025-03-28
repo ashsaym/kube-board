@@ -1,0 +1,299 @@
+<!-- templates/kubeBoard/ingress_detail.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Ingress Detail - {{ ingress.metadata.name }}{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <!-- Display Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger text-center" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if ingress %}
+            <div class="card shadow-lg p-4 mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-network-wired me-2"></i>Ingress
+                        Detail: {{ ingress.metadata.name }}</h4>
+                    <div class="d-flex align-items-center">
+                        <!-- Describe Ingress Command -->
+                        <button class="btn btn-outline-light btn-sm me-2"
+                                onclick="copyToClipboard('{{ kube_commands.describe_ingress|escapejs }}')"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Describe Ingress Command">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <!-- Delete Ingress Command -->
+                        <button class="btn btn-outline-danger btn-sm me-2"
+                                onclick="copyToClipboard('{{ kube_commands.delete_ingress|escapejs }}')"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Delete Ingress Command">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <a href="{% url 'all_ingresses_page' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to All Ingresses
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Basic Information Section -->
+                    <h5 class="card-title">Basic Information</h5>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item"><strong>Name:</strong> {{ ingress.metadata.name }}</li>
+                        <li class="list-group-item"><strong>Namespace:</strong> {{ ingress.metadata.namespace }}</li>
+                        <li class="list-group-item"><strong>UID:</strong> {{ ingress.metadata.uid }}</li>
+                        <li class="list-group-item"><strong>Resource
+                            Version:</strong> {{ ingress.metadata.resource_version }}</li>
+                        <li class="list-group-item"><strong>Creation
+                            Timestamp:</strong> {{ ingress.metadata.creation_timestamp }}</li>
+                        <li class="list-group-item"><strong>Labels:</strong>
+                            {% if ingress.metadata.labels %}
+                                <ul>
+                                    {% for key, value in ingress.metadata.labels.items %}
+                                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                None
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item"><strong>Annotations:</strong>
+                            {% if ingress.metadata.annotations %}
+                                <ul>
+                                    {% for key, value in ingress.metadata.annotations.items %}
+                                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                None
+                            {% endif %}
+                        </li>
+                    </ul>
+
+                    <!-- Spec Section -->
+                    <h5 class="card-title">Spec</h5>
+                    <div class="accordion mb-3" id="specAccordion">
+                        <!-- General Spec Details -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="specGeneralHeading">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#specGeneral" aria-expanded="true" aria-controls="specGeneral">
+                                    General Spec Details
+                                </button>
+                            </h2>
+                            <div id="specGeneral" class="accordion-collapse collapse show"
+                                 aria-labelledby="specGeneralHeading" data-bs-parent="#specAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item"><strong>Ingress Class
+                                            Name:</strong> {{ ingress.spec.ingressClassName }}</li>
+                                        <li class="list-group-item"><strong>Default Backend:</strong>
+                                            {% if ingress.spec.defaultBackend %}
+                                                <strong>Service:</strong> {{ ingress.spec.defaultBackend.service.name }}
+                                                :
+                                                <strong>Port:</strong>
+                                                {{ ingress.spec.defaultBackend.service.port.number }}
+                                            {% else %}
+                                                None
+                                            {% endif %}
+                                        </li>
+                                        <li class="list-group-item"><strong>TLS:</strong>
+                                            {% if ingress.spec.tls %}
+                                                <ul>
+                                                    {% for tls in ingress.spec.tls %}
+                                                        <li>
+                                                            <strong>Secret Name:</strong> {{ tls.secretName }}<br>
+                                                            <strong>Hosts:</strong>
+                                                            {% if tls.hosts %}
+                                                                {{ tls.hosts|join:", " }}
+                                                            {% else %}
+                                                                None
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                None
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Rules -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="specRulesHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#specRules" aria-expanded="false" aria-controls="specRules">
+                                    Rules
+                                </button>
+                            </h2>
+                            <div id="specRules" class="accordion-collapse collapse" aria-labelledby="specRulesHeading"
+                                 data-bs-parent="#specAccordion">
+                                <div class="accordion-body">
+                                    {% if ingress.spec.rules %}
+                                        {% for rule in ingress.spec.rules %}
+                                            <div class="card mb-2">
+                                                <div class="card-header">
+                                                    <strong>Host:</strong> {{ rule.host|default:"-" }}
+                                                </div>
+                                                <div class="card-body">
+                                                    {% if rule.http.paths %}
+                                                        <ul class="list-group">
+                                                            {% for path in rule.http.paths %}
+                                                                <li class="list-group-item">
+                                                                    <strong>Path:</strong> {{ path.path }}
+                                                                    (<em>{{ path.pathType }}</em>)<br>
+                                                                    <strong>Backend:</strong>
+                                                                    {% if path.backend.service %}
+                                                                        Service: {{ path.backend.service.name }}:
+                                                                        <strong>Port:</strong>
+                                                                        {{ path.backend.service.port.number }}
+                                                                    {% else %}
+                                                                        {{ path.backend }}
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <p>No paths defined.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>No rules defined.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Section -->
+                    <h5 class="card-title">Status</h5>
+                    <div class="accordion mb-3" id="statusAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="statusLoadBalancerHeading">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#statusLoadBalancer" aria-expanded="true"
+                                        aria-controls="statusLoadBalancer">
+                                    Load Balancer
+                                </button>
+                            </h2>
+                            <div id="statusLoadBalancer" class="accordion-collapse collapse show"
+                                 aria-labelledby="statusLoadBalancerHeading" data-bs-parent="#statusAccordion">
+                                <div class="accordion-body">
+                                    {% if ingress.status.loadBalancer.ingress %}
+                                        <table class="table table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>IP</th>
+                                                <th>Hostname</th>
+                                                <th>Ports</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for lb in ingress.status.loadBalancer.ingress %}
+                                                <tr>
+                                                    <td>{{ lb.ip|default:"-" }}</td>
+                                                    <td>{{ lb.hostname|default:"-" }}</td>
+                                                    <td>
+                                                        {% if lb.ports %}
+                                                            {{ lb.ports }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% else %}
+                                        <p>No load balancer information available.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Managed Fields Section -->
+                    <h5 class="card-title">Managed Fields</h5>
+                    <div class="accordion mb-3" id="managedFieldsAccordion">
+                        {% if ingress.metadata.managed_fields %}
+                            {% for field in ingress.metadata.managed_fields %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="mf{{ forloop.counter }}Heading">
+                                        <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#mf{{ forloop.counter }}"
+                                                aria-expanded="false" aria-controls="mf{{ forloop.counter }}">
+                                            {{ field.manager }} - {{ field.operation|capfirst }} ({{ field.time }})
+                                        </button>
+                                    </h2>
+                                    <div id="mf{{ forloop.counter }}" class="accordion-collapse collapse"
+                                         aria-labelledby="mf{{ forloop.counter }}Heading"
+                                         data-bs-parent="#managedFieldsAccordion">
+                                        <div class="accordion-body">
+                                            <!-- Display managed_fields as a nested list -->
+                                            <ul>
+                                                {% for key, value in field.fields_v1.items %}
+                                                    <li><strong>{{ key }}:</strong>
+                                                        {% if value %}
+                                                            <pre>{{ value|json_script:"" }}</pre>
+                                                        {% else %}
+                                                            None
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No managed fields available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Optional: Toast for Copy Feedback -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+                 aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Command copied to clipboard!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Initialize Tooltips and Pretty Print JSON -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+
+                // Initialize Bootstrap Tooltips
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                });
+
+            });
+
+            // Copy to Clipboard Function with Toast Feedback
+            function copyToClipboard(command) {
+                navigator.clipboard.writeText(command).then(function () {
+                    var toastEl = document.getElementById('copyToast');
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }, function (err) {
+                    console.error('Could not copy text: ', err);
+                });
+            }
+        </script>
+    </div>
+{% endblock %}

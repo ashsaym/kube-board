@@ -39,6 +39,7 @@ def parse_cpu(cpu_str):
         logger.error(f"Error parsing CPU string '{cpu_str}': {e}")
         return 0.0
 
+
 def parse_ram(ram_str):
     """
     Parses RAM usage strings from Kubernetes metrics and converts to MiB.
@@ -69,6 +70,7 @@ def parse_ram(ram_str):
         logger.error(f"Error parsing RAM string '{ram_str}': {e}")
         return 0.0
 
+
 def format_event(event, kubeconfig_file):
     """Formats an event for general usage."""
     namespace = event.metadata.namespace or 'default'
@@ -94,6 +96,7 @@ def format_event(event, kubeconfig_file):
         'details_url': details_url,
     }
 
+
 def format_pod_event(event):
     """Formats an event related to a pod."""
     first_seen = event.first_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else ''
@@ -105,6 +108,7 @@ def format_pod_event(event):
         'first_seen': first_seen,
         'last_seen': last_seen,
     }
+
 
 def index_page(request):
     """
@@ -253,6 +257,50 @@ def index_page(request):
         for event in events:
             all_events_data.append(format_event(event, cluster.kubeconfig_file))
 
+        # ================== Ingresses Overview ==================
+
+        # Retrieve Ingresses
+        try:
+            all_ingresses = cluster.networking_v1.list_ingress_for_all_namespaces().items
+            logger.info(f"Retrieved {len(all_ingresses)} ingresses.")
+        except ApiException as e:
+            logger.error(f"Failed to retrieve ingresses for kubeconfig '{cluster.kubeconfig_file}': {e}")
+            all_ingresses = []
+
+        # Process ingresses
+        all_ingresses_data = []
+        for ingress in all_ingresses:
+            name = ingress.metadata.name or 'Unnamed'
+            namespace = ingress.metadata.namespace or 'default'
+            rules = ingress.spec.rules if ingress.spec else []
+            host = rules[0].host if rules else 'N/A'
+            paths = []
+            for rule in rules:
+                if rule.http:
+                    for path in rule.http.paths:
+                        paths.append(path.path)
+            creation_timestamp = ingress.metadata.creation_timestamp
+            if creation_timestamp:
+                age_timedelta = datetime.now(timezone.utc) - creation_timestamp
+                age_hours = age_timedelta.total_seconds() / 3600
+                age_str = f"{int(age_hours)}h" if age_hours < 24 else f"{int(age_hours / 24)}d"
+            else:
+                age_str = "N/A"
+
+            all_ingresses_data.append({
+                'name': name,
+                'namespace': namespace,
+                'host': host,
+                'paths': ', '.join(paths),
+                'age': age_str,
+                'details_url': f"/ingresses/{namespace}/{name}/",
+            })
+
+        # Convert to JSON
+        ingresses_data_json = json.dumps(all_ingresses_data)
+
+        # ================== End Ingresses Overview ==================
+
         # Collect overview statistics
         all_overviews = [{
             'total_namespaces': total_namespaces,
@@ -276,6 +324,7 @@ def index_page(request):
             'get_nodes': 'kubectl get nodes',
             'get_all_pods': 'kubectl get pods --all-namespaces',
             'get_all_events': 'kubectl get events --all-namespaces',
+            'get_ingresses': 'kubectl get ingress --all-namespaces',
         }
 
         # Prepare context for the template
@@ -283,6 +332,7 @@ def index_page(request):
             'overviews': all_overviews,
             'pods_data_json': json.dumps(all_pods_data),
             'events_data_json': json.dumps(all_events_data),
+            'ingresses_data_json': ingresses_data_json,  # Added Ingresses Data
             'kube_commands': kube_commands,
         }
 
@@ -296,6 +346,7 @@ def index_page(request):
         error_message = f"Unexpected Error: {str(e)}"
         logger.error(f"Unexpected Exception: {error_message}")
         return render(request, 'kubeBoard/index.html', {'error': error_message})
+
 
 @require_POST
 def select_kubeconfig(request):

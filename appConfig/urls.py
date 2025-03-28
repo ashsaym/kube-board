@@ -3,6 +3,7 @@
 from django.contrib import admin
 from django.urls import path
 from kubeBoard.views import index_page, select_kubeconfig
+from kubeIngress.views import ingress_detail, all_ingresses_page
 from kubePods.views import pod_details_page, pod_json_page, download_pod_json, all_pods_page
 from kubeLogs.views import stream_pod_logs
 from kubeEvents.views import all_events_page, event_detail_page  # Import events views
@@ -19,4 +20,7 @@ urlpatterns = [
          name='stream_pod_logs'),
     path('events/', all_events_page, name='all_events_page'),  # Add this line
     path('events/<str:namespace>/<str:event_name>/', event_detail_page, name='event_detail_page'),  # And this line
+
+    path('ingresses/<str:namespace>/<str:name>/', ingress_detail, name='ingress_detail'),  # Detailed Ingress View
+    path('ingresses/', all_ingresses_page, name='all_ingresses_page'),  # List All Ingresses
 ]
