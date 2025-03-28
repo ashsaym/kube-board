@@ -14,7 +14,7 @@
         {% endif %}
 
         {% if ingress %}
-            <div class="card shadow-lg p-4 mb-4">
+            <div class="card shadow-lg mb-4">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="fas fa-network-wired me-2"></i>Ingress
                         Detail: {{ ingress.metadata.name }}</h4>
@@ -24,6 +24,12 @@
                                 onclick="copyToClipboard('{{ kube_commands.describe_ingress|escapejs }}')"
                                 data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Describe Ingress Command">
                             <i class="fas fa-copy"></i>
+                        </button>
+                        <!-- Get Ingress YAML Command -->
+                        <button class="btn btn-outline-light btn-sm me-2"
+                                onclick="copyToClipboard('{{ kube_commands.get_ingress_yaml|escapejs }}')"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Get Ingress Command">
+                            <i class="fas fa-file-code"></i>
                         </button>
                         <!-- Delete Ingress Command -->
                         <button class="btn btn-outline-danger btn-sm me-2"

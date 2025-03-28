@@ -98,12 +98,12 @@ def ingress_detail(request, namespace, name):
         except ApiException as e:
             logger.error(f"Failed to retrieve ingress '{name}' in namespace '{namespace}': {e}")
             return render(request, 'kubeIngress/ingress_detail.html', {'error': f"Error fetching ingress: {e}"})
-        # Prepare context for the template
         context = {
             'ingress': ingress,
             'kube_commands': {
                 'describe_ingress': f"kubectl describe ingress {name} -n {namespace}",
                 'delete_ingress': f"kubectl delete ingress {name} -n {namespace}",
+                'get_ingress_yaml': f"kubectl get ingress {name} -n {namespace} -o yaml"
             }
         }
 
