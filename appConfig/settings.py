@@ -41,11 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # Custom apps
     'kubeBoard',
     'kubePods',
     'kubeLogs',
+    'kubeEvents',
 ]
 
 # MIDDLEWARE

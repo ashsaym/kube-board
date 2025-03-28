@@ -1,0 +1,115 @@
+<!-- kubeEvents/templates/kubeEvents/all-events.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}All Kubernetes Events{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <!-- Display Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger text-center" role="alert">
+                {{ error }}
+            </div>
+        {% else %}
+            <!-- Events Overview Card -->
+            <div class="card shadow-lg p-4 mb-4">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Events Overview</h4>
+                    <!-- Copy Command Button -->
+                    {% include 'components/kube_command.html' with kube_command=kubectl_command display_type='pre_icon' %}
+                    <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">Back to Dashboard</a>
+                </div>
+                <div class="card-body">
+                    <!-- Tabulator Table for Events -->
+                    <div id="events-table"></div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not error %}
+    <!-- Initialize Tabulator for Events -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var eventsTable = new Tabulator("#events-table", {
+                data: {{ events_data_json|safe }},
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "local",
+                paginationSize: 20,
+                movableColumns: true,
+                placeholder: "No Events Available",
+                initialSort: [
+                    {column: "last_seen", dir: "desc"}
+                ],
+                columns: [
+                    {
+                        title: "Event Name",
+                        field: "event_name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            var data = cell.getRow().getData();
+                            var url = data.details_url;
+                            if (url && url !== "#") {
+                                return `<a href="${url}" >${cell.getValue()}</a>`;
+                            } else {
+                                return cell.getValue();
+                            }
+                        }
+                    },
+                    {
+                        title: "Object Name",
+                        field: "object_name",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Namespace",
+                        field: "namespace",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Kind",
+                        field: "kind",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Type",
+                        field: "type",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Reason",
+                        field: "reason",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Message",
+                        field: "message",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "First Seen",
+                        field: "first_seen",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Last Seen",
+                        field: "last_seen",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                ],
+            });
+        });
+    </script>
+    {% endif %}
+{% endblock %}

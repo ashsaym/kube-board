@@ -5,6 +5,7 @@ from django.urls import path
 from kubeBoard.views import index_page, select_kubeconfig
 from kubePods.views import pod_details_page, pod_json_page, download_pod_json, all_pods_page
 from kubeLogs.views import stream_pod_logs
+from kubeEvents.views import all_events_page, event_detail_page  # Import events views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,4 +17,6 @@ urlpatterns = [
     path('pods/<str:namespace>/<str:pod_name>/download_json/', download_pod_json, name='download_pod_json'),
     path('pods/<str:namespace>/<str:pod_name>/stream-logs/<str:container_name>/', stream_pod_logs,
          name='stream_pod_logs'),
+    path('events/', all_events_page, name='all_events_page'),  # Add this line
+    path('events/<str:namespace>/<str:event_name>/', event_detail_page, name='event_detail_page'),  # And this line
 ]
