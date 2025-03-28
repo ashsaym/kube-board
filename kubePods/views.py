@@ -1,89 +1,15 @@
 # kubePods/views.py
 
 import json
-from collections import defaultdict
-from datetime import datetime, timezone
 
 from django.http import StreamingHttpResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.encoding import escape_uri_path
-from django.views.decorators.http import require_POST
 from kubernetes.client import ApiException
 
-from appConfig.kubeconfig import load_kubeconfig, list_kubeconfigs, ClusterClient
+from appConfig.settings import logger
 from appConfig.utils import get_cluster_client
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-def parse_cpu(cpu_str):
-    try:
-        if cpu_str.endswith('n'):
-            return float(cpu_str[:-1]) / 1e6
-        elif cpu_str.endswith('u'):
-            return float(cpu_str[:-1]) / 1e3
-        elif cpu_str.endswith('m'):
-            return float(cpu_str[:-1])
-        else:
-            return float(cpu_str) * 1000
-    except ValueError as e:
-        logger.error(f"Error parsing CPU string '{cpu_str}': {e}")
-        return 0.0
-
-def parse_ram(ram_str):
-    try:
-        if ram_str.endswith('Ki'):
-            return float(ram_str[:-2]) / 1024
-        elif ram_str.endswith('Mi'):
-            return float(ram_str[:-2])
-        elif ram_str.endswith('Gi'):
-            return float(ram_str[:-2]) * 1024
-        elif ram_str.endswith('Ti'):
-            return float(ram_str[:-2]) * 1024 * 1024
-        elif ram_str.endswith('n'):
-            return 0.0
-        else:
-            logger.warning(f"Unknown RAM unit in '{ram_str}'")
-            return 0.0
-    except ValueError as e:
-        logger.error(f"Error parsing RAM string '{ram_str}': {e}")
-        return 0.0
-
-def format_event(event, kubeconfig_file):
-    namespace = event.metadata.namespace or 'default'
-    event_name = event.metadata.name or 'unknown-event'
-    object_name = (event.involved_object.name or 'unknown-object') if event.involved_object else 'unknown-object'
-    kind = (event.involved_object.kind or 'UnknownKind') if event.involved_object else 'UnknownKind'
-    details_url = f"/events/{namespace}/{event_name}/" if (namespace != 'default' and event_name != 'unknown-event') else "#"
-    first_seen = event.first_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else ''
-    last_seen = event.last_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else ''
-    return {
-        'event_name': event_name,
-        'object_name': object_name,
-        'namespace': namespace,
-        'kind': kind,
-        'type': event.type or '',
-        'reason': event.reason or '',
-        'message': event.message or '',
-        'count': event.count or 0,
-        'source_component': event.source.component or '',
-        'source_host': event.source.host or '',
-        'first_seen': first_seen,
-        'last_seen': last_seen,
-        'details_url': details_url,
-    }
-
-def format_pod_event(event):
-    first_seen = event.first_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.first_timestamp else ''
-    last_seen = event.last_timestamp.replace(tzinfo=timezone.utc).astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if event.last_timestamp else ''
-    return {
-        'type': event.type,
-        'reason': event.reason,
-        'message': event.message,
-        'first_seen': first_seen,
-        'last_seen': last_seen,
-    }
 
 def all_pods_page(request):
     """
@@ -309,66 +235,3 @@ def download_pod_json(request, namespace, pod_name):
     """
     # Redirect to pod_json_page with download parameter
     return redirect(f"/pods/{namespace}/{pod_name}/json/?download=true")
-
-def stream_pod_logs(request, namespace, pod_name, container_name):
-    """
-    Streams the logs of a specific pod's container in the selected Kubernetes cluster.
-
-    Args:
-        request (HttpRequest): The incoming HTTP request.
-        namespace (str): The namespace of the pod.
-        pod_name (str): The name of the pod.
-        container_name (str): The name of the container within the pod.
-
-    Returns:
-        StreamingHttpResponse: A streaming HTTP response with log data.
-        HttpResponse: An error response in case of failures.
-    """
-    # Retrieve the ClusterClient based on the user's selected kubeconfig
-    cluster, error = get_cluster_client(request)
-    if error:
-        logger.error(f"Failed to get cluster client: {error}")
-        return HttpResponse(error, status=500)
-
-    try:
-        # Initialize the log stream
-        pod_logs = cluster.core_v1.read_namespaced_pod_log(
-            name=pod_name,
-            namespace=namespace,
-            container=container_name,
-            follow=True,
-            tail_lines=100,  # Fetch the last 100 log lines initially
-            _preload_content=False,
-            pretty=True,
-            async_req=False
-        )
-
-        def event_stream():
-            try:
-                for log_line in pod_logs:
-                    if isinstance(log_line, bytes):
-                        decoded_log = log_line.decode('utf-8').rstrip()
-                    else:
-                        decoded_log = str(log_line).rstrip()
-                    yield f"data: {json.dumps({'log': decoded_log})}\n\n"
-            except GeneratorExit:
-                cluster.core_v1.api_client.close()  # Handle client disconnect
-                logger.info(f"Log streaming for pod '{pod_name}' in namespace '{namespace}' has been terminated by the client.")
-            except Exception as e:
-                error_message = f"Error streaming logs: {str(e)}"
-                logger.error(error_message)
-                yield f"data: {json.dumps({'log': error_message})}\n\n"
-
-        response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
-        response['Cache-Control'] = 'no-cache'
-        response['X-Accel-Buffering'] = 'no'
-        return response
-
-    except ApiException as e:
-        error_message = f"API Error: {e.reason or 'An unknown API error occurred.'}"
-        logger.error(f"API Exception in stream_pod_logs: {error_message}")
-        return HttpResponse(error_message, status=e.status if e.status else 500)
-    except Exception as e:
-        error_message = f"Unexpected Error: {str(e)}"
-        logger.error(f"Unexpected Exception in stream_pod_logs: {error_message}")
-        return HttpResponse(error_message, status=500)

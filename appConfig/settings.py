@@ -11,6 +11,7 @@ load_dotenv()
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+logger = logging.getLogger(__name__)
 # Logging
 LOGGING = {
     'version': 1,

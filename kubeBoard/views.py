@@ -9,7 +9,8 @@ from django.views.decorators.http import require_POST
 from kubernetes.client.exceptions import ApiException
 
 from appConfig.kubeconfig import list_kubeconfigs
-from appConfig.utils import get_cluster_client, logger
+from appConfig.settings import logger
+from appConfig.utils import get_cluster_client
 
 
 def parse_cpu(cpu_str):

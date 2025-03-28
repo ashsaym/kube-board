@@ -6,11 +6,7 @@ from django.http import StreamingHttpResponse, HttpResponse
 from kubernetes.client import ApiException
 
 from appConfig.utils import get_cluster_client  # Import the helper function
-
-import logging
-
-logger = logging.getLogger(__name__)
-
+from appConfig.settings import logger
 def stream_pod_logs(request, namespace, pod_name, container_name):
     """
     Streams the logs of a specific pod's container in the selected Kubernetes cluster.

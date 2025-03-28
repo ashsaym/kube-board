@@ -3,7 +3,9 @@
 import json
 from django.shortcuts import render
 from kubernetes.client import ApiException
-from appConfig.utils import get_cluster_client, logger
+
+from appConfig.settings import logger
+from appConfig.utils import get_cluster_client  # Import the helper function
 from kubeBoard.views import format_event  # Ensure format_event accepts kubeconfig_file
 
 def all_events_page(request):
