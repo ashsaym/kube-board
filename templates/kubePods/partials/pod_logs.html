@@ -69,6 +69,8 @@
 </div>
 
 <!-- SSE and Log Handling Scripts -->
+<!-- Include this in your templates/logs.html -->
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const namespace = "{{ selected_namespace }}";
@@ -81,29 +83,74 @@
         const connectionStatus = document.getElementById('connection-status');
         const containerSelect = document.getElementById('container-select');
         const logFilter = document.getElementById('log-level-filter');
+        const tailLinesInput = document.getElementById('tail-lines-input');
         const kubectlCommandText = document.getElementById('kubectl-command-text');
         const copyCommand = document.getElementById('copy-command');
         let eventSource = null;
         let isPaused = false;
         let filterLevel = "all";
+        let reconnectTimeout = null;
+
+        // Debounce function to limit rapid calls
+        function debounce(func, delay) {
+            let debounceTimer;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => func.apply(context, args), delay);
+            }
+        }
 
         // Update kubectl command display
         function updateKubectlCommand() {
             const container = containerSelect.value;
+            const tailLines = tailLinesInput.value || 100;
             const command = container ?
-                `kubectl logs -f ${podName} -n ${namespace} -c ${container}` :
-                `kubectl logs -f ${podName} -n ${namespace}`;
+                `kubectl logs -f ${podName} -n ${namespace} -c ${container} --tail=${tailLines}` :
+                `kubectl logs -f ${podName} -n ${namespace} --tail=${tailLines}`;
             kubectlCommandText.textContent = command;
         }
 
         // Initial command generation
         updateKubectlCommand();
 
+        // Function to close existing SSE connection
+        function closeEventSource() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+                connectionStatus.textContent = "Disconnected.";
+                connectionStatus.className = 'text-danger';
+            }
+        }
+
+        // Function to reset SSE connection
+        function resetSSE() {
+            closeEventSource();
+            logContainer.innerHTML = "";
+            connectionStatus.textContent = "Reconnecting...";
+            connectionStatus.className = '';
+            initSSE();
+        }
+
         // Listen for container selection change to update command and reset log stream
-        containerSelect.addEventListener('change', function () {
+        containerSelect.addEventListener('change', debounce(function () {
             updateKubectlCommand();
-            resetSSE(this.value);
-        });
+            resetSSE();
+        }, 300));
+
+        // Listen for tail lines input change to update command and reset log stream
+        tailLinesInput.addEventListener('change', debounce(function () {
+            const value = parseInt(this.value, 10);
+            if (isNaN(value) || value < 1) {
+                alert("Tail Lines must be a positive integer.");
+                this.value = 100;
+                return;
+            }
+            updateKubectlCommand();
+            resetSSE();
+        }, 300));
 
         // Listen for log filter change to apply filtering
         logFilter.addEventListener('change', function () {
@@ -124,13 +171,16 @@
         }
 
         // Initialize Server-Sent Events (SSE) for log streaming
-        function initSSE(containerName) {
+        function initSSE() {
+            const containerName = containerSelect.value;
             if (!containerName) {
                 console.error("No container name provided.");
                 logContainer.innerHTML = "<div class='log-error'>No container selected.</div>";
+                connectionStatus.textContent = "No container selected.";
+                connectionStatus.className = 'text-danger';
                 return;
             }
-            const sse_url = `/pods/${encodeURIComponent(namespace)}/${encodeURIComponent(podName)}/stream-logs/${encodeURIComponent(containerName)}/`;
+            const sse_url = `/pods/${encodeURIComponent(namespace)}/${encodeURIComponent(podName)}/stream-logs/${encodeURIComponent(containerName)}/?tail_lines=${encodeURIComponent(tailLinesInput.value)}`;
             eventSource = new EventSource(sse_url);
 
             eventSource.onmessage = function (e) {
@@ -164,7 +214,11 @@
                 errorLine.textContent = "Error receiving logs.";
                 errorLine.classList.add('log-error');
                 logContainer.appendChild(errorLine);
-                eventSource.close();
+                // Attempt to reconnect after a delay
+                closeEventSource();
+                if (!isPaused) {
+                    reconnectTimeout = setTimeout(initSSE, 5000); // 5 seconds
+                }
             };
 
             eventSource.onopen = function () {
@@ -174,23 +228,8 @@
             };
         }
 
-        // Function to reset SSE connection
-        function resetSSE(containerName) {
-            if (eventSource) {
-                eventSource.close();
-            }
-            logContainer.innerHTML = "";
-            connectionStatus.textContent = "Reconnecting...";
-            connectionStatus.className = '';
-            initSSE(containerName);
-        }
-
-        // Initialize SSE on page load with the default selected container
-        if (containerSelect) {
-            initSSE(containerSelect.value);
-        } else if (containers.length === 1) {
-            initSSE(containers[0]);
-        }
+        // Initialize SSE on page load with the default selected container and tail lines
+        initSSE();
 
         // Pause Logs Button Handler
         pauseButton.addEventListener('click', function () {
@@ -199,18 +238,24 @@
             connectionStatus.className = 'text-warning';
             pauseButton.disabled = true;
             resumeButton.disabled = false;
+            // Close SSE connection when paused
+            closeEventSource();
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+            }
         });
 
         // Resume Logs Button Handler
         resumeButton.addEventListener('click', function () {
-            if (isPaused && (!eventSource || eventSource.readyState === EventSource.CLOSED)) {
-                resetSSE(containerSelect.value);
+            if (isPaused) {
+                isPaused = false;
+                connectionStatus.textContent = "Log streaming resumed.";
+                connectionStatus.className = 'text-success';
+                pauseButton.disabled = false;
+                resumeButton.disabled = true;
+                resetSSE();
             }
-            isPaused = false;
-            connectionStatus.textContent = "Log streaming resumed.";
-            connectionStatus.className = 'text-success';
-            pauseButton.disabled = false;
-            resumeButton.disabled = true;
         });
 
         // Jump to Latest Logs Button Handler
@@ -223,12 +268,12 @@
             navigator.clipboard.writeText(kubectlCommandText.textContent)
                 .then(() => {
                     copyCommand.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-                    copyCommand.classList.remove('btn-dark');
-                    copyCommand.classList.add('btn-success');
+                    copyCommand.classList.remove('btn-outline-secondary', 'copy-button');
+                    copyCommand.classList.add('btn-outline-success');
                     setTimeout(() => {
                         copyCommand.innerHTML = '<i class="bi bi-clipboard"></i>';
-                        copyCommand.classList.remove('btn-success');
-                        copyCommand.classList.add('btn-dark');
+                        copyCommand.classList.remove('btn-outline-success');
+                        copyCommand.classList.add('btn-outline-secondary', 'copy-button');
                     }, 2000);
                 })
                 .catch(err => {
@@ -244,8 +289,9 @@
 
         // Clean up SSE connection when the page is unloaded
         window.addEventListener('beforeunload', function () {
-            if (eventSource) {
-                eventSource.close();
+            closeEventSource();
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
             }
         });
     });

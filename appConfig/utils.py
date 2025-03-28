@@ -15,7 +15,10 @@ def acquire_stream_semaphore():
     Acquires the semaphore for a new log stream.
     Returns True if acquired, False otherwise.
     """
-    return log_stream_semaphore.acquire(blocking=False)
+    acquired = log_stream_semaphore.acquire(blocking=False)
+    if not acquired:
+        logger.warning("Failed to acquire semaphore for new log stream.")
+    return acquired
 
 def release_stream_semaphore():
     """

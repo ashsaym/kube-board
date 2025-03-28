@@ -33,6 +33,7 @@ class ClusterClient:
         except Exception as e:
             logger.error(f"Error closing ApiClient for cluster '{self.name}': {e}")
 
+
 @lru_cache(maxsize=None)
 def load_and_cache_kubeconfig(kubeconfig_path_str):
     """
@@ -85,6 +86,7 @@ def load_and_cache_kubeconfig(kubeconfig_path_str):
         logger.error(f"Failed to load kubeconfig '{kubeconfig_path}': {e}")
         return None
 
+
 def load_kubeconfig(kubeconfig_path):
     """
     Interface to fetch cached ClusterClient.
@@ -97,15 +99,17 @@ def load_kubeconfig(kubeconfig_path):
     """
     return load_and_cache_kubeconfig(str(kubeconfig_path))
 
+
 def close_all_cluster_clients():
     """
     Closes all cached ClusterClient ApiClients. To be called on application shutdown.
     """
-    for cluster_client in load_and_cache_kubeconfig.cache.values():
+    for key, cluster_client in load_and_cache_kubeconfig.cache_info().cache.items() if hasattr(load_and_cache_kubeconfig, 'cache_info') else []:
         if cluster_client:
             cluster_client.close()
     load_and_cache_kubeconfig.cache_clear()
     logger.info("All ClusterClients have been closed and cache cleared.")
+
 
 def list_kubeconfigs(kube_configs_dir="kubeConfigs/"):
     """
