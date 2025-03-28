@@ -1,4 +1,4 @@
-# appName/views.py
+# kubeLogs/views.py
 
 import json
 
@@ -36,6 +36,18 @@ def stream_pod_logs(request, namespace, pod_name, container_name):
         logger.warning(error_message)
         return HttpResponse(error_message, status=429)  # 429 Too Many Requests
 
+    # Get tail_lines from query parameters with default value
+    try:
+        tail_lines = int(request.GET.get('tail_lines', 100))
+        if tail_lines < 0:
+            raise ValueError("tail_lines must be a positive integer.")
+    except ValueError as ve:
+        # Release semaphore and return error response
+        release_stream_semaphore()
+        error_message = f"Invalid tail_lines parameter: {str(ve)}"
+        logger.error(error_message)
+        return HttpResponse(error_message, status=400)  # 400 Bad Request
+
     try:
         # Initialize the log stream
         pod_logs = cluster.core_v1.read_namespaced_pod_log(
@@ -43,7 +55,7 @@ def stream_pod_logs(request, namespace, pod_name, container_name):
             namespace=namespace,
             container=container_name,
             follow=True,
-            tail_lines=100,  # Fetch the last 100 log lines initially
+            tail_lines=tail_lines,  # Use user-specified tail_lines
             _preload_content=False,  # Important for streaming
             pretty=True,
             async_req=False  # Ensure synchronous request for streaming
@@ -66,11 +78,17 @@ def stream_pod_logs(request, namespace, pod_name, container_name):
             finally:
                 # Ensure the semaphore is released when streaming ends
                 release_stream_semaphore()
+                # Close the pod_logs stream to free resources
+                pod_logs.close()
 
         # Create a StreamingHttpResponse using the generator
         response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'
         response['X-Accel-Buffering'] = 'no'
+
+        # Optional: Set connection timeout if needed
+        # response.timeout = 3600  # 1 hour, adjust as necessary
+
         return response
 
     except ApiException as e:

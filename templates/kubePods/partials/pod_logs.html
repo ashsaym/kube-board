@@ -12,9 +12,9 @@
             <!-- Connection Status -->
             <div id="connection-status" class="mb-3 text-center"></div>
 
-            <!-- Controls Container: Left (Container and Filter) and Right (Buttons) -->
+            <!-- Controls Container: Left (Container, Tail Lines, and Filter) and Right (Buttons) -->
             <div class="controls-container mb-3 d-flex justify-content-between align-items-center flex-wrap">
-                <!-- Left Controls: Container Select and Log Level Filter -->
+                <!-- Left Controls: Container Select, Tail Lines Input, and Log Level Filter -->
                 <div class="left-controls d-flex align-items-center mb-2 mb-md-0">
                     <!-- Container Selection -->
                     <div class="control-group me-3">
@@ -26,6 +26,12 @@
                                 </option>
                             {% endfor %}
                         </select>
+                    </div>
+
+                    <!-- Tail Lines Input -->
+                    <div class="control-group me-3">
+                        <label for="tail-lines-input" class="form-label me-2">Tail Lines:</label>
+                        <input type="number" id="tail-lines-input" class="form-control" min="1" value="100">
                     </div>
 
                     <!-- Log Level Filter -->
