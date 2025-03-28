@@ -1,11 +1,27 @@
 # appConfig/utils.py
 
-from django.http import HttpResponse
+import threading
 from pathlib import Path
-from appConfig.kubeconfig import load_kubeconfig, list_kubeconfigs
-import logging
 
-logger = logging.getLogger(__name__)
+from appConfig.kubeconfig import load_kubeconfig, list_kubeconfigs
+from appConfig.settings import logger
+
+# Define a semaphore with a maximum number of concurrent streams
+MAX_CONCURRENT_STREAMS = 10  # Adjust based on your server's capacity
+log_stream_semaphore = threading.Semaphore(MAX_CONCURRENT_STREAMS)
+
+def acquire_stream_semaphore():
+    """
+    Acquires the semaphore for a new log stream.
+    Returns True if acquired, False otherwise.
+    """
+    return log_stream_semaphore.acquire(blocking=False)
+
+def release_stream_semaphore():
+    """
+    Releases the semaphore when a log stream is closed.
+    """
+    log_stream_semaphore.release()
 
 def get_cluster_client(request):
     """

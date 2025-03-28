@@ -1,37 +1,50 @@
 # appConfig/kubeconfig.py
 
-import logging
+from functools import lru_cache
 from pathlib import Path
-import yaml
 
+import yaml
 from kubernetes import client, config
 from kubernetes.client import Configuration
 
-# Configure logging
-logger = logging.getLogger(__name__)
+from appConfig.settings import logger
+
 
 class ClusterClient:
     """
     Represents a Kubernetes cluster with its API clients.
     """
-    def __init__(self, name, kubeconfig_file, core_v1, apps_v1, custom_api, metrics_api):
+    def __init__(self, name, kubeconfig_file, core_v1, apps_v1, custom_api, metrics_api, api_client):
         self.name = name
         self.kubeconfig_file = kubeconfig_file
         self.core_v1 = core_v1
         self.apps_v1 = apps_v1
         self.custom_api = custom_api
         self.metrics_api = metrics_api
+        self.api_client = api_client  # Keep reference for closing
 
-def load_kubeconfig(kubeconfig_path):
+    def close(self):
+        """
+        Closes the underlying ApiClient to release resources.
+        """
+        try:
+            self.api_client.close()
+            logger.info(f"Closed ApiClient for cluster '{self.name}'.")
+        except Exception as e:
+            logger.error(f"Error closing ApiClient for cluster '{self.name}': {e}")
+
+@lru_cache(maxsize=None)
+def load_and_cache_kubeconfig(kubeconfig_path_str):
     """
-    Loads a single kubeconfig file and initializes its API clients.
+    Loads a kubeconfig file and caches the ClusterClient instance.
 
     Args:
-        kubeconfig_path (Path): Path to the kubeconfig file.
+        kubeconfig_path_str (str): Path to the kubeconfig file as a string.
 
     Returns:
         ClusterClient: An instance of ClusterClient.
     """
+    kubeconfig_path = Path(kubeconfig_path_str)
     try:
         with open(kubeconfig_path, 'r') as f:
             config_dict = yaml.safe_load(f)
@@ -56,7 +69,7 @@ def load_kubeconfig(kubeconfig_path):
                 cluster_name = context.get('context', {}).get('cluster', kubeconfig_path.stem)
                 break
 
-        logger.info(f"Successfully loaded cluster '{cluster_name}' from '{kubeconfig_path.name}'.")
+        logger.info(f"Successfully loaded and cached cluster '{cluster_name}' from '{kubeconfig_path.name}'.")
 
         return ClusterClient(
             name=cluster_name,
@@ -64,12 +77,35 @@ def load_kubeconfig(kubeconfig_path):
             core_v1=core_v1,
             apps_v1=apps_v1,
             custom_api=custom_api,
-            metrics_api=metrics_api
+            metrics_api=metrics_api,
+            api_client=api_client
         )
 
     except Exception as e:
         logger.error(f"Failed to load kubeconfig '{kubeconfig_path}': {e}")
         return None
+
+def load_kubeconfig(kubeconfig_path):
+    """
+    Interface to fetch cached ClusterClient.
+
+    Args:
+        kubeconfig_path (Path): Path to the kubeconfig file.
+
+    Returns:
+        ClusterClient: An instance of ClusterClient.
+    """
+    return load_and_cache_kubeconfig(str(kubeconfig_path))
+
+def close_all_cluster_clients():
+    """
+    Closes all cached ClusterClient ApiClients. To be called on application shutdown.
+    """
+    for cluster_client in load_and_cache_kubeconfig.cache.values():
+        if cluster_client:
+            cluster_client.close()
+    load_and_cache_kubeconfig.cache_clear()
+    logger.info("All ClusterClients have been closed and cache cleared.")
 
 def list_kubeconfigs(kube_configs_dir="kubeConfigs/"):
     """
