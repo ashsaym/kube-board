@@ -8,33 +8,18 @@
         <div class="card shadow-lg p-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Pods Overview</h4>
-                <div>
+                <div class="d-flex align-items-center">
+                    <!-- Copy Command Button -->
+                    <button class="btn btn-outline-light btn-sm me-2" onclick="copyToClipboard('{{ kubectl_command|escapejs }}')" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Kubectl Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
                     <!-- Back to Dashboard Button -->
-                    <a href="{% url 'index_page' %}" class="btn btn-light btn-sm ms-2">
+                    <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
                     </a>
                 </div>
             </div>
             <div class="card-body">
-                {% include 'components/kube_command.html' with kube_command=kubectl_command.get display_type='pre_icon' %}
-                {% include 'components/kube_command.html' with kube_command=kubectl_command.yaml display_type='pre_icon' %}
-            </div>
-            <div class="card-body">
-                <!-- Filters Section -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <select id="namespace-filter" class="form-select" aria-label="Filter by Namespace">
-                            <option selected value="">Filter by Namespace</option>
-                            {% for namespace in namespaces %}
-                                <option value="{{ namespace.metadata.name }}">{{ namespace.metadata.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" id="search" class="form-control" placeholder="Search Pods">
-                    </div>
-                </div>
-
                 {% if error %}
                     <div class="alert alert-danger text-center" role="alert">
                         {{ error }}
@@ -44,17 +29,38 @@
                 <!-- Pods Table -->
                 <div id="pods-table" class="table-responsive border rounded p-2 bg-light"></div>
             </div>
+            <!-- Optional: Toast for Copy Feedback -->
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+                <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            Command copied to clipboard!
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tabulator Initialization Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialize Bootstrap Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Initialize Tabulator with Pagination
             var table = new Tabulator("#pods-table", {
                 layout: "fitColumns",
                 responsiveLayout: "collapse",
                 height: "auto",
                 placeholder: "No Pods Available",
+                pagination: "local", // Enable local pagination
+                paginationSize: 25,   // Set default rows per page to 25
+                paginationSizeSelector: [10, 25, 50, 100], // Options for rows per page
                 columns: [
                     {
                         title: "Name",
@@ -104,7 +110,7 @@
             document.getElementById('namespace-filter').addEventListener('change', function () {
                 var namespace = this.value;
                 if (namespace) {
-                    // Clear existing filters and apply namespace filter
+                    // Apply namespace filter
                     table.setFilter("namespace", "=", namespace);
                 } else {
                     // Clear all filters if "Filter by Namespace" is selected
@@ -128,11 +134,12 @@
             });
         });
 
-        // Copy to Clipboard Functionality
+        // Copy to Clipboard Function with Toast Feedback
         function copyToClipboard(command) {
             navigator.clipboard.writeText(command).then(function () {
-                /* Optional: Provide user feedback */
-                alert('Kubectl command copied to clipboard!');
+                var toastEl = document.getElementById('copyToast');
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
             }, function (err) {
                 console.error('Could not copy text: ', err);
             });
