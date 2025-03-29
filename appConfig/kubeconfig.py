@@ -16,7 +16,7 @@ class ClusterClient:
     """
     def __init__(
         self, name, kubeconfig_file, core_v1, apps_v1, custom_api,
-        metrics_api, networking_v1, storage_v1, rbac_v1, api_client
+        metrics_api, networking_v1, storage_v1, rbac_v1, batch_v1, api_client
     ):
         self.name = name
         self.kubeconfig_file = kubeconfig_file
@@ -27,6 +27,7 @@ class ClusterClient:
         self.networking_v1 = networking_v1
         self.storage_v1 = storage_v1
         self.rbac_v1 = rbac_v1
+        self.batch_v1 = batch_v1
         self.api_client = api_client  # Keep reference for closing
 
     def close(self):
@@ -69,6 +70,7 @@ def load_and_cache_kubeconfig(kubeconfig_path_str):
         networking_v1 = client.NetworkingV1Api(api_client)
         storage_v1 = client.StorageV1Api(api_client)
         rbac_v1 = client.RbacAuthorizationV1Api(api_client)
+        batch_v1 = client.BatchV1Api(api_client)
 
         # Extract cluster name from context
         current_context = config_dict.get('current-context')
@@ -91,6 +93,7 @@ def load_and_cache_kubeconfig(kubeconfig_path_str):
             networking_v1=networking_v1,
             storage_v1=storage_v1,
             rbac_v1=rbac_v1,
+            batch_v1=batch_v1,
             api_client=api_client
         )
 
@@ -352,6 +355,25 @@ def list_deployments(cluster_client, namespace="default"):
         return None
 
 
+def list_deployments_for_all_namespaces(cluster_client):
+    """
+    Lists all Deployments across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1DeploymentList: List of deployments.
+    """
+    try:
+        deployments = cluster_client.apps_v1.list_deployment_for_all_namespaces()
+        logger.info(f"Retrieved {len(deployments.items)} deployments across all namespaces.")
+        return deployments
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list deployments across all namespaces: {e}")
+        return None
+
+
 # StatefulSets Operations
 def list_statefulsets(cluster_client, namespace="default"):
     """
@@ -398,15 +420,408 @@ def list_jobs(cluster_client, namespace="default"):
         return None
 
 
-# Add BatchV1Api to ClusterClient if not already present
-def ensure_batch_api(cluster_client):
+# ConfigMaps Operations
+def list_config_maps(cluster_client, namespace="default"):
     """
-    Ensures that the BatchV1Api is available in the ClusterClient.
+    Lists all ConfigMaps in the specified namespace.
 
     Args:
         cluster_client (ClusterClient): The ClusterClient instance.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1ConfigMapList: List of ConfigMaps.
     """
-    if not hasattr(cluster_client, 'batch_v1'):
-        cluster_client.batch_v1 = client.BatchV1Api(cluster_client.api_client)
-        logger.info("Initialized BatchV1Api for the ClusterClient.")
+    try:
+        config_maps = cluster_client.core_v1.list_namespaced_config_map(namespace=namespace)
+        logger.info(f"Retrieved {len(config_maps.items)} ConfigMaps in namespace '{namespace}'.")
+        return config_maps
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list ConfigMaps: {e}")
+        return None
+
+
+def list_config_maps_for_all_namespaces(cluster_client):
+    """
+    Lists all ConfigMaps across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1ConfigMapList: List of ConfigMaps.
+    """
+    try:
+        config_maps = cluster_client.core_v1.list_config_map_for_all_namespaces()
+        logger.info(f"Retrieved {len(config_maps.items)} ConfigMaps across all namespaces.")
+        return config_maps
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list ConfigMaps across all namespaces: {e}")
+        return None
+
+
+def read_namespaced_config_map(cluster_client, name, namespace="default"):
+    """
+    Reads a specific ConfigMap in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the ConfigMap.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1ConfigMap: The ConfigMap object.
+    """
+    try:
+        config_map = cluster_client.core_v1.read_namespaced_config_map(name=name, namespace=namespace)
+        logger.info(f"Retrieved ConfigMap '{name}' in namespace '{namespace}'.")
+        return config_map
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read ConfigMap '{name}' in namespace '{namespace}': {e}")
+        return None
+
+
+# Secrets Operations
+def list_secrets(cluster_client, namespace="default"):
+    """
+    Lists all Secrets in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1SecretList: List of Secrets.
+    """
+    try:
+        secrets = cluster_client.core_v1.list_namespaced_secret(namespace=namespace)
+        logger.info(f"Retrieved {len(secrets.items)} Secrets in namespace '{namespace}'.")
+        return secrets
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list Secrets: {e}")
+        return None
+
+
+def list_secrets_for_all_namespaces(cluster_client):
+    """
+    Lists all Secrets across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1SecretList: List of Secrets.
+    """
+    try:
+        secrets = cluster_client.core_v1.list_secret_for_all_namespaces()
+        logger.info(f"Retrieved {len(secrets.items)} Secrets across all namespaces.")
+        return secrets
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list Secrets across all namespaces: {e}")
+        return None
+
+
+def read_namespaced_secret(cluster_client, name, namespace="default"):
+    """
+    Reads a specific Secret in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the Secret.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1Secret: The Secret object.
+    """
+    try:
+        secret = cluster_client.core_v1.read_namespaced_secret(name=name, namespace=namespace)
+        logger.info(f"Retrieved Secret '{name}' in namespace '{namespace}'.")
+        return secret
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read Secret '{name}' in namespace '{namespace}': {e}")
+        return None
+
+
+# DaemonSets Operations
+def list_daemon_sets(cluster_client, namespace="default"):
+    """
+    Lists all DaemonSets in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1DaemonSetList: List of DaemonSets.
+    """
+    try:
+        daemon_sets = cluster_client.apps_v1.list_namespaced_daemon_set(namespace=namespace)
+        logger.info(f"Retrieved {len(daemon_sets.items)} DaemonSets in namespace '{namespace}'.")
+        return daemon_sets
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list DaemonSets: {e}")
+        return None
+
+
+def list_daemon_sets_for_all_namespaces(cluster_client):
+    """
+    Lists all DaemonSets across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1DaemonSetList: List of DaemonSets.
+    """
+    try:
+        daemon_sets = cluster_client.apps_v1.list_daemon_set_for_all_namespaces()
+        logger.info(f"Retrieved {len(daemon_sets.items)} DaemonSets across all namespaces.")
+        return daemon_sets
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list DaemonSets across all namespaces: {e}")
+        return None
+
+
+def read_namespaced_daemon_set(cluster_client, name, namespace="default"):
+    """
+    Reads a specific DaemonSet in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the DaemonSet.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1DaemonSet: The DaemonSet object.
+    """
+    try:
+        daemon_set = cluster_client.apps_v1.read_namespaced_daemon_set(name=name, namespace=namespace)
+        logger.info(f"Retrieved DaemonSet '{name}' in namespace '{namespace}'.")
+        return daemon_set
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read DaemonSet '{name}' in namespace '{namespace}': {e}")
+        return None
+
+
+# Jobs Operations
+def list_jobs(cluster_client, namespace="default"):
+    """
+    Lists all Jobs in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1JobList: List of Jobs.
+    """
+    try:
+        jobs = cluster_client.batch_v1.list_namespaced_job(namespace=namespace)
+        logger.info(f"Retrieved {len(jobs.items)} Jobs in namespace '{namespace}'.")
+        return jobs
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list Jobs: {e}")
+        return None
+
+
+def list_jobs_for_all_namespaces(cluster_client):
+    """
+    Lists all Jobs across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1JobList: List of Jobs.
+    """
+    try:
+        jobs = cluster_client.batch_v1.list_job_for_all_namespaces()
+        logger.info(f"Retrieved {len(jobs.items)} Jobs across all namespaces.")
+        return jobs
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list Jobs across all namespaces: {e}")
+        return None
+
+
+def read_namespaced_job(cluster_client, name, namespace="default"):
+    """
+    Reads a specific Job in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the Job.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1Job: The Job object.
+    """
+    try:
+        job = cluster_client.batch_v1.read_namespaced_job(name=name, namespace=namespace)
+        logger.info(f"Retrieved Job '{name}' in namespace '{namespace}'.")
+        return job
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read Job '{name}' in namespace '{namespace}': {e}")
+        return None
+
+
+# CronJobs Operations
+def list_cron_jobs(cluster_client, namespace="default"):
+    """
+    Lists all CronJobs in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1CronJobList: List of CronJobs.
+    """
+    try:
+        cron_jobs = cluster_client.batch_v1.list_namespaced_cron_job(namespace=namespace)
+        logger.info(f"Retrieved {len(cron_jobs.items)} CronJobs in namespace '{namespace}'.")
+        return cron_jobs
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list CronJobs: {e}")
+        return None
+
+
+def list_cron_jobs_for_all_namespaces(cluster_client):
+    """
+    Lists all CronJobs across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1CronJobList: List of CronJobs.
+    """
+    try:
+        cron_jobs = cluster_client.batch_v1.list_cron_job_for_all_namespaces()
+        logger.info(f"Retrieved {len(cron_jobs.items)} CronJobs across all namespaces.")
+        return cron_jobs
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list CronJobs across all namespaces: {e}")
+        return None
+
+
+def read_namespaced_cron_job(cluster_client, name, namespace="default"):
+    """
+    Reads a specific CronJob in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the CronJob.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1CronJob: The CronJob object.
+    """
+    try:
+        cron_job = cluster_client.batch_v1.read_namespaced_cron_job(name=name, namespace=namespace)
+        logger.info(f"Retrieved CronJob '{name}' in namespace '{namespace}'.")
+        return cron_job
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read CronJob '{name}' in namespace '{namespace}': {e}")
+        return None
+
+
+# NetworkPolicies Operations
+def list_network_policies(cluster_client, namespace="default"):
+    """
+    Lists all NetworkPolicies in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1NetworkPolicyList: List of NetworkPolicies.
+    """
+    try:
+        network_policies = cluster_client.networking_v1.list_namespaced_network_policy(namespace=namespace)
+        logger.info(f"Retrieved {len(network_policies.items)} NetworkPolicies in namespace '{namespace}'.")
+        return network_policies
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list NetworkPolicies: {e}")
+        return None
+
+
+def list_network_policies_for_all_namespaces(cluster_client):
+    """
+    Lists all NetworkPolicies across all namespaces.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1NetworkPolicyList: List of NetworkPolicies.
+    """
+    try:
+        network_policies = cluster_client.networking_v1.list_network_policy_for_all_namespaces()
+        logger.info(f"Retrieved {len(network_policies.items)} NetworkPolicies across all namespaces.")
+        return network_policies
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list NetworkPolicies across all namespaces: {e}")
+        return None
+
+
+def read_namespaced_network_policy(cluster_client, name, namespace="default"):
+    """
+    Reads a specific NetworkPolicy in the specified namespace.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the NetworkPolicy.
+        namespace (str): Kubernetes namespace.
+
+    Returns:
+        V1NetworkPolicy: The NetworkPolicy object.
+    """
+    try:
+        network_policy = cluster_client.networking_v1.read_namespaced_network_policy(name=name, namespace=namespace)
+        logger.info(f"Retrieved NetworkPolicy '{name}' in namespace '{namespace}'.")
+        return network_policy
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read NetworkPolicy '{name}' in namespace '{namespace}': {e}")
+        return None
+
+
+# StorageClasses Operations
+def list_storage_classes(cluster_client):
+    """
+    Lists all StorageClasses in the cluster.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+
+    Returns:
+        V1StorageClassList: List of StorageClasses.
+    """
+    try:
+        storage_classes = cluster_client.storage_v1.list_storage_class()
+        logger.info(f"Retrieved {len(storage_classes.items)} StorageClasses.")
+        return storage_classes
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to list StorageClasses: {e}")
+        return None
+
+
+def read_storage_class(cluster_client, name):
+    """
+    Reads a specific StorageClass.
+
+    Args:
+        cluster_client (ClusterClient): The ClusterClient instance.
+        name (str): Name of the StorageClass.
+
+    Returns:
+        V1StorageClass: The StorageClass object.
+    """
+    try:
+        storage_class = cluster_client.storage_v1.read_storage_class(name=name)
+        logger.info(f"Retrieved StorageClass '{name}'.")
+        return storage_class
+    except client.exceptions.ApiException as e:
+        logger.error(f"Failed to read StorageClass '{name}': {e}")
+        return None
 

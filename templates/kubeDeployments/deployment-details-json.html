@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Deployment JSON: {{ deployment_name }}{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index_page' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'all_deployments_page' %}">Deployments</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'deployment_details_page' namespace deployment_name %}">{{ deployment_name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">JSON</li>
+            </ol>
+        </nav>
+
+        <!-- Deployment JSON Card -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-code me-2"></i>Deployment JSON: {{ deployment_name }}
+                </h4>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-light btn-sm me-2" onclick="copyToClipboard(jsonContent)">
+                        <i class="fas fa-copy me-1"></i>Copy JSON
+                    </button>
+                    <a href="{% url 'deployment_details_page' namespace deployment_name %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Details
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <pre id="jsonDisplay" class="bg-light p-3 rounded"><code>{{ deployment_json }}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast for Copy Feedback -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    JSON copied to clipboard!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store JSON content for copying
+        const jsonContent = `{{ deployment_json|escapejs }}`;
+
+        // Copy to Clipboard Function with Toast Feedback
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function () {
+                var toastEl = document.getElementById('copyToast');
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }, function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+{% endblock %}

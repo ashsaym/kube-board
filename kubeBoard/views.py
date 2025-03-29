@@ -301,6 +301,121 @@ def index_page(request):
 
         # ================== End Ingresses Overview ==================
 
+        # ================== ConfigMaps Overview ==================
+
+        # Retrieve ConfigMaps
+        try:
+            all_config_maps = cluster.core_v1.list_config_map_for_all_namespaces().items
+            logger.info(f"Retrieved {len(all_config_maps)} ConfigMaps.")
+        except ApiException as e:
+            logger.error(f"Failed to retrieve ConfigMaps for kubeconfig '{cluster.kubeconfig_file}': {e}")
+            all_config_maps = []
+
+        # Process ConfigMaps
+        all_config_maps_data = []
+        for config_map in all_config_maps:
+            name = config_map.metadata.name or 'Unnamed'
+            namespace = config_map.metadata.namespace or 'default'
+            data_count = len(config_map.data) if config_map.data else 0
+            creation_timestamp = config_map.metadata.creation_timestamp
+            if creation_timestamp:
+                age_timedelta = datetime.now(timezone.utc) - creation_timestamp
+                age_hours = age_timedelta.total_seconds() / 3600
+                age_str = f"{int(age_hours)}h" if age_hours < 24 else f"{int(age_hours / 24)}d"
+            else:
+                age_str = "N/A"
+
+            all_config_maps_data.append({
+                'name': name,
+                'namespace': namespace,
+                'data_count': data_count,
+                'age': age_str,
+                'details_url': f"/configmaps/{namespace}/{name}/",
+            })
+
+        # Convert to JSON
+        config_maps_data_json = json.dumps(all_config_maps_data)
+
+        # ================== End ConfigMaps Overview ==================
+
+        # ================== Deployments Overview ==================
+
+        # Retrieve Deployments
+        try:
+            all_deployments = cluster.apps_v1.list_deployment_for_all_namespaces().items
+            logger.info(f"Retrieved {len(all_deployments)} Deployments.")
+        except ApiException as e:
+            logger.error(f"Failed to retrieve Deployments for kubeconfig '{cluster.kubeconfig_file}': {e}")
+            all_deployments = []
+
+        # Process Deployments
+        all_deployments_data = []
+        for deployment in all_deployments:
+            name = deployment.metadata.name or 'Unnamed'
+            namespace = deployment.metadata.namespace or 'default'
+            replicas = deployment.status.replicas or 0
+            ready_replicas = deployment.status.ready_replicas or 0
+            readiness = f"{ready_replicas}/{replicas}"
+            creation_timestamp = deployment.metadata.creation_timestamp
+            if creation_timestamp:
+                age_timedelta = datetime.now(timezone.utc) - creation_timestamp
+                age_hours = age_timedelta.total_seconds() / 3600
+                age_str = f"{int(age_hours)}h" if age_hours < 24 else f"{int(age_hours / 24)}d"
+            else:
+                age_str = "N/A"
+
+            all_deployments_data.append({
+                'name': name,
+                'namespace': namespace,
+                'readiness': readiness,
+                'age': age_str,
+                'details_url': f"/deployments/{namespace}/{name}/",
+            })
+
+        # Convert to JSON
+        deployments_data_json = json.dumps(all_deployments_data)
+
+        # ================== End Deployments Overview ==================
+
+        # ================== DaemonSets Overview ==================
+
+        # Retrieve DaemonSets
+        try:
+            all_daemon_sets = cluster.apps_v1.list_daemon_set_for_all_namespaces().items
+            logger.info(f"Retrieved {len(all_daemon_sets)} DaemonSets.")
+        except ApiException as e:
+            logger.error(f"Failed to retrieve DaemonSets for kubeconfig '{cluster.kubeconfig_file}': {e}")
+            all_daemon_sets = []
+
+        # Process DaemonSets
+        all_daemon_sets_data = []
+        for daemon_set in all_daemon_sets:
+            name = daemon_set.metadata.name or 'Unnamed'
+            namespace = daemon_set.metadata.namespace or 'default'
+            desired_count = daemon_set.status.desired_number_scheduled or 0
+            current_count = daemon_set.status.current_number_scheduled or 0
+            readiness = f"{current_count}/{desired_count}"
+            creation_timestamp = daemon_set.metadata.creation_timestamp
+            if creation_timestamp:
+                age_timedelta = datetime.now(timezone.utc) - creation_timestamp
+                age_hours = age_timedelta.total_seconds() / 3600
+                age_str = f"{int(age_hours)}h" if age_hours < 24 else f"{int(age_hours / 24)}d"
+            else:
+                age_str = "N/A"
+
+            all_daemon_sets_data.append({
+                'name': name,
+                'namespace': namespace,
+                'readiness': readiness,
+                'age': age_str,
+                'details_url': f"/daemonsets/{namespace}/{name}/",
+            })
+
+        # Convert to JSON
+        daemon_sets_data_json = json.dumps(all_daemon_sets_data)
+
+        # ================== End DaemonSets Overview ==================
+
         # Collect overview statistics
         all_overviews = [{
             'total_namespaces': total_namespaces,
@@ -325,6 +440,15 @@ def index_page(request):
             'get_all_pods': 'kubectl get pods --all-namespaces',
             'get_all_events': 'kubectl get events --all-namespaces',
             'get_ingresses': 'kubectl get ingress --all-namespaces',
+            'get_configmaps': 'kubectl get configmaps --all-namespaces',
+            'get_secrets': 'kubectl get secrets --all-namespaces',
+            'get_deployments': 'kubectl get deployments --all-namespaces',
+            'get_statefulsets': 'kubectl get statefulsets --all-namespaces',
+            'get_daemonsets': 'kubectl get daemonsets --all-namespaces',
+            'get_jobs': 'kubectl get jobs --all-namespaces',
+            'get_cronjobs': 'kubectl get cronjobs --all-namespaces',
+            'get_networkpolicies': 'kubectl get networkpolicies --all-namespaces',
+            'get_storageclasses': 'kubectl get storageclasses',
         }
 
         # Prepare context for the template
@@ -332,7 +456,10 @@ def index_page(request):
             'overviews': all_overviews,
             'pods_data_json': json.dumps(all_pods_data),
             'events_data_json': json.dumps(all_events_data),
-            'ingresses_data_json': ingresses_data_json,  # Added Ingresses Data
+            'ingresses_data_json': ingresses_data_json,
+            'config_maps_data_json': config_maps_data_json,
+            'deployments_data_json': deployments_data_json,
+            'daemon_sets_data_json': daemon_sets_data_json,
             'kube_commands': kube_commands,
         }
 
