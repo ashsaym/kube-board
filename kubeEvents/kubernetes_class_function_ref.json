@@ -1,0 +1,3942 @@
+[
+  {
+    "class": "WellKnownApi",
+    "method": "get_service_account_issuer_open_id_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "create_mutating_webhook_configuration",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "create_validating_admission_policy",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "create_validating_admission_policy_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "create_validating_webhook_configuration",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_collection_mutating_webhook_configuration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_collection_validating_admission_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_collection_validating_admission_policy_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_collection_validating_webhook_configuration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_mutating_webhook_configuration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_validating_admission_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_validating_admission_policy_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "delete_validating_webhook_configuration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "list_mutating_webhook_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "list_validating_admission_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "list_validating_admission_policy_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "list_validating_webhook_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "patch_mutating_webhook_configuration",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "patch_validating_admission_policy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "patch_validating_admission_policy_binding",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "patch_validating_admission_policy_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "patch_validating_webhook_configuration",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "read_mutating_webhook_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "read_validating_admission_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "read_validating_admission_policy_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "read_validating_admission_policy_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "read_validating_webhook_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "replace_mutating_webhook_configuration",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "replace_validating_admission_policy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "replace_validating_admission_policy_binding",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "replace_validating_admission_policy_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1Api",
+    "method": "replace_validating_webhook_configuration",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "create_mutating_admission_policy",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "create_mutating_admission_policy_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "delete_collection_mutating_admission_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "delete_collection_mutating_admission_policy_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "delete_mutating_admission_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "delete_mutating_admission_policy_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "list_mutating_admission_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "list_mutating_admission_policy_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "patch_mutating_admission_policy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "patch_mutating_admission_policy_binding",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "read_mutating_admission_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "read_mutating_admission_policy_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "replace_mutating_admission_policy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1alpha1Api",
+    "method": "replace_mutating_admission_policy_binding",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "create_validating_admission_policy",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "create_validating_admission_policy_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "delete_collection_validating_admission_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "delete_collection_validating_admission_policy_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "delete_validating_admission_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "delete_validating_admission_policy_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "list_validating_admission_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "list_validating_admission_policy_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "patch_validating_admission_policy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "patch_validating_admission_policy_binding",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "patch_validating_admission_policy_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "read_validating_admission_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "read_validating_admission_policy_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "read_validating_admission_policy_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "replace_validating_admission_policy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "replace_validating_admission_policy_binding",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AdmissionregistrationV1beta1Api",
+    "method": "replace_validating_admission_policy_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ApiextensionsApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "create_custom_resource_definition",
+    "http_type": "POST"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "delete_collection_custom_resource_definition",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "delete_custom_resource_definition",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "list_custom_resource_definition",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "patch_custom_resource_definition",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "patch_custom_resource_definition_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "read_custom_resource_definition",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "read_custom_resource_definition_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "replace_custom_resource_definition",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ApiextensionsV1Api",
+    "method": "replace_custom_resource_definition_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ApiregistrationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "create_api_service",
+    "http_type": "POST"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "delete_api_service",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "delete_collection_api_service",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "list_api_service",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "patch_api_service",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "patch_api_service_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "read_api_service",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "read_api_service_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "replace_api_service",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ApiregistrationV1Api",
+    "method": "replace_api_service_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ApisApi",
+    "method": "get_api_versions",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "create_namespaced_controller_revision",
+    "http_type": "POST"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "create_namespaced_daemon_set",
+    "http_type": "POST"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "create_namespaced_deployment",
+    "http_type": "POST"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "create_namespaced_replica_set",
+    "http_type": "POST"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "create_namespaced_stateful_set",
+    "http_type": "POST"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_collection_namespaced_controller_revision",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_collection_namespaced_daemon_set",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_collection_namespaced_deployment",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_collection_namespaced_replica_set",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_collection_namespaced_stateful_set",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_namespaced_controller_revision",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_namespaced_daemon_set",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_namespaced_deployment",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_namespaced_replica_set",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "delete_namespaced_stateful_set",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_controller_revision_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_daemon_set_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_deployment_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_namespaced_controller_revision",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_namespaced_daemon_set",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_namespaced_deployment",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_namespaced_replica_set",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_namespaced_stateful_set",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_replica_set_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "list_stateful_set_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_controller_revision",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_daemon_set",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_daemon_set_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_deployment",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_deployment_scale",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_deployment_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_replica_set",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_replica_set_scale",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_replica_set_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_stateful_set",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_stateful_set_scale",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "patch_namespaced_stateful_set_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_controller_revision",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_daemon_set",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_daemon_set_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_deployment",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_deployment_scale",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_deployment_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_replica_set",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_replica_set_scale",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_replica_set_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_stateful_set",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_stateful_set_scale",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "read_namespaced_stateful_set_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_controller_revision",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_daemon_set",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_daemon_set_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_deployment",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_deployment_scale",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_deployment_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_replica_set",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_replica_set_scale",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_replica_set_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_stateful_set",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_stateful_set_scale",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AppsV1Api",
+    "method": "replace_namespaced_stateful_set_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AuthenticationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "AuthenticationV1Api",
+    "method": "create_self_subject_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthenticationV1Api",
+    "method": "create_token_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthenticationV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AuthenticationV1beta1Api",
+    "method": "create_self_subject_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthenticationV1beta1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AuthorizationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "AuthorizationV1Api",
+    "method": "create_namespaced_local_subject_access_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthorizationV1Api",
+    "method": "create_self_subject_access_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthorizationV1Api",
+    "method": "create_self_subject_rules_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthorizationV1Api",
+    "method": "create_subject_access_review",
+    "http_type": "POST"
+  },
+  {
+    "class": "AuthorizationV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "create_namespaced_horizontal_pod_autoscaler",
+    "http_type": "POST"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "delete_collection_namespaced_horizontal_pod_autoscaler",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "delete_namespaced_horizontal_pod_autoscaler",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "list_horizontal_pod_autoscaler_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "list_namespaced_horizontal_pod_autoscaler",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "patch_namespaced_horizontal_pod_autoscaler",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "patch_namespaced_horizontal_pod_autoscaler_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "read_namespaced_horizontal_pod_autoscaler",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "read_namespaced_horizontal_pod_autoscaler_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "replace_namespaced_horizontal_pod_autoscaler",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AutoscalingV1Api",
+    "method": "replace_namespaced_horizontal_pod_autoscaler_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "create_namespaced_horizontal_pod_autoscaler",
+    "http_type": "POST"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "delete_collection_namespaced_horizontal_pod_autoscaler",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "delete_namespaced_horizontal_pod_autoscaler",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "list_horizontal_pod_autoscaler_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "list_namespaced_horizontal_pod_autoscaler",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "patch_namespaced_horizontal_pod_autoscaler",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "patch_namespaced_horizontal_pod_autoscaler_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "read_namespaced_horizontal_pod_autoscaler",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "read_namespaced_horizontal_pod_autoscaler_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "replace_namespaced_horizontal_pod_autoscaler",
+    "http_type": "PUT"
+  },
+  {
+    "class": "AutoscalingV2Api",
+    "method": "replace_namespaced_horizontal_pod_autoscaler_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "BatchApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "create_namespaced_cron_job",
+    "http_type": "POST"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "create_namespaced_job",
+    "http_type": "POST"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "delete_collection_namespaced_cron_job",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "delete_collection_namespaced_job",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "delete_namespaced_cron_job",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "delete_namespaced_job",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "list_cron_job_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "list_job_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "list_namespaced_cron_job",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "list_namespaced_job",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "patch_namespaced_cron_job",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "patch_namespaced_cron_job_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "patch_namespaced_job",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "patch_namespaced_job_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "read_namespaced_cron_job",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "read_namespaced_cron_job_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "read_namespaced_job",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "read_namespaced_job_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "replace_namespaced_cron_job",
+    "http_type": "PUT"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "replace_namespaced_cron_job_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "replace_namespaced_job",
+    "http_type": "PUT"
+  },
+  {
+    "class": "BatchV1Api",
+    "method": "replace_namespaced_job_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CertificatesApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "create_certificate_signing_request",
+    "http_type": "POST"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "delete_certificate_signing_request",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "delete_collection_certificate_signing_request",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "list_certificate_signing_request",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "patch_certificate_signing_request",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "patch_certificate_signing_request_approval",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "patch_certificate_signing_request_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "read_certificate_signing_request",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "read_certificate_signing_request_approval",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "read_certificate_signing_request_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "replace_certificate_signing_request",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "replace_certificate_signing_request_approval",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CertificatesV1Api",
+    "method": "replace_certificate_signing_request_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "create_cluster_trust_bundle",
+    "http_type": "POST"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "delete_cluster_trust_bundle",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "delete_collection_cluster_trust_bundle",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "list_cluster_trust_bundle",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "patch_cluster_trust_bundle",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "read_cluster_trust_bundle",
+    "http_type": "GET"
+  },
+  {
+    "class": "CertificatesV1alpha1Api",
+    "method": "replace_cluster_trust_bundle",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoordinationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "create_namespaced_lease",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "delete_collection_namespaced_lease",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "delete_namespaced_lease",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "list_lease_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "list_namespaced_lease",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "patch_namespaced_lease",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "read_namespaced_lease",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1Api",
+    "method": "replace_namespaced_lease",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "create_namespaced_lease_candidate",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "delete_collection_namespaced_lease_candidate",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "delete_namespaced_lease_candidate",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "list_lease_candidate_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "list_namespaced_lease_candidate",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "patch_namespaced_lease_candidate",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "read_namespaced_lease_candidate",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoordinationV1alpha2Api",
+    "method": "replace_namespaced_lease_candidate",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreApi",
+    "method": "get_api_versions",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_delete_namespaced_pod_proxy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_delete_namespaced_pod_proxy_with_path",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_delete_namespaced_service_proxy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_delete_namespaced_service_proxy_with_path",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_delete_node_proxy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_delete_node_proxy_with_path",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_pod_attach",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_pod_exec",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_pod_portforward",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_pod_proxy",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_pod_proxy_with_path",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_service_proxy",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_namespaced_service_proxy_with_path",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_node_proxy",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_get_node_proxy_with_path",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_head_namespaced_pod_proxy",
+    "http_type": "HEAD"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_head_namespaced_pod_proxy_with_path",
+    "http_type": "HEAD"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_head_namespaced_service_proxy",
+    "http_type": "HEAD"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_head_namespaced_service_proxy_with_path",
+    "http_type": "HEAD"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_head_node_proxy",
+    "http_type": "HEAD"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_head_node_proxy_with_path",
+    "http_type": "HEAD"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_options_namespaced_pod_proxy",
+    "http_type": "OPTIONS"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_options_namespaced_pod_proxy_with_path",
+    "http_type": "OPTIONS"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_options_namespaced_service_proxy",
+    "http_type": "OPTIONS"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_options_namespaced_service_proxy_with_path",
+    "http_type": "OPTIONS"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_options_node_proxy",
+    "http_type": "OPTIONS"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_options_node_proxy_with_path",
+    "http_type": "OPTIONS"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_patch_namespaced_pod_proxy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_patch_namespaced_pod_proxy_with_path",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_patch_namespaced_service_proxy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_patch_namespaced_service_proxy_with_path",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_patch_node_proxy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_patch_node_proxy_with_path",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_pod_attach",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_pod_exec",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_pod_portforward",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_pod_proxy",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_pod_proxy_with_path",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_service_proxy",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_namespaced_service_proxy_with_path",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_node_proxy",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_post_node_proxy_with_path",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_put_namespaced_pod_proxy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_put_namespaced_pod_proxy_with_path",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_put_namespaced_service_proxy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_put_namespaced_service_proxy_with_path",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_put_node_proxy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "connect_put_node_proxy_with_path",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespace",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_config_map",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_endpoints",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_event",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_limit_range",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_persistent_volume_claim",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_pod",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_pod_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_pod_eviction",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_pod_template",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_replication_controller",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_resource_quota",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_secret",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_service",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_service_account",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_namespaced_service_account_token",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_node",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "create_persistent_volume",
+    "http_type": "POST"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_config_map",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_endpoints",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_event",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_limit_range",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_persistent_volume_claim",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_pod",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_pod_template",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_replication_controller",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_resource_quota",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_secret",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_service",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_namespaced_service_account",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_node",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_collection_persistent_volume",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespace",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_config_map",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_endpoints",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_event",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_limit_range",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_persistent_volume_claim",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_pod",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_pod_template",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_replication_controller",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_resource_quota",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_secret",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_service",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_namespaced_service_account",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_node",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "delete_persistent_volume",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_component_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_config_map_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_endpoints_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_event_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_limit_range_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespace",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_config_map",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_endpoints",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_event",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_limit_range",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_persistent_volume_claim",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_pod",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_pod_template",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_replication_controller",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_resource_quota",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_secret",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_service",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_namespaced_service_account",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_node",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_persistent_volume",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_persistent_volume_claim_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_pod_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_pod_template_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_replication_controller_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_resource_quota_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_secret_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_service_account_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "list_service_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespace",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespace_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_config_map",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_endpoints",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_event",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_limit_range",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_persistent_volume_claim",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_persistent_volume_claim_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_pod",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_pod_ephemeralcontainers",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_pod_resize",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_pod_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_pod_template",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_replication_controller",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_replication_controller_scale",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_replication_controller_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_resource_quota",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_resource_quota_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_secret",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_service",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_service_account",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_namespaced_service_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_node",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_node_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_persistent_volume",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "patch_persistent_volume_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_component_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespace",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespace_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_config_map",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_endpoints",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_event",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_limit_range",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_persistent_volume_claim",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_persistent_volume_claim_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_pod",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_pod_ephemeralcontainers",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_pod_log",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_pod_resize",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_pod_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_pod_template",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_replication_controller",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_replication_controller_scale",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_replication_controller_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_resource_quota",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_resource_quota_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_secret",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_service",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_service_account",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_namespaced_service_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_node",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_node_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_persistent_volume",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "read_persistent_volume_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespace",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespace_finalize",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespace_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_config_map",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_endpoints",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_event",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_limit_range",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_persistent_volume_claim",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_persistent_volume_claim_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_pod",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_pod_ephemeralcontainers",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_pod_resize",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_pod_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_pod_template",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_replication_controller",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_replication_controller_scale",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_replication_controller_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_resource_quota",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_resource_quota_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_secret",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_service",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_service_account",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_namespaced_service_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_node",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_node_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_persistent_volume",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CoreV1Api",
+    "method": "replace_persistent_volume_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "create_cluster_custom_object",
+    "http_type": "POST"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "create_namespaced_custom_object",
+    "http_type": "POST"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "delete_cluster_custom_object",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "delete_collection_cluster_custom_object",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "delete_collection_namespaced_custom_object",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "delete_namespaced_custom_object",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_cluster_custom_object",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_cluster_custom_object_scale",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_cluster_custom_object_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_namespaced_custom_object",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_namespaced_custom_object_scale",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "get_namespaced_custom_object_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "list_cluster_custom_object",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "list_custom_object_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "list_namespaced_custom_object",
+    "http_type": "GET"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "patch_cluster_custom_object",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "patch_cluster_custom_object_scale",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "patch_cluster_custom_object_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "patch_namespaced_custom_object",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "patch_namespaced_custom_object_scale",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "patch_namespaced_custom_object_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "replace_cluster_custom_object",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "replace_cluster_custom_object_scale",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "replace_cluster_custom_object_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "replace_namespaced_custom_object",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "replace_namespaced_custom_object_scale",
+    "http_type": "PUT"
+  },
+  {
+    "class": "CustomObjectsApi",
+    "method": "replace_namespaced_custom_object_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "DiscoveryApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "create_namespaced_endpoint_slice",
+    "http_type": "POST"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "delete_collection_namespaced_endpoint_slice",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "delete_namespaced_endpoint_slice",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "list_endpoint_slice_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "list_namespaced_endpoint_slice",
+    "http_type": "GET"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "patch_namespaced_endpoint_slice",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "read_namespaced_endpoint_slice",
+    "http_type": "GET"
+  },
+  {
+    "class": "DiscoveryV1Api",
+    "method": "replace_namespaced_endpoint_slice",
+    "http_type": "PUT"
+  },
+  {
+    "class": "EventsApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "create_namespaced_event",
+    "http_type": "POST"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "delete_collection_namespaced_event",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "delete_namespaced_event",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "list_event_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "list_namespaced_event",
+    "http_type": "GET"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "patch_namespaced_event",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "read_namespaced_event",
+    "http_type": "GET"
+  },
+  {
+    "class": "EventsV1Api",
+    "method": "replace_namespaced_event",
+    "http_type": "PUT"
+  },
+  {
+    "class": "FlowcontrolApiserverApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "create_flow_schema",
+    "http_type": "POST"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "create_priority_level_configuration",
+    "http_type": "POST"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "delete_collection_flow_schema",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "delete_collection_priority_level_configuration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "delete_flow_schema",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "delete_priority_level_configuration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "list_flow_schema",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "list_priority_level_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "patch_flow_schema",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "patch_flow_schema_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "patch_priority_level_configuration",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "patch_priority_level_configuration_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "read_flow_schema",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "read_flow_schema_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "read_priority_level_configuration",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "read_priority_level_configuration_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "replace_flow_schema",
+    "http_type": "PUT"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "replace_flow_schema_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "replace_priority_level_configuration",
+    "http_type": "PUT"
+  },
+  {
+    "class": "FlowcontrolApiserverV1Api",
+    "method": "replace_priority_level_configuration_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "InternalApiserverApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "create_storage_version",
+    "http_type": "POST"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "delete_collection_storage_version",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "delete_storage_version",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "list_storage_version_migration",
+    "http_type": "GET"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "patch_storage_version_migration",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "patch_storage_version_migration_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "read_storage_version_migration",
+    "http_type": "GET"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "read_storage_version_migration_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "replace_storage_version_migration",
+    "http_type": "PUT"
+  },
+  {
+    "class": "InternalApiserverV1alpha1Api",
+    "method": "replace_storage_version_migration_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "LogsApi",
+    "method": "log_file_handler",
+    "http_type": "GET"
+  },
+  {
+    "class": "LogsApi",
+    "method": "log_file_list_handler",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "create_ingress_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "create_namespaced_ingress",
+    "http_type": "POST"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "create_namespaced_network_policy",
+    "http_type": "POST"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "delete_collection_ingress_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "delete_collection_namespaced_ingress",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "delete_collection_namespaced_network_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "delete_ingress_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "delete_namespaced_ingress",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "delete_namespaced_network_policy",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "list_ingress_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "list_ingress_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "list_namespaced_ingress",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "list_namespaced_network_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "list_network_policy_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "list_role_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "patch_ingress_class",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "patch_namespaced_ingress",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "patch_namespaced_ingress_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "patch_namespaced_network_policy",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "read_ingress_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "read_namespaced_ingress",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "read_namespaced_ingress_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "read_namespaced_network_policy",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "replace_ingress_class",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "replace_namespaced_ingress",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "replace_namespaced_ingress_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NetworkingV1Api",
+    "method": "replace_namespaced_network_policy",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "create_ip_address",
+    "http_type": "POST"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "create_service_cidr",
+    "http_type": "POST"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "delete_collection_ip_address",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "delete_collection_service_cidr",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "delete_ip_address",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "delete_service_cidr",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "list_ip_address",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "list_service_cidr",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "patch_ip_address",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "patch_service_cidr",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "patch_service_cidr_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "read_ip_address",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "read_service_cidr",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "read_service_cidr_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "replace_ip_address",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "replace_service_cidr",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NetworkingV1beta1Api",
+    "method": "replace_service_cidr_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NodeApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "create_runtime_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "create_csi_node",
+    "http_type": "POST"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "create_namespaced_csi_storage_capacity",
+    "http_type": "POST"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "create_storage_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "create_volume_attachment",
+    "http_type": "POST"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_collection_csi_driver",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_collection_csi_node",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_collection_namespaced_csi_storage_capacity",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_collection_storage_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_collection_volume_attachment",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_csi_driver",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_csi_node",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_namespaced_csi_storage_capacity",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_storage_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "delete_volume_attachment",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "list_csi_driver",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "list_csi_node",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "list_csi_storage_capacity_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "list_namespaced_csi_storage_capacity",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "list_storage_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "list_volume_attachment",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "patch_csi_driver",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "patch_csi_node",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "patch_namespaced_csi_storage_capacity",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "patch_storage_class",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "patch_volume_attachment",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "patch_volume_attachment_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "read_csi_driver",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "read_csi_node",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "read_namespaced_csi_storage_capacity",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "read_storage_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "read_volume_attachment",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "read_volume_attachment_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "replace_csi_driver",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "replace_csi_node",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "replace_namespaced_csi_storage_capacity",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "replace_storage_class",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "replace_volume_attachment",
+    "http_type": "PUT"
+  },
+  {
+    "class": "NodeV1Api",
+    "method": "replace_volume_attachment_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "OpenidApi",
+    "method": "get_service_account_issuer_open_id_keyset",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "create_namespaced_pod_disruption_budget",
+    "http_type": "POST"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "delete_collection_namespaced_pod_disruption_budget",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "delete_namespaced_pod_disruption_budget",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "list_namespaced_pod_disruption_budget",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "list_pod_disruption_budget_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "patch_namespaced_pod_disruption_budget",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "patch_namespaced_pod_disruption_budget_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "read_namespaced_pod_disruption_budget",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "read_namespaced_pod_disruption_budget_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "replace_namespaced_pod_disruption_budget",
+    "http_type": "PUT"
+  },
+  {
+    "class": "PolicyV1Api",
+    "method": "replace_namespaced_pod_disruption_budget_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "RbacAuthorizationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "create_cluster_role",
+    "http_type": "POST"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "create_cluster_role_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "create_namespaced_role",
+    "http_type": "POST"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "create_namespaced_role_binding",
+    "http_type": "POST"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_cluster_role",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_cluster_role_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_collection_cluster_role",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_collection_cluster_role_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_collection_namespaced_role",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_collection_namespaced_role_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_namespaced_role",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "delete_namespaced_role_binding",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "list_cluster_role",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "list_cluster_role_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "list_namespaced_role",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "list_namespaced_role_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "list_role_binding_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "list_role_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "patch_cluster_role",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "patch_cluster_role_binding",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "patch_namespaced_role",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "patch_namespaced_role_binding",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "read_cluster_role",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "read_cluster_role_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "read_namespaced_role",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "read_namespaced_role_binding",
+    "http_type": "GET"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "replace_cluster_role",
+    "http_type": "PUT"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "replace_cluster_role_binding",
+    "http_type": "PUT"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "replace_namespaced_role",
+    "http_type": "PUT"
+  },
+  {
+    "class": "RbacAuthorizationV1Api",
+    "method": "replace_namespaced_role_binding",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ResourceApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "create_device_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "create_namespaced_resource_claim",
+    "http_type": "POST"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "create_namespaced_resource_claim_template",
+    "http_type": "POST"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "create_resource_slice",
+    "http_type": "POST"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_collection_device_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_collection_namespaced_resource_claim",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_collection_namespaced_resource_claim_template",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_collection_resource_slice",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_device_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_namespaced_resource_claim",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_namespaced_resource_claim_template",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "delete_resource_slice",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "list_device_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "list_namespaced_resource_claim",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "list_namespaced_resource_claim_template",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "list_resource_claim_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "list_resource_claim_template_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "list_resource_slice",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "patch_device_class",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "patch_namespaced_resource_claim",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "patch_namespaced_resource_claim_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "patch_namespaced_resource_claim_template",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "patch_resource_slice",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "read_device_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "read_namespaced_resource_claim",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "read_namespaced_resource_claim_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "read_namespaced_resource_claim_template",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "read_resource_slice",
+    "http_type": "GET"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "replace_device_class",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "replace_namespaced_resource_claim",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "replace_namespaced_resource_claim_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "replace_namespaced_resource_claim_template",
+    "http_type": "PUT"
+  },
+  {
+    "class": "ResourceV1alpha3Api",
+    "method": "replace_resource_slice",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "create_csi_driver",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "create_csi_node",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "create_namespaced_csi_storage_capacity",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "create_storage_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "create_volume_attachment",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_collection_csi_driver",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_collection_csi_node",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_collection_namespaced_csi_storage_capacity",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_collection_storage_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_collection_volume_attachment",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_csi_driver",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_csi_node",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_namespaced_csi_storage_capacity",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_storage_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "delete_volume_attachment",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "list_csi_driver",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "list_csi_node",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "list_csi_storage_capacity_for_all_namespaces",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "list_namespaced_csi_storage_capacity",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "list_storage_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "list_volume_attachment",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "patch_csi_driver",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "patch_csi_node",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "patch_namespaced_csi_storage_capacity",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "patch_storage_class",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "patch_volume_attachment",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "patch_volume_attachment_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "read_csi_driver",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "read_csi_node",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "read_namespaced_csi_storage_capacity",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "read_storage_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "read_volume_attachment",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "read_volume_attachment_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "replace_csi_driver",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "replace_csi_node",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "replace_namespaced_csi_storage_capacity",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "replace_storage_class",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "replace_volume_attachment",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1Api",
+    "method": "replace_volume_attachment_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "create_volume_attributes_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "delete_collection_volume_attributes_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "delete_volume_attributes_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "list_volume_attributes_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "patch_volume_attributes_class",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "read_volume_attributes_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1alpha1Api",
+    "method": "replace_volume_attributes_class",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "create_volume_attributes_class",
+    "http_type": "POST"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "delete_collection_volume_attributes_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "delete_volume_attributes_class",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "list_volume_attributes_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "patch_volume_attributes_class",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "read_volume_attributes_class",
+    "http_type": "GET"
+  },
+  {
+    "class": "StorageV1beta1Api",
+    "method": "replace_volume_attributes_class",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StoragemigrationApi",
+    "method": "get_api_group",
+    "http_type": "GET"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "create_storage_version_migration",
+    "http_type": "POST"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "delete_collection_storage_version_migration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "delete_storage_version_migration",
+    "http_type": "DELETE"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "get_api_resources",
+    "http_type": "GET"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "list_storage_version_migration",
+    "http_type": "GET"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "patch_storage_version_migration",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "patch_storage_version_migration_status",
+    "http_type": "PATCH"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "read_storage_version_migration",
+    "http_type": "GET"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "read_storage_version_migration_status",
+    "http_type": "GET"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "replace_storage_version_migration",
+    "http_type": "PUT"
+  },
+  {
+    "class": "StoragemigrationV1alpha1Api",
+    "method": "replace_storage_version_migration_status",
+    "http_type": "PUT"
+  },
+  {
+    "class": "VersionApi",
+    "method": "get_code",
+    "http_type": "GET"
+  }
+]
