@@ -8,6 +8,7 @@ from appConfig.settings import logger
 from appConfig.utils import get_cluster_client  # Import the helper function
 from kubeBoard.views import format_event  # Ensure format_event accepts kubeconfig_file
 
+
 def all_events_page(request):
     """
     Displays all Kubernetes events across all namespaces for the selected cluster.
@@ -72,12 +73,17 @@ def event_detail_page(request, namespace, event_name):
             'metadata': event.metadata.to_dict(),
         }
 
-        kubectl_command = f"kubectl get event {event_name} -n {namespace} -o yaml"
+        # Define dynamic kubectl commands
+        kube_commands = {
+            'describe_event': f"kubectl describe event {event_name} -n {namespace}",
+            'delete_event': f"kubectl delete event {event_name} -n {namespace}",
+            'get_event_yaml': f"kubectl get event {event_name} -n {namespace} -o yaml"
+        }
 
         context = {
             'event': event,
             'additional_properties': additional_properties,
-            'kubectl_command': kubectl_command
+            'kube_commands': kube_commands
         }
 
         return render(request, 'kubeEvents/event-detail.html', context)

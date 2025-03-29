@@ -15,10 +15,31 @@
             <!-- Event Detail Card -->
             <div class="card shadow-lg mb-4">
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Event Detail</h4>
-                    <!-- Copy Command Button -->
-                    {% include 'components/kube_command.html' with kube_command=kubectl_command display_type='pre_icon' %}
-                    <a href="{% url 'all_events_page' %}" class="btn btn-light btn-sm">Back to Events</a>
+                    <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Event Detail: {{ event.metadata.name }}</h4>
+                    <div class="d-flex align-items-center">
+                        <!-- Describe Event Command -->
+                        <button class="btn btn-outline-light btn-sm me-2"
+                                onclick="copyToClipboard('{{ kube_commands.describe_event|escapejs }}')"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Describe Event Command">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <!-- Get Event YAML Command -->
+                        <button class="btn btn-outline-light btn-sm me-2"
+                                onclick="copyToClipboard('{{ kube_commands.get_event_yaml|escapejs }}')"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Get Event YAML Command">
+                            <i class="fas fa-file-code"></i>
+                        </button>
+                        <!-- Delete Event Command -->
+                        <button class="btn btn-outline-danger btn-sm me-2"
+                                onclick="copyToClipboard('{{ kube_commands.delete_event|escapejs }}')"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Delete Event Command">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <!-- Back to All Events -->
+                        <a href="{% url 'all_events_page' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to All Events
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <!-- Event Details Table -->
@@ -78,7 +99,7 @@
                     <table class="table table-bordered table-hover">
                         {% for key, value in additional_properties.items %}
                             <tr>
-                                <th style="width: 30%;">{{ key|capfirst}}</th>
+                                <th style="width: 30%;">{{ key|capfirst }}</th>
                                 <td>
                                     {% if value %}
                                         {% if value %}
@@ -103,7 +124,46 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Optional: Toast for Copy Feedback -->
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+                     aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            Command copied to clipboard!
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
+            </div>
         {% endif %}
-        <!-- Back to Events Button -->
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Initialize Bootstrap Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+        });
+
+        // Copy to Clipboard Function with Toast Feedback
+        function copyToClipboard(command) {
+            navigator.clipboard.writeText(command).then(function () {
+                var toastEl = document.getElementById('copyToast');
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }, function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+    <!-- Back to Events Button -->
+
 {% endblock %}
