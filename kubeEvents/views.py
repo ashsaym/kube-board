@@ -26,9 +26,12 @@ def all_events_page(request):
         events_data = [format_event(event, cluster.kubeconfig_file) for event in events]
         kubectl_command = "kubectl get events --all-namespaces"
 
+        events_count = len(events_data)
+
         context = {
             'events_data_json': json.dumps(events_data),
-            'kubectl_command': kubectl_command
+            'kubectl_command': kubectl_command,
+            'events_count': events_count,
         }
 
         return render(request, 'kubeEvents/all-events.html', context)

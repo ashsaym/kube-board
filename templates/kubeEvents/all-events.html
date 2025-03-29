@@ -5,193 +5,196 @@
 {% block title %}All Kubernetes Events - Kubernetes Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row">
-        <!-- Events Overview Section -->
-        <div class="col-12">
-            <div class="card shadow-lg">
-                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Events Overview</h4>
-                    <div class="d-flex align-items-center">
-                        <!-- Copy Main Command Icon -->
-                        <button class="btn btn-outline-light btn-sm me-2" onclick="copyToClipboard('{{ kubectl_command|escapejs }}')" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Main Command">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                        <!-- Back to Dashboard Button -->
-                        <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {% if error %}
-                        <div class="alert alert-danger text-center" role="alert">
-                            {{ error }}
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Events Overview Section -->
+            <div class="col-12">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Events Overview ({{ events_count }} events)</h4>
+                        <div class="d-flex align-items-center">
+                            <!-- Copy Main Command Icon -->
+                            <button class="btn btn-outline-light btn-sm me-2"
+                                    onclick="copyToClipboard('{{ kubectl_command|escapejs }}')" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" title="Copy Main Command">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <!-- Back to Dashboard Button -->
+                            <a href="{% url 'index_page' %}" class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                            </a>
                         </div>
-                    {% else %}
-                        <!-- Filters Section -->
-                        <!-- Events Table -->
-                        <div id="events-table" class="table-responsive border rounded p-2 bg-light"></div>
-                    {% endif %}
-                </div>
-                <!-- Optional: Toast for Copy Feedback -->
-                <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
-                    <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                Command copied to clipboard!
+                    </div>
+                    <div class="card-body">
+                        {% if error %}
+                            <div class="alert alert-danger text-center" role="alert">
+                                {{ error }}
                             </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        {% else %}
+                            <!-- Events Table -->
+                            <div id="events-table" class="table-responsive border rounded p-2 bg-light"></div>
+                        {% endif %}
+                    </div>
+                    <!-- Optional: Toast for Copy Feedback -->
+                    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+                        <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+                             aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    Command copied to clipboard!
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                        data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-{% if not error %}
-<!-- Tabulator and Custom Scripts -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Initialize Bootstrap Tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+    {% if not error %}
+        <!-- Tabulator and Custom Scripts -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Initialize Bootstrap Tooltips
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
 
-        // Initialize Tabulator for Events
-        var eventsTable = new Tabulator("#events-table", {
-            data: {{ events_data_json|safe }}, // Ensure this is a JSON array
-            layout: "fitColumns",
-            responsiveLayout: "collapse",
-            placeholder: "No Events Available",
-            pagination: "local",          // Enable local pagination
-            paginationSize: 25,           // Set default rows per page to 25
-            paginationSizeSelector: [10, 25, 50, 100], // Options for rows per page
-            movableColumns: true,
-            initialSort: [
-                {column: "last_seen", dir: "desc"}
-            ],
-            columns: [
-                {
-                    title: "Event Name",
-                    field: "event_name",
-                    headerFilter: "input",
-                    headerSort: true,
-                    formatter: function (cell, formatterParams) {
-                        var data = cell.getRow().getData();
-                        var url = data.details_url;
-                        if (url && url !== "#") {
-                            return `<a href="${url}" class="text-primary">${cell.getValue()}</a>`;
-                        } else {
-                            return cell.getValue();
-                        }
-                    }
-                },
-                {
-                    title: "Object Name",
-                    field: "object_name",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Namespace",
-                    field: "namespace",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Kind",
-                    field: "kind",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Type",
-                    field: "type",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Reason",
-                    field: "reason",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "Message",
-                    field: "message",
-                    headerFilter: "input",
-                    headerSort: true
-                },
-                {
-                    title: "First Seen",
-                    field: "first_seen",
-                    headerFilter: "input",
-                    headerSort: true,
-                    sorter: "datetime",
-                    formatter: "datetime",
-                    formatterParams: {
-                        outputFormat: "YYYY-MM-DD HH:mm:ss",
-                        invalidPlaceholder: "-"
-                    }
-                },
-                {
-                    title: "Last Seen",
-                    field: "last_seen",
-                    headerFilter: "input",
-                    headerSort: true,
-                    sorter: "datetime",
-                    formatter: "datetime",
-                    formatterParams: {
-                        outputFormat: "YYYY-MM-DD HH:mm:ss",
-                        invalidPlaceholder: "-"
-                    }
-                },
-            ],
-        });
+                // Log the data for debugging
+                console.log("Events Data:", {{ events_data_json|safe }});
 
-        // Apply Kind Filter
-        document.getElementById('kind-filter').addEventListener('change', function () {
-            var kind = this.value;
-            if (kind) {
-                // Apply kind filter
-                eventsTable.setFilter("kind", "=", kind);
-            } else {
-                // Clear all filters if "Filter by Kind" is selected
-                eventsTable.clearFilter();
+                // Initialize Tabulator for Events
+                var eventsTable = new Tabulator("#events-table", {
+                    data: {{ events_data_json|safe }}, // Ensure this is a JSON array
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    placeholder: "No Events Available",
+                    pagination: "local",          // Enable local pagination
+                    paginationSize: 25,           // Set default rows per page to 25
+                    paginationSizeSelector: [10, 25, 50, 100], // Options for rows per page
+                    movableColumns: true,
+                    initialSort: [
+                        {column: "last_seen", dir: "desc"}
+                    ],
+                    columns: [
+                        {
+                            title: "Event Name",
+                            field: "event_name",
+                            headerFilter: "input",
+                            headerSort: true,
+                            formatter: function (cell, formatterParams) {
+                                var data = cell.getRow().getData();
+                                var url = data.details_url;
+                                if (url && url !== "#") {
+                                    return `<a href="${url}" class="text-primary">${cell.getValue()}</a>`;
+                                } else {
+                                    return cell.getValue();
+                                }
+                            }
+                        },
+                        {
+                            title: "Object Name",
+                            field: "object_name",
+                            headerFilter: "input",
+                            headerSort: true
+                        },
+                        {
+                            title: "Namespace",
+                            field: "namespace",
+                            headerFilter: "input",
+                            headerSort: true
+                        },
+                        {
+                            title: "Kind",
+                            field: "kind",
+                            headerFilter: "input",
+                            headerSort: true
+                        },
+                        {
+                            title: "Type",
+                            field: "type",
+                            headerFilter: "input",
+                            headerSort: true
+                        },
+                        {
+                            title: "Reason",
+                            field: "reason",
+                            headerFilter: "input",
+                            headerSort: true
+                        },
+                        {
+                            title: "Message",
+                            field: "message",
+                            headerFilter: "input",
+                            headerSort: true
+                        },
+                        {
+                            title: "First Seen",
+                            field: "first_seen",
+                            headerFilter: "input",
+                            headerSort: true,
+                            formatter: function (cell) {
+                                return new Date(cell.getValue()).toLocaleString();
+                            }
+                        },
+                        {
+                            title: "Last Seen",
+                            field: "last_seen",
+                            headerFilter: "input",
+                            headerSort: true,
+                            formatter: function (cell) {
+                                return new Date(cell.getValue()).toLocaleString();
+                            }
+                        },
+                    ],
+                });
+
+                // Log the data loaded into Tabulator for debugging
+                console.log("Tabulator Data:", eventsTable.getData());
+
+                // Apply Kind Filter
+                document.getElementById('kind-filter').addEventListener('change', function () {
+                    var kind = this.value;
+                    if (kind) {
+                        // Apply kind filter
+                        eventsTable.setFilter("kind", "=", kind);
+                    } else {
+                        // Clear all filters if "Filter by Kind" is selected
+                        eventsTable.clearFilter();
+                    }
+                });
+
+                // Apply Search Filter
+                document.getElementById('search').addEventListener('input', function () {
+                    var query = this.value;
+                    if (query) {
+                        // Apply a compound filter: event_name OR object_name OR reason OR message contains the query
+                        eventsTable.setFilter([
+                            {field: "event_name", type: "like", value: query},
+                            {field: "object_name", type: "like", value: query},
+                            {field: "reason", type: "like", value: query},
+                            {field: "message", type: "like", value: query}
+                        ], "OR");
+                    } else {
+                        // Clear all filters if search input is empty
+                        eventsTable.clearFilter();
+                    }
+                });
+            });
+
+            // Copy to Clipboard Function with Toast Feedback
+            function copyToClipboard(command) {
+                navigator.clipboard.writeText(command).then(function () {
+                    var toastEl = document.getElementById('copyToast');
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }, function (err) {
+                    console.error('Could not copy text: ', err);
+                });
             }
-        });
-
-        // Apply Search Filter
-        document.getElementById('search').addEventListener('input', function () {
-            var query = this.value;
-            if (query) {
-                // Apply a compound filter: event_name OR object_name OR reason OR message contains the query
-                eventsTable.setFilter([
-                    {field: "event_name", type: "like", value: query},
-                    {field: "object_name", type: "like", value: query},
-                    {field: "reason", type: "like", value: query},
-                    {field: "message", type: "like", value: query}
-                ], "OR");
-            } else {
-                // Clear all filters if search input is empty
-                eventsTable.clearFilter();
-            }
-        });
-    });
-
-    // Copy to Clipboard Function with Toast Feedback
-    function copyToClipboard(command) {
-        navigator.clipboard.writeText(command).then(function () {
-            var toastEl = document.getElementById('copyToast');
-            var toast = new bootstrap.Toast(toastEl);
-            toast.show();
-        }, function (err) {
-            console.error('Could not copy text: ', err);
-        });
-    }
-</script>
-{% endif %}
+        </script>
+    {% endif %}
 {% endblock %}
