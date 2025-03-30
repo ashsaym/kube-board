@@ -50,6 +50,17 @@ INSTALLED_APPS = [
     'kubeLogs',
     'kubeEvents',
     'kubeIngress',
+    
+    # New resource apps
+    'kubeConfigMaps',
+    'kubeSecrets',
+    'kubeDeployments',
+    'kubeStatefulSets',
+    'kubeDaemonSets',
+    'kubeJobs',
+    'kubeCronJobs',
+    'kubeNetworkPolicies',
+    'kubeStorageClasses',
 ]
 
 # MIDDLEWARE

@@ -231,6 +231,72 @@
             </div>
         </div>
 
+        <!-- ConfigMaps Overview -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-file-alt me-2"></i>ConfigMaps Overview</h4>
+                <div class="d-flex align-items-center">
+                    <!-- Copy All ConfigMaps Command -->
+                    <button class="btn btn-outline-light btn-sm me-2"
+                            onclick="copyToClipboard('{{ kube_commands.get_configmaps }}')"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Get All ConfigMaps Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <a href="{% url 'all_config_maps_page' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-eye me-1"></i>View All ConfigMaps
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Tabulator Table for ConfigMaps -->
+                <div id="configmaps-table"></div>
+            </div>
+        </div>
+
+        <!-- Deployments Overview -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-rocket me-2"></i>Deployments Overview</h4>
+                <div class="d-flex align-items-center">
+                    <!-- Copy All Deployments Command -->
+                    <button class="btn btn-outline-light btn-sm me-2"
+                            onclick="copyToClipboard('{{ kube_commands.get_deployments }}')"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Get All Deployments Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <a href="{% url 'all_deployments_page' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-eye me-1"></i>View All Deployments
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Tabulator Table for Deployments -->
+                <div id="deployments-table"></div>
+            </div>
+        </div>
+
+        <!-- DaemonSets Overview -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-server me-2"></i>DaemonSets Overview</h4>
+                <div class="d-flex align-items-center">
+                    <!-- Copy All DaemonSets Command -->
+                    <button class="btn btn-outline-light btn-sm me-2"
+                            onclick="copyToClipboard('{{ kube_commands.get_daemonsets }}')"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Copy Get All DaemonSets Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <a href="{% url 'all_daemon_sets_page' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-eye me-1"></i>View All DaemonSets
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Tabulator Table for DaemonSets -->
+                <div id="daemonsets-table"></div>
+            </div>
+        </div>
+
         <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
                  aria-live="assertive" aria-atomic="true">
@@ -432,6 +498,135 @@
                     {
                         title: "Paths",
                         field: "paths",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Age",
+                        field: "age",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                ],
+            });
+
+            // Initialize Tabulator for ConfigMaps
+            var configMapsTable = new Tabulator("#configmaps-table", {
+                data: {{ config_maps_data_json|safe }},
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "local", // Enable local pagination
+                paginationSize: 10,  // Number of rows per page
+                movableColumns: true,
+                placeholder: "No ConfigMaps Available",
+                initialSort: [
+                    {column: "name", dir: "asc"},
+                ],
+                columns: [
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            return `<a href="${cell.getData().details_url}" class="text-primary">${cell.getValue()}</a>`;
+                        }
+                    },
+                    {
+                        title: "Namespace",
+                        field: "namespace",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Data Items",
+                        field: "data_count",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Age",
+                        field: "age",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                ],
+            });
+
+            // Initialize Tabulator for Deployments
+            var deploymentsTable = new Tabulator("#deployments-table", {
+                data: {{ deployments_data_json|safe }},
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "local", // Enable local pagination
+                paginationSize: 10,  // Number of rows per page
+                movableColumns: true,
+                placeholder: "No Deployments Available",
+                initialSort: [
+                    {column: "name", dir: "asc"},
+                ],
+                columns: [
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            return `<a href="${cell.getData().details_url}" class="text-primary">${cell.getValue()}</a>`;
+                        }
+                    },
+                    {
+                        title: "Namespace",
+                        field: "namespace",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Ready",
+                        field: "readiness",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Age",
+                        field: "age",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                ],
+            });
+            
+            // Initialize Tabulator for DaemonSets
+            var daemonsetsTable = new Tabulator("#daemonsets-table", {
+                data: {{ daemon_sets_data_json|safe }},
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "local", // Enable local pagination
+                paginationSize: 10,  // Number of rows per page
+                movableColumns: true,
+                placeholder: "No DaemonSets Available",
+                initialSort: [
+                    {column: "name", dir: "asc"},
+                ],
+                columns: [
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            return `<a href="${cell.getData().details_url}" class="text-primary">${cell.getValue()}</a>`;
+                        }
+                    },
+                    {
+                        title: "Namespace",
+                        field: "namespace",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Ready",
+                        field: "readiness",
                         headerFilter: "input",
                         headerSort: true
                     },

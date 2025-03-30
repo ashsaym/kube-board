@@ -1,20 +1,54 @@
 /* Global Styles */
 
 body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
 }
 
 .navbar-brand {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .card {
-    border-radius: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-weight: 500;
 }
 
 .badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
     font-size: 0.9rem;
+}
+
+/* Navbar Styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
 }
 
 .copy-command {
