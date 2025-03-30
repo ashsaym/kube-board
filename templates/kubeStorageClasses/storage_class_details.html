@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ storage_class.name }} | Storage Class Details{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Display Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Back Button and Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="{% url 'all_storage_classes_page' %}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Storage Classes
+                </a>
+                <h1 class="d-inline-block h2 mb-0 ms-2">
+                    <i class="fas fa-hdd me-2"></i>{{ storage_class.name }}
+                    {% if storage_class.is_default %}
+                        <span class="badge bg-success">Default</span>
+                    {% endif %}
+                </h1>
+            </div>
+            <div class="d-flex">
+                <button class="btn btn-outline-secondary me-2" onclick="copyToClipboard('{{ kubectl_commands.get_storage_class }}')">
+                    <i class="fas fa-copy me-1"></i>YAML
+                </button>
+                <button class="btn btn-outline-secondary me-2" onclick="copyToClipboard('{{ kubectl_commands.describe_storage_class }}')">
+                    <i class="fas fa-copy me-1"></i>Describe
+                </button>
+                <button class="btn btn-outline-danger" onclick="copyToClipboard('{{ kubectl_commands.delete_storage_class }}')">
+                    <i class="fas fa-trash me-1"></i>Delete
+                </button>
+            </div>
+        </div>
+
+        <!-- Storage Class Details -->
+        <div class="row">
+            <!-- Basic Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" style="width: 30%;">Name</th>
+                                    <td>{{ storage_class.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Provisioner</th>
+                                    <td>{{ storage_class.provisioner }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Reclaim Policy</th>
+                                    <td>
+                                        {% if storage_class.reclaim_policy == "Delete" %}
+                                            <span class="badge bg-danger">{{ storage_class.reclaim_policy }}</span>
+                                        {% elif storage_class.reclaim_policy == "Retain" %}
+                                            <span class="badge bg-success">{{ storage_class.reclaim_policy }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ storage_class.reclaim_policy }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Volume Binding Mode</th>
+                                    <td>{{ storage_class.volume_binding_mode }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Allow Volume Expansion</th>
+                                    <td>
+                                        {% if storage_class.allow_volume_expansion %}
+                                            <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">No</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Default Class</th>
+                                    <td>
+                                        {% if storage_class.is_default %}
+                                            <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No</span>
+                                            <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('{{ kubectl_commands.set_default }}')">
+                                                <i class="fas fa-star me-1"></i>Set as Default
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Creation Time</th>
+                                    <td>{{ storage_class.creation_timestamp }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parameters -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Parameters</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if storage_class.parameters %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Key</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, value in storage_class.parameters.items %}
+                                        <tr>
+                                            <td>{{ key }}</td>
+                                            <td>{{ value }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="alert alert-info">No parameters defined for this storage class.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mount Options -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Mount Options</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if storage_class.mount_options %}
+                            <ul class="list-group">
+                                {% for option in storage_class.mount_options %}
+                                    <li class="list-group-item">{{ option }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-info">No mount options defined for this storage class.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Labels and Annotations -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Labels & Annotations</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="labels-tab" data-bs-toggle="tab" data-bs-target="#labels" type="button" role="tab" aria-controls="labels" aria-selected="true">Labels</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="annotations-tab" data-bs-toggle="tab" data-bs-target="#annotations" type="button" role="tab" aria-controls="annotations" aria-selected="false">Annotations</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-3" id="myTabContent">
+                            <div class="tab-pane fade show active" id="labels" role="tabpanel" aria-labelledby="labels-tab">
+                                {% if storage_class.labels %}
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for key, value in storage_class.labels.items %}
+                                                <tr>
+                                                    <td>{{ key }}</td>
+                                                    <td>{{ value }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <div class="alert alert-info">No labels defined for this storage class.</div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="annotations" role="tabpanel" aria-labelledby="annotations-tab">
+                                {% if storage_class.annotations %}
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for key, value in storage_class.annotations.items %}
+                                                <tr>
+                                                    <td>{{ key }}</td>
+                                                    <td>{{ value }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <div class="alert alert-info">No annotations defined for this storage class.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw YAML -->
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">YAML</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ kubectl_commands.get_storage_class }}')">
+                            <i class="fas fa-copy me-1"></i>Copy Command
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="command-container">
+                            <pre id="kubectl-command-text">{{ kubectl_commands.get_storage_class }}</pre>
+                            <button id="copy-command" onclick="copyToClipboard('{{ kubectl_commands.get_storage_class }}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
