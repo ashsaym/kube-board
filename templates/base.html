@@ -32,7 +32,7 @@
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'index_page' %}">Kubernetes Dashboard</a>
         
@@ -90,10 +90,10 @@
         <form method="post" action="{% url 'select_kubeconfig' %}" class="d-flex">
             {% csrf_token %}
             <div class="input-group">
-                <label class="input-group-text text-white bg-dark border-0" for="kubeconfigSelect">
+                <label class="input-group-text border-0" for="kubeconfigSelect">
                     <i class="fas fa-file-alt"></i>
                 </label>
-                <select class="form-select bg-dark text-white border-0" id="kubeconfigSelect" name="kubeconfig"
+                <select class="form-select border-0" id="kubeconfigSelect" name="kubeconfig"
                         onchange="this.form.submit()">
                     {% for file in kubeconfig_files %}
                         <option value="{{ file }}"

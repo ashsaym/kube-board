@@ -166,7 +166,7 @@
                                             <!-- Describe Container -->
                                             <div class="command-container mb-2">
                                                 <pre><code>kubectl describe pod {{ pod.metadata.name }} -c {{ container.name }}</code></pre>
-                                                <button class="copy-button btn btn-sm btn-dark"
+                                                <button class="copy-button btn btn-sm btn-light"
                                                         title="Copy Command to Clipboard">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -177,7 +177,7 @@
                                             <!-- Get Logs -->
                                             <div class="command-container mb-2">
                                                 <pre><code>kubectl logs {{ pod.metadata.name }} -c {{ container.name }}</code></pre>
-                                                <button class="copy-button btn btn-sm btn-dark"
+                                                <button class="copy-button btn btn-sm btn-light"
                                                         title="Copy Command to Clipboard">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -188,7 +188,7 @@
                                             <!-- Exec into Container -->
                                             <div class="command-container mb-2">
                                                 <pre><code>kubectl exec -it {{ pod.metadata.name }} -c {{ container.name }} -- /bin/bash</code></pre>
-                                                <button class="copy-button btn btn-sm btn-dark"
+                                                <button class="copy-button btn btn-sm btn-light"
                                                         title="Copy Command to Clipboard">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -201,7 +201,7 @@
                                                 {% for port in container.ports %}
                                                     <div class="command-container mb-2">
                                                         <pre><code>kubectl port-forward {{ pod.metadata.name }} {{ port.container_port }}:{{ port.container_port }} -c {{ container.name }}</code></pre>
-                                                        <button class="copy-button btn btn-sm btn-dark"
+                                                        <button class="copy-button btn btn-sm btn-light"
                                                                 title="Copy Command to Clipboard">
                                                             <i class="bi bi-clipboard"></i>
                                                         </button>
@@ -220,7 +220,7 @@
                                             <!-- Execute One-Time Command -->
                                             <div class="command-container mb-2">
                                                 <pre><code>kubectl exec {{ pod.metadata.name }} -c {{ container.name }} -- &lt;command&gt;</code></pre>
-                                                <button class="copy-button btn btn-sm btn-dark"
+                                                <button class="copy-button btn btn-sm btn-light"
                                                         title="Copy Command to Clipboard">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -231,7 +231,7 @@
                                             <!-- Copy Files -->
                                             <div class="command-container mb-2">
                                                 <pre><code>kubectl cp &lt;source&gt; {{ pod.metadata.name }}:&lt;container_path&gt; -c {{ container.name }}</code></pre>
-                                                <button class="copy-button btn btn-sm btn-dark"
+                                                <button class="copy-button btn btn-sm btn-light"
                                                         title="Copy Command to Clipboard">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -242,7 +242,7 @@
                                             <!-- High-Relevance Kubectl Commands -->
                                             <div class="command-container mb-2">
                                                 <pre><code>kubectl top pod {{ pod.metadata.name }} -c {{ container.name }}</code></pre>
-                                                <button class="copy-button btn btn-sm btn-dark"
+                                                <button class="copy-button btn btn-sm btn-light"
                                                         title="Copy Command to Clipboard">
                                                     <i class="bi bi-clipboard"></i>
                                                 </button>
@@ -359,7 +359,7 @@
                                                 <!-- Describe Init Container -->
                                                 <div class="command-container mb-2">
                                                     <pre><code>kubectl describe pod {{ pod.metadata.name }} -c {{ init_container.name }}</code></pre>
-                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                    <button class="copy-button btn btn-sm btn-light"
                                                             title="Copy Command to Clipboard">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
@@ -370,7 +370,7 @@
                                                 <!-- Get Init Container Logs -->
                                                 <div class="command-container mb-2">
                                                     <pre><code>kubectl logs {{ pod.metadata.name }} -c {{ init_container.name }}</code></pre>
-                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                    <button class="copy-button btn btn-sm btn-light"
                                                             title="Copy Command to Clipboard">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
@@ -381,7 +381,7 @@
                                                 <!-- Exec into Init Container -->
                                                 <div class="command-container mb-2">
                                                     <pre><code>kubectl exec -it {{ pod.metadata.name }} -c {{ init_container.name }} -- /bin/bash</code></pre>
-                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                    <button class="copy-button btn btn-sm btn-light"
                                                             title="Copy Command to Clipboard">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
@@ -394,7 +394,7 @@
                                                     {% for port in init_container.ports %}
                                                         <div class="command-container mb-2">
                                                             <pre><code>kubectl port-forward {{ pod.metadata.name }} {{ port.container_port }}:{{ port.container_port }} -c {{ init_container.name }}</code></pre>
-                                                            <button class="copy-button btn btn-sm btn-dark"
+                                                            <button class="copy-button btn btn-sm btn-light"
                                                                     title="Copy Command to Clipboard">
                                                                 <i class="bi bi-clipboard"></i>
                                                             </button>
@@ -414,7 +414,7 @@
                                                 <!-- Execute One-Time Command in Init Container -->
                                                 <div class="command-container mb-2">
                                                     <pre><code>kubectl exec {{ pod.metadata.name }} -c {{ init_container.name }} -- &lt;command&gt;</code></pre>
-                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                    <button class="copy-button btn btn-sm btn-light"
                                                             title="Copy Command to Clipboard">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
@@ -425,7 +425,7 @@
                                                 <!-- Copy Files to Init Container -->
                                                 <div class="command-container mb-2">
                                                     <pre><code>kubectl cp &lt;source&gt; {{ pod.metadata.name }}:&lt;container_path&gt; -c {{ init_container.name }}</code></pre>
-                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                    <button class="copy-button btn btn-sm btn-light"
                                                             title="Copy Command to Clipboard">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
@@ -436,7 +436,7 @@
                                                 <!-- High-Relevance Kubectl Commands -->
                                                 <div class="command-container mb-2">
                                                     <pre><code>kubectl top pod {{ pod.metadata.name }} -c {{ init_container.name }}</code></pre>
-                                                    <button class="copy-button btn btn-sm btn-dark"
+                                                    <button class="copy-button btn btn-sm btn-light"
                                                             title="Copy Command to Clipboard">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
