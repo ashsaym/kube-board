@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Persistent Volume Claims | Kube Board{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Persistent Volume Claims</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Kubectl Commands</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for action, command in kubectl_command.items %}
+                                    <tr>
+                                        <td>{{ action|title }}</td>
+                                        <td><code>{{ command }}</code></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="persistentvolumeclaims-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Namespace</th>
+                                    <th>Status</th>
+                                    <th>Volume</th>
+                                    <th>Capacity</th>
+                                    <th>Access Modes</th>
+                                    <th>Storage Class</th>
+                                    <th>Age</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pvc in processed_pvcs %}
+                                <tr>
+                                    <td>{{ pvc.name }}</td>
+                                    <td>{{ pvc.namespace }}</td>
+                                    <td>
+                                        {% if pvc.status == "Bound" %}
+                                        <span class="badge badge-success">{{ pvc.status }}</span>
+                                        {% elif pvc.status == "Pending" %}
+                                        <span class="badge badge-warning">{{ pvc.status }}</span>
+                                        {% elif pvc.status == "Lost" %}
+                                        <span class="badge badge-danger">{{ pvc.status }}</span>
+                                        {% else %}
+                                        <span class="badge badge-secondary">{{ pvc.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ pvc.volume }}</td>
+                                    <td>{{ pvc.capacity }}</td>
+                                    <td>{{ pvc.access_modes }}</td>
+                                    <td>{{ pvc.storage_class }}</td>
+                                    <td>{{ pvc.age }}</td>
+                                    <td>
+                                        <a href="{{ pvc.details_url }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center">No Persistent Volume Claims found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#persistentvolumeclaims-table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+    });
+</script>
+{% endblock %}

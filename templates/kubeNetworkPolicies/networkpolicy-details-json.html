@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Network Policy JSON: {{ network_policy_name }} | Kube Board{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Network Policy JSON: {{ network_policy_name }}</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="/networkpolicies/{{ namespace }}/{{ network_policy_name }}/" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Network Policy Details
+                        </a>
+                    </div>
+                    <div class="json-viewer">
+                        <pre><code class="language-json">{{ network_policy_json }}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Initialize syntax highlighting
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+{% endblock %}

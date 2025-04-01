@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+
+{% block title %}Namespace: {{ namespace_name }} | Kube Board{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Namespace: {{ namespace_name }}</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="{% url 'all_namespaces_page' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Namespaces
+                        </a>
+                        <a href="/namespaces/{{ namespace_name }}/json/" class="btn btn-info">
+                            <i class="fas fa-code"></i> View JSON
+                        </a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Namespace Details</h3>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Name</th>
+                                            <td>{{ namespace.metadata.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Created</th>
+                                            <td>{{ namespace.metadata.creation_timestamp }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td>
+                                                {% if namespace.status.phase == "Active" %}
+                                                <span class="badge badge-success">{{ namespace.status.phase }}</span>
+                                                {% elif namespace.status.phase == "Terminating" %}
+                                                <span class="badge badge-warning">{{ namespace.status.phase }}</span>
+                                                {% else %}
+                                                <span class="badge badge-secondary">{{ namespace.status.phase }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Labels & Annotations</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h5>Labels</h5>
+                                    <table class="table table-bordered table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Key</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for key, value in namespace.metadata.labels.items %}
+                                            <tr>
+                                                <td>{{ key }}</td>
+                                                <td>{{ value }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="2">No labels found</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <h5 class="mt-3">Annotations</h5>
+                                    <table class="table table-bordered table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Key</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for key, value in namespace.metadata.annotations.items %}
+                                            <tr>
+                                                <td>{{ key }}</td>
+                                                <td>{{ value }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="2">No annotations found</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Resource Quotas</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if resource_quotas %}
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Resource</th>
+                                                    <th>Hard Limit</th>
+                                                    <th>Used</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for quota in resource_quotas %}
+                                                    {% for resource, hard in quota.spec.hard.items %}
+                                                    <tr>
+                                                        <td>{{ quota.metadata.name }}</td>
+                                                        <td>{{ resource }}</td>
+                                                        <td>{{ hard }}</td>
+                                                        <td>{{ quota.status.used|default_if_none:"-"|get_item:resource|default:"-" }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        No Resource Quotas defined for this namespace.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Limit Ranges</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if limit_ranges %}
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Resource</th>
+                                                    <th>Min</th>
+                                                    <th>Max</th>
+                                                    <th>Default</th>
+                                                    <th>Default Request</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for limit_range in limit_ranges %}
+                                                    {% for limit in limit_range.spec.limits %}
+                                                        {% for resource, value in limit.max.items %}
+                                                        <tr>
+                                                            <td>{{ limit_range.metadata.name }}</td>
+                                                            <td>{{ limit.type }}</td>
+                                                            <td>{{ resource }}</td>
+                                                            <td>{{ limit.min|default_if_none:"-"|get_item:resource|default:"-" }}</td>
+                                                            <td>{{ value }}</td>
+                                                            <td>{{ limit.default|default_if_none:"-"|get_item:resource|default:"-" }}</td>
+                                                            <td>{{ limit.default_request|default_if_none:"-"|get_item:resource|default:"-" }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        No Limit Ranges defined for this namespace.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Network Policies</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if network_policies %}
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Policy Types</th>
+                                                    <th>Pod Selector</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for policy in network_policies %}
+                                                <tr>
+                                                    <td>{{ policy.metadata.name }}</td>
+                                                    <td>{{ policy.spec.policy_types|join:", "|default:"None" }}</td>
+                                                    <td>
+                                                        {% if policy.spec.pod_selector.match_labels %}
+                                                            {% for key, value in policy.spec.pod_selector.match_labels.items %}
+                                                                <span class="badge badge-info">{{ key }}={{ value }}</span>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            All pods
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="/networkpolicies/{{ namespace_name }}/{{ policy.metadata.name }}/" class="btn btn-sm btn-info">
+                                                            <i class="fas fa-info-circle"></i> Details
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        No Network Policies defined for this namespace.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Services</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Cluster IP</th>
+                                                    <th>External IP</th>
+                                                    <th>Ports</th>
+                                                    <th>Age</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for svc in services %}
+                                                <tr>
+                                                    <td>{{ svc.name }}</td>
+                                                    <td>{{ svc.type }}</td>
+                                                    <td>{{ svc.cluster_ip }}</td>
+                                                    <td>{{ svc.external_ip }}</td>
+                                                    <td>{{ svc.ports }}</td>
+                                                    <td>{{ svc.age }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="6" class="text-center">No Services found</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Events</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>Reason</th>
+                                                    <th>Message</th>
+                                                    <th>First Seen</th>
+                                                    <th>Last Seen</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for event in events %}
+                                                <tr>
+                                                    <td>{{ event.type }}</td>
+                                                    <td>{{ event.reason }}</td>
+                                                    <td>{{ event.message }}</td>
+                                                    <td>{{ event.first_seen }}</td>
+                                                    <td>{{ event.last_seen }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No events found</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Kubectl Commands</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Command</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for cmd in kubectl_commands %}
+                                                <tr>
+                                                    <td><code>{{ cmd.command }}</code></td>
+                                                    <td>{{ cmd.explanation }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
