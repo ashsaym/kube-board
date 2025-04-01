@@ -1,5 +1,10 @@
-Django~=5.1.7
-kubernetes~=32.0.1
-dotenv~=0.9.9
-python-dotenv~=1.1.0
-PyYAML~=6.0.2
+Django
+kubernetes
+dotenv
+python-dotenv
+PyYAML
+channels
+daphne
+channels-redis
+redis
+websockets
