@@ -106,8 +106,8 @@ def storage_class_details_page(request, storage_class_name):
             'get_storage_class': f'kubectl get storageclass {storage_class_name} -o yaml',
             'describe_storage_class': f'kubectl describe storageclass {storage_class_name}',
             'delete_storage_class': f'kubectl delete storageclass {storage_class_name}',
+
             'set_default': f'kubectl patch storageclass {storage_class_name} -p \'{{"metadata":{{"annotations":{{"storageclass.kubernetes.io/is-default-class":"true"}}}}}}\'',
-        }
 
         # Convert to JSON for JavaScript
         sc_details_json = json.dumps(sc_details, default=str)
