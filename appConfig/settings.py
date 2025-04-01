@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     'kubeCronJobs',
     'kubeNetworkPolicies',
     'kubeStorageClasses',
+    'kubePersistentVolumes',
+    'kubeNamespaces',
 ]
 
 # MIDDLEWARE

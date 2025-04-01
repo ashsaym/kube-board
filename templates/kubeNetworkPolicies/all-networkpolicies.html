@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Network Policies | Kube Board{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Network Policies</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Kubectl Commands</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for action, command in kubectl_command.items %}
+                                    <tr>
+                                        <td>{{ action|title }}</td>
+                                        <td><code>{{ command }}</code></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="networkpolicies-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Namespace</th>
+                                    <th>Policy Types</th>
+                                    <th>Pod Selector</th>
+                                    <th>Age</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for policy in processed_network_policies %}
+                                <tr>
+                                    <td>{{ policy.name }}</td>
+                                    <td>{{ policy.namespace }}</td>
+                                    <td>{{ policy.policy_types }}</td>
+                                    <td>{{ policy.pod_selector }}</td>
+                                    <td>{{ policy.age }}</td>
+                                    <td>
+                                        <a href="{{ policy.details_url }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No Network Policies found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#networkpolicies-table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+    });
+</script>
+{% endblock %}

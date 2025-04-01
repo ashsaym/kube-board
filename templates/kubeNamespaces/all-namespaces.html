@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Namespaces | Kube Board{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Namespaces</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Kubectl Commands</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for action, command in kubectl_command.items %}
+                                    <tr>
+                                        <td>{{ action|title }}</td>
+                                        <td><code>{{ command }}</code></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="namespaces-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Age</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ns in processed_namespaces %}
+                                <tr>
+                                    <td>{{ ns.name }}</td>
+                                    <td>
+                                        {% if ns.status == "Active" %}
+                                        <span class="badge badge-success">{{ ns.status }}</span>
+                                        {% elif ns.status == "Terminating" %}
+                                        <span class="badge badge-warning">{{ ns.status }}</span>
+                                        {% else %}
+                                        <span class="badge badge-secondary">{{ ns.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ns.age }}</td>
+                                    <td>
+                                        <a href="{{ ns.details_url }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No Namespaces found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Services Across All Namespaces</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="services-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Namespace</th>
+                                    <th>Type</th>
+                                    <th>Cluster IP</th>
+                                    <th>External IP</th>
+                                    <th>Ports</th>
+                                    <th>Age</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for svc in processed_services %}
+                                <tr>
+                                    <td>{{ svc.name }}</td>
+                                    <td>{{ svc.namespace }}</td>
+                                    <td>{{ svc.type }}</td>
+                                    <td>{{ svc.cluster_ip }}</td>
+                                    <td>{{ svc.external_ip }}</td>
+                                    <td>{{ svc.ports }}</td>
+                                    <td>{{ svc.age }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No Services found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#namespaces-table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+
+        $('#services-table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+    });
+</script>
+{% endblock %}
