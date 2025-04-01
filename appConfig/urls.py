@@ -11,6 +11,7 @@ from kubeConfigMaps.views import all_config_maps_page, config_map_details_page, 
 from kubeSecrets.views import all_secrets_page, secret_details_page, secret_json_page
 from kubeDeployments.views import all_deployments_page, deployment_details_page, deployment_json_page
 from kubeDaemonSets.views import all_daemon_sets_page, daemon_set_details_page, daemon_set_json_page
+from kubeStorageClasses.views import all_storage_classes_page, storage_class_details_page, storage_class_json_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -52,4 +53,9 @@ urlpatterns = [
     path('daemonsets/', all_daemon_sets_page, name='all_daemon_sets_page'),
     path('daemonsets/<str:namespace>/<str:daemon_set_name>/', daemon_set_details_page, name='daemon_set_details_page'),
     path('daemonsets/<str:namespace>/<str:daemon_set_name>/json/', daemon_set_json_page, name='daemon_set_json_page'),
+    
+    # StorageClasses
+    path('storageclasses/', all_storage_classes_page, name='all_storage_classes_page'),
+    path('storageclasses/<str:storage_class_name>/', storage_class_details_page, name='storage_class_details_page'),
+    path('storageclasses/<str:storage_class_name>/json/', storage_class_json_page, name='storage_class_json_page'),
 ]

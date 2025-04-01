@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Storage Classes | Kubernetes Dashboard{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Display Error Messages -->
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Storage Classes Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2"><i class="fas fa-hdd me-2"></i>Storage Classes</h1>
+            <div class="d-flex">
+                <button class="btn btn-outline-secondary me-2" onclick="copyToClipboard('{{ kubectl_commands.get_storage_classes }}')">
+                    <i class="fas fa-copy me-1"></i>Get Command
+                </button>
+                <button class="btn btn-outline-secondary me-2" onclick="copyToClipboard('{{ kubectl_commands.create_storage_class }}')">
+                    <i class="fas fa-copy me-1"></i>Create Command
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="storage-class-search" class="form-control" placeholder="Search storage classes...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Classes Table -->
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Storage Classes</h5>
+            </div>
+            <div class="card-body">
+                <div id="storage-classes-table" data-realtime="true" data-resource-type="storageclasses"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Tabulator for Storage Classes
+            var storageClassesTable = new Tabulator("#storage-classes-table", {
+                data: {{ storage_classes_data_json|safe }},
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "local",
+                paginationSize: 10,
+                movableColumns: true,
+                placeholder: "No Storage Classes Available",
+                initialSort: [
+                    {column: "name", dir: "asc"},
+                ],
+                columns: [
+                    {
+                        title: "Name",
+                        field: "name",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function(cell, formatterParams) {
+                            const data = cell.getData();
+                            const isDefault = data.is_default ? '<span class="badge bg-success ms-2">Default</span>' : '';
+                            return `<a href="${data.details_url}" class="command-hover" data-resource-type="storageclass" data-resource-name="${data.name}">${data.name}</a>${isDefault}`;
+                        }
+                    },
+                    {
+                        title: "Provisioner",
+                        field: "provisioner",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Reclaim Policy",
+                        field: "reclaim_policy",
+                        headerFilter: "input",
+                        headerSort: true,
+                        formatter: function(cell) {
+                            const value = cell.getValue();
+                            let badgeClass = "bg-secondary";
+                            
+                            if (value === "Delete") {
+                                badgeClass = "bg-danger";
+                            } else if (value === "Retain") {
+                                badgeClass = "bg-success";
+                            }
+                            
+                            return `<span class="badge ${badgeClass}">${value}</span>`;
+                        }
+                    },
+                    {
+                        title: "Volume Binding Mode",
+                        field: "volume_binding_mode",
+                        headerFilter: "input",
+                        headerSort: true
+                    },
+                    {
+                        title: "Actions",
+                        formatter: function(cell) {
+                            const data = cell.getRow().getData();
+                            return `
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('kubectl describe storageclass ${data.name}')">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="copyToClipboard('kubectl delete storageclass ${data.name}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            `;
+                        },
+                        headerSort: false,
+                        hozAlign: "center",
+                        width: 120
+                    }
+                ],
+            });
+
+            // Connect search input to table
+            document.getElementById("storage-class-search").addEventListener("keyup", function() {
+                storageClassesTable.setFilter(filterFunc);
+            });
+
+            function filterFunc(data) {
+                var searchTerm = document.getElementById("storage-class-search").value.toLowerCase();
+                
+                // If search is empty, show all
+                if (searchTerm === "") return true;
+                
+                // Search in all fields
+                return Object.keys(data).some(function(key) {
+                    if (typeof data[key] === "string") {
+                        return data[key].toLowerCase().includes(searchTerm);
+                    }
+                    return false;
+                });
+            }
+        });
+    </script>
+{% endblock %}

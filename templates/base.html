@@ -2,9 +2,8 @@
 {% load i18n %}
 {% load humanize %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <!-- Existing head content -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Kubernetes Dashboard{% endblock %}</title>
@@ -13,15 +12,27 @@
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"
           type="image/svg+xml">
 
+    <!-- Google Fonts - Roboto & Roboto Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" 
+          rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
           integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    
+    <!-- Tabulator CSS - Material Design Theme -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.1/css/tabulator_materialize.min.css"
           integrity="sha512-GpRsukKH+xY9GoC7vOiS3dof7iZuw0P+q8O3db/aaWzXv2cuXz/N4Bi+zLltxFqLotF6brilG9XIY+AxX8p5OA=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    
+    <!-- Custom CSS -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
           integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
@@ -30,11 +41,21 @@
           integrity="sha512-pvgEHI1a6kkKqiKZOb7KxH8I3BzPQstwPl+M1HWzh2k/S+wyj1x9Iu7aaFTXv8VhegIumzIHYCrVfn7+JSLg7A=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
+    <!-- Material Design Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Meta theme color for mobile browsers -->
+    <meta name="theme-color" content="#3f51b5">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<!-- Material Design Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'index_page' %}">Kubernetes Dashboard</a>
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'index_page' %}">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" 
+                 alt="Kubernetes Logo" width="30" height="30" class="me-2">
+            Kubernetes Dashboard
+        </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
                 aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,36 +69,114 @@
                         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_pods_page' %}">
-                        <i class="fas fa-cubes me-1"></i>Pods
+                
+                <!-- Workloads Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="workloadsDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-cubes me-1"></i>Workloads
                     </a>
+                    <ul class="dropdown-menu" aria-labelledby="workloadsDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_pods_page' %}">
+                                <i class="fas fa-cube me-1"></i>Pods
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_deployments_page' %}">
+                                <i class="fas fa-rocket me-1"></i>Deployments
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_daemon_sets_page' %}">
+                                <i class="fas fa-server me-1"></i>DaemonSets
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-database me-1"></i>StatefulSets
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-tasks me-1"></i>Jobs
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-clock me-1"></i>CronJobs
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_deployments_page' %}">
-                        <i class="fas fa-rocket me-1"></i>Deployments
+                
+                <!-- Configuration Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="configDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-cogs me-1"></i>Configuration
                     </a>
+                    <ul class="dropdown-menu" aria-labelledby="configDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_config_maps_page' %}">
+                                <i class="fas fa-file-alt me-1"></i>ConfigMaps
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_secrets_page' %}">
+                                <i class="fas fa-key me-1"></i>Secrets
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_daemon_sets_page' %}">
-                        <i class="fas fa-server me-1"></i>DaemonSets
+                
+                <!-- Networking -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="networkDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-network-wired me-1"></i>Networking
                     </a>
+                    <ul class="dropdown-menu" aria-labelledby="networkDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_ingresses_page' %}">
+                                <i class="fas fa-sitemap me-1"></i>Ingresses
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-shield-alt me-1"></i>Network Policies
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_config_maps_page' %}">
-                        <i class="fas fa-file-alt me-1"></i>ConfigMaps
+                
+                <!-- Storage -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="storageDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-hdd me-1"></i>Storage
                     </a>
+                    <ul class="dropdown-menu" aria-labelledby="storageDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'all_storage_classes_page' %}">
+                                <i class="fas fa-layer-group me-1"></i>Storage Classes
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-database me-1"></i>Persistent Volumes
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-file-invoice me-1"></i>Persistent Volume Claims
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_secrets_page' %}">
-                        <i class="fas fa-key me-1"></i>Secrets
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'all_ingresses_page' %}">
-                        <i class="fas fa-network-wired me-1"></i>Ingresses
-                    </a>
-                </li>
+                
+                <!-- Events -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'all_events_page' %}">
                         <i class="fas fa-bell me-1"></i>Events
@@ -87,14 +186,14 @@
         </div>
 
         <!-- Kubeconfig Selection Dropdown -->
-        <form method="post" action="{% url 'select_kubeconfig' %}" class="d-flex">
+        <form method="post" action="{% url 'select_kubeconfig' %}" class="d-flex me-3">
             {% csrf_token %}
             <div class="input-group">
-                <label class="input-group-text text-white bg-dark border-0" for="kubeconfigSelect">
+                <label class="input-group-text text-white border-0" for="kubeconfigSelect" style="background-color: rgba(255, 255, 255, 0.1);">
                     <i class="fas fa-file-alt"></i>
                 </label>
-                <select class="form-select bg-dark text-white border-0" id="kubeconfigSelect" name="kubeconfig"
-                        onchange="this.form.submit()">
+                <select class="form-select text-white border-0" id="kubeconfigSelect" name="kubeconfig"
+                        style="background-color: rgba(255, 255, 255, 0.1);" onchange="this.form.submit()">
                     {% for file in kubeconfig_files %}
                         <option value="{{ file }}"
                                 {% if file == selected_kubeconfig %}selected{% endif %}>{{ file }}</option>
@@ -102,14 +201,37 @@
                 </select>
             </div>
         </form>
+        
+        <!-- Theme Toggle Button -->
+        <button id="themeToggle" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
 </nav>
 
+<!-- Main Content Container -->
 <div class="container-fluid mt-4">
     {% block content %}{% endblock %}
 </div>
 
-<!-- Existing scripts and styles -->
+<!-- Theme Toggle Button (Mobile) -->
+<button id="themeToggleMobile" class="theme-toggle">
+    <i class="fas fa-moon"></i>
+</button>
+
+<!-- Toast for Copy Notifications -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="copyToast" class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i> Command copied to clipboard!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"
         integrity="sha512-7Pi/otdlbbCR+LnW+F7PwFcSDJOuUJB3OxtEHbg4vSMvzvJjde4Po1v4BR9Gdc9aXNUNFVUY+SK51wWT8WF0Gg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>

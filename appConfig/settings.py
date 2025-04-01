@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
+    # Third-party apps
+    'channels',
+
     # Custom apps
     'kubeBoard',
     'kubePods',
@@ -97,6 +100,16 @@ TEMPLATES = [
 
 # WSGI
 WSGI_APPLICATION = 'appConfig.wsgi.application'
+
+# ASGI
+ASGI_APPLICATION = 'appConfig.asgi.application'
+
+# Channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # DATABASES
 DATABASES = {
