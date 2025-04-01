@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load humanize %}
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,8 +48,7 @@
     <meta name="theme-color" content="#3f51b5">
 </head>
 <body>
-<!-- Material Design Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="{% url 'index_page' %}">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" 
@@ -189,11 +188,11 @@
         <form method="post" action="{% url 'select_kubeconfig' %}" class="d-flex me-3">
             {% csrf_token %}
             <div class="input-group">
-                <label class="input-group-text text-white border-0" for="kubeconfigSelect" style="background-color: rgba(255, 255, 255, 0.1);">
+                <label class="input-group-text border-0" for="kubeconfigSelect">
                     <i class="fas fa-file-alt"></i>
                 </label>
-                <select class="form-select text-white border-0" id="kubeconfigSelect" name="kubeconfig"
-                        style="background-color: rgba(255, 255, 255, 0.1);" onchange="this.form.submit()">
+                <select class="form-select border-0" id="kubeconfigSelect" name="kubeconfig"
+                        onchange="this.form.submit()">
                     {% for file in kubeconfig_files %}
                         <option value="{{ file }}"
                                 {% if file == selected_kubeconfig %}selected{% endif %}>{{ file }}</option>

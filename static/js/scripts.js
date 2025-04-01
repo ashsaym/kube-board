@@ -74,14 +74,14 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(() => {
                 // Provide visual feedback by changing the icon
                 button.innerHTML = '<i class="fas fa-check"></i>';
-                button.classList.remove('btn-outline-light');
+                button.classList.remove('btn-outline-secondary');
                 button.classList.add('btn-success');
 
                 // Revert back to the original icon after 2 seconds
                 setTimeout(() => {
                     button.innerHTML = '<i class="fas fa-copy"></i>';
                     button.classList.remove('btn-success');
-                    button.classList.add('btn-outline-light');
+                    button.classList.add('btn-outline-secondary');
                 }, 2000);
             })
             .catch(err => {
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(() => {
                     // Provide visual feedback by changing the icon
                     this.innerHTML = '<i class="fas fa-check"></i>';
-                    this.classList.remove('btn-dark');
+                    this.classList.remove('btn-light');
                     this.classList.add('btn-success');
 
                     // Show toast notification
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     setTimeout(() => {
                         this.innerHTML = '<i class="fas fa-copy"></i>';
                         this.classList.remove('btn-success');
-                        this.classList.add('btn-dark');
+                        this.classList.add('btn-light');
                     }, 2000);
                 })
                 .catch(err => {
