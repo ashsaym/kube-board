@@ -4,7 +4,7 @@ A comprehensive web-based UI for managing and monitoring Kubernetes clusters wit
 
 ## Features
 
-- **Modern Material Design UI**: Clean, intuitive interface with dark mode by default and light mode toggle
+- **Modern Material Design UI**: Clean, intuitive interface with a light theme
 - **Cluster Overview**: Get a quick overview of your cluster's health and resources
 - **Resource Management**: View and manage various Kubernetes resources:
   - Pods
@@ -23,13 +23,10 @@ A comprehensive web-based UI for managing and monitoring Kubernetes clusters wit
 - **Command Generation**: Automatically generate kubectl commands for common operations with copy-to-clipboard functionality
 - **Resource Details**: Detailed views of all Kubernetes resources with relevant information
 - **Logs Streaming**: Stream logs from pods in real-time
-<<<<<<< HEAD
-- **User-Friendly Interface**: Clean, light-themed UI designed for both beginners and experienced users
-=======
+- **User-Friendly Interface**: Clean UI designed for both beginners and experienced users
 - **Real-time Updates**: WebSocket support for live resource monitoring
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 - **Hover Command Tips**: View kubectl commands by hovering over resource names
->>>>>>> origin/main
 
 ## Quick Start
 
@@ -141,24 +138,27 @@ kube-board/
    chmod 600 kubeConfigs/*
    ```
 
-<<<<<<< HEAD
 2. **Connection refused**
-=======
-4. Apply database migrations:
+
+3. Apply database migrations:
    ```bash
    python manage.py migrate
    ```
 
-5. Run the development server:
->>>>>>> origin/main
+4. Run the development server:
    ```bash
    # Verify kubeconfig
    KUBECONFIG=kubeConfigs/your-config kubectl get nodes
    ```
 
-<<<<<<< HEAD
-3. **Port in use**
-=======
+5. **Port in use**
+   ```bash
+   # Check port usage
+   lsof -i :8000
+   # Use different port
+   python manage.py runserver 0.0.0.0:8001
+   ```
+
 6. Access the dashboard at http://localhost:8000
 
 ## Usage
@@ -168,7 +168,7 @@ kube-board/
 3. Click on individual resources to view detailed information
 4. Use the generated kubectl commands for common operations (hover over resources to see commands)
 5. Stream logs from pods directly in the browser
-6. Toggle between dark and light themes using the theme button in the navigation bar
+
 
 ## Development
 
@@ -195,12 +195,8 @@ kube-board/
 ### Adding New Features
 
 1. Create a new Django app for the resource type:
->>>>>>> origin/main
    ```bash
-   # Check port usage
-   lsof -i :8000
-   # Use different port
-   python manage.py runserver 0.0.0.0:8001
+   python manage.py startapp kube<ResourceType>
    ```
 
 ### Security Best Practices
@@ -227,8 +223,7 @@ The application uses Django Channels for WebSocket support, enabling real-time u
 
 ## Features Added in This Version
 
-- Material Design UI with dark theme by default
-- Theme toggle between dark and light modes
+- Material Design UI with light theme
 - Improved navigation with dropdown menus for resource categories
 - WebSocket support for real-time updates
 - Storage Classes management module
