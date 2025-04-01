@@ -5,65 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Theme Management
-    const htmlElement = document.documentElement;
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const themeToggleMobileBtn = document.getElementById('themeToggleMobile');
-    const themeIcons = document.querySelectorAll('#themeToggle i, #themeToggleMobile i');
-    
-    // Check for saved theme preference or use default (dark)
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
-    
-    // Theme toggle functionality
-    function toggleTheme() {
-        const currentTheme = htmlElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-    }
-    
-    function setTheme(theme) {
-        htmlElement.setAttribute('data-theme', theme);
-        
-        // Update icons
-        themeIcons.forEach(icon => {
-            if (theme === 'dark') {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            } else {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            }
-        });
-        
-        // Apply CSS variables based on theme
-        if (theme === 'light') {
-            document.body.style.setProperty('--background-dark', '#f8f9fa');
-            document.body.style.setProperty('--surface-dark', '#ffffff');
-            document.body.style.setProperty('--card-dark', '#ffffff');
-            document.body.style.setProperty('--text-primary-dark', 'rgba(0, 0, 0, 0.87)');
-            document.body.style.setProperty('--text-secondary-dark', 'rgba(0, 0, 0, 0.6)');
-            document.body.style.setProperty('--divider-dark', 'rgba(0, 0, 0, 0.12)');
-        } else {
-            document.body.style.setProperty('--background-dark', '#121212');
-            document.body.style.setProperty('--surface-dark', '#1e1e1e');
-            document.body.style.setProperty('--card-dark', '#242424');
-            document.body.style.setProperty('--text-primary-dark', 'rgba(255, 255, 255, 0.87)');
-            document.body.style.setProperty('--text-secondary-dark', 'rgba(255, 255, 255, 0.6)');
-            document.body.style.setProperty('--divider-dark', 'rgba(255, 255, 255, 0.12)');
-        }
-    }
-    
-    // Add event listeners to theme toggle buttons
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', toggleTheme);
-    }
-    
-    if (themeToggleMobileBtn) {
-        themeToggleMobileBtn.addEventListener('click', toggleTheme);
-    }
-
     // Copy Command Functionality
     function handleCopyCommand(event) {
         const button = event.currentTarget;

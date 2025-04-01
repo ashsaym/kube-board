@@ -371,13 +371,19 @@
                         title: "CPU Usage",
                         field: "cpu_usage",
                         headerFilter: "input",
-                        headerSort: true
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            return cell.getValue() + " m";
+                        }
                     },
                     {
                         title: "RAM Usage",
                         field: "ram_usage",
                         headerFilter: "input",
-                        headerSort: true
+                        headerSort: true,
+                        formatter: function (cell, formatterParams) {
+                            return cell.getValue() + " Mi";
+                        }
                     },
                 ],
             });

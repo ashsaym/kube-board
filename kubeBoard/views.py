@@ -201,8 +201,8 @@ def index_page(request):
             total_cpu_usage += pod_cpu
             total_ram_usage += pod_ram
             pod_metrics[(namespace, name)] = {
-                'cpu_usage': f"{pod_cpu:.2f}m",
-                'ram_usage': f"{pod_ram:.2f}Mi"
+                'cpu_usage': f"{pod_cpu:.2f}",
+                'ram_usage': f"{pod_ram:.2f}"
             }
 
         # Compute usage percentages

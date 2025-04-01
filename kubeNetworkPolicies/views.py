@@ -112,11 +112,13 @@ def network_policy_details_page(request, namespace, network_policy_name):
                 }
                 
                 # Process 'from' field
-                if rule.from_:
-                    for from_item in rule.from_:
+                # Handle the 'from_' attribute safely
+                from_items = getattr(rule, 'from_', None)
+                if from_items:
+                    for from_item in from_items:
                         if from_item.ip_block:
                             cidr = from_item.ip_block.cidr
-                            except_cidrs = from_item.ip_block.except_ or []
+                            except_cidrs = getattr(from_item.ip_block, 'except_', []) or []
                             formatted_rule['from'].append({
                                 'type': 'IPBlock',
                                 'value': f"CIDR: {cidr}, Except: {', '.join(except_cidrs) if except_cidrs else 'None'}"

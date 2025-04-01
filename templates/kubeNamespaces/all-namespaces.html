@@ -92,38 +92,60 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="services-table" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Namespace</th>
-                                    <th>Type</th>
-                                    <th>Cluster IP</th>
-                                    <th>External IP</th>
-                                    <th>Ports</th>
-                                    <th>Age</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for svc in processed_services %}
-                                <tr>
-                                    <td>{{ svc.name }}</td>
-                                    <td>{{ svc.namespace }}</td>
-                                    <td>{{ svc.type }}</td>
-                                    <td>{{ svc.cluster_ip }}</td>
-                                    <td>{{ svc.external_ip }}</td>
-                                    <td>{{ svc.ports }}</td>
-                                    <td>{{ svc.age }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="text-center">No Services found</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    <div class="mb-3">
+                        <input type="text" id="services-filter" class="form-control" placeholder="Filter services...">
                     </div>
+                    <div id="services-tabulator" class="tabulator-container"></div>
+                    
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Initialize Tabulator for services
+                            var servicesTable = new Tabulator("#services-tabulator", {
+                                data: [
+                                    {% for svc in processed_services %}
+                                    {
+                                        name: "{{ svc.name }}",
+                                        namespace: "{{ svc.namespace }}",
+                                        type: "{{ svc.type }}",
+                                        cluster_ip: "{{ svc.cluster_ip }}",
+                                        external_ip: "{{ svc.external_ip }}",
+                                        ports: "{{ svc.ports }}",
+                                        age: "{{ svc.age }}"
+                                    }{% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                ],
+                                layout: "fitColumns",
+                                responsiveLayout: "collapse",
+                                pagination: "local",
+                                paginationSize: 10,
+                                paginationSizeSelector: [5, 10, 20, 50],
+                                movableColumns: true,
+                                columns: [
+                                    {title: "Name", field: "name", sorter: "string", headerFilter: true},
+                                    {title: "Namespace", field: "namespace", sorter: "string", headerFilter: true},
+                                    {title: "Type", field: "type", sorter: "string", headerFilter: true},
+                                    {title: "Cluster IP", field: "cluster_ip", sorter: "string"},
+                                    {title: "External IP", field: "external_ip", sorter: "string"},
+                                    {title: "Ports", field: "ports", sorter: "string"},
+                                    {title: "Age", field: "age", sorter: "string"}
+                                ]
+                            });
+                            
+                            // Add filter functionality
+                            document.getElementById("services-filter").addEventListener("keyup", function() {
+                                servicesTable.setFilter(filterFunc);
+                            });
+                            
+                            function filterFunc(data) {
+                                var filterValue = document.getElementById("services-filter").value.toLowerCase();
+                                
+                                // Return true if any field contains the filter value
+                                return Object.values(data).some(function(value) {
+                                    return String(value).toLowerCase().includes(filterValue);
+                                });
+                            }
+                        });
+                    </script>
                 </div>
             </div>
         </div>
