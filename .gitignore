@@ -7,3 +7,5 @@
 .env
 rke2.yaml
 /kubeConfigs
+*.pyc
+node_modules
